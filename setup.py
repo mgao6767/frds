@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 
 requires = [
     'pandas',
@@ -11,5 +11,5 @@ setup(name='frds',
       description='Financial Research Data Services',
       author='Mingze Gao',
       author_email='adrian.gao@outlook.com',
-      packages=['frds'],
+      packages=find_namespace_packages(),
       install_requires=requires)

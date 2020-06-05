@@ -9,6 +9,12 @@ General purpose financial research data services.
 python -m frds.run
 ```
 
+## Test
+
+```python
+python -m unittest
+```
+
 ## Structure
 
 | Module          | Description                                        |
