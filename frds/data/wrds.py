@@ -23,7 +23,6 @@ class Connection(object):
         if autoconnect:
             self.connect()
             self.load_library_list()
-            print(self.schema_perm)
 
     def connect(self):
         try:
