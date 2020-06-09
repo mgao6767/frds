@@ -4,24 +4,23 @@ from datetime import datetime
 from typing import List
 from ..data import Dataset
 
-name = 'Sample Measure'
-description = 'Calculate the average firm size based on comp.funda sample.'
+name = 'Tangibility'
+description = 'The asset tangibility for firms in the comp.funda sample.'
 # TODO: `start_date` and `end_date` are not used right now.
-datasets = [Dataset(source='wrds', library='comp',
-                    table='funda',
-                    vars=['datadate', 'gvkey', 'at', 'indfmt',
-                          'datafmt', 'popsrc', 'consol'],
-                    date_vars=['datadate'],
-                    start_date=datetime(2019, 1, 1),
-                    end_date=datetime(2019, 1, 5)),
-            Dataset(source='wrds', library='comp',
-                    table='funda',
-                    vars=['datadate', 'gvkey', 'ppent',
-                          'indfmt', 'datafmt', 'popsrc', 'consol'],
-                    date_vars=['datadate'],
-                    start_date=datetime(2019, 1, 1),
-                    end_date=datetime(2019, 1, 5),
-                    )]
+# For demonstration, I deliberately separate it into two datasets.
+datasets = [
+    Dataset(source='wrds', library='comp',
+            table='funda',
+            vars=['datadate', 'gvkey', 'at', 'indfmt',
+                  'datafmt', 'popsrc', 'consol'],
+            date_vars=['datadate']),
+    Dataset(source='wrds', library='comp',
+            table='funda',
+            vars=['datadate', 'gvkey', 'ppent',
+                  'indfmt', 'datafmt', 'popsrc', 'consol'],
+            date_vars=['datadate']
+            )
+]
 
 
 def estimate(nparrays: List[np.recarray]):
@@ -38,7 +37,9 @@ def estimate(nparrays: List[np.recarray]):
     nparray1 = filter_funda(nparray1)
     nparray2 = filter_funda(nparray2)
 
-    nparray = rfn.rec_join(['gvkey', 'datadate'], nparray1, nparray2)
-    nparray2.sort(order=['gvkey', 'datadate'])
-    print(f'{nparray=}')
-    return np.nanmean(nparray.at)
+    # The output of `rfn.rec_join()` is sorted along the keys.
+    nparray = rfn.rec_join(keys := ['gvkey', 'datadate'], nparray1, nparray2)
+    nparray = rfn.rec_append_fields(nparray, name, nparray.ppent/nparray.at)
+    cols = set(rfn.get_names_flat(nparray.dtype))
+    (cols_to_keep := set(keys)).add(name)
+    return rfn.rec_drop_fields(nparray, cols-cols_to_keep)
