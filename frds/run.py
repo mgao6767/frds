@@ -25,4 +25,4 @@ if __name__ == "__main__":
 
         while not dm.queue.empty():
             item = dm.queue.get()
-            print(f'{item}')
+            item['result'].to_stata(f'~/{item["name"]}.dta')

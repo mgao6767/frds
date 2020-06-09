@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 from numpy.lib import recfunctions as rfn
 from datetime import datetime
@@ -42,4 +43,4 @@ def estimate(nparrays: List[np.recarray]):
     nparray = rfn.rec_append_fields(nparray, name, nparray.ppent/nparray.at)
     cols = set(rfn.get_names_flat(nparray.dtype))
     (cols_to_keep := set(keys)).add(name)
-    return rfn.rec_drop_fields(nparray, cols-cols_to_keep)
+    return pd.DataFrame.from_records(nparray, exclude=list(cols-cols_to_keep))
