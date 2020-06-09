@@ -5,7 +5,7 @@ from importlib import import_module
 from numpy import recarray, copyto, dtype
 from pandas import DataFrame
 from .dataset import Dataset
-from typing import NewType, Tuple
+from typing import NewType, Tuple, List
 import os
 
 SharedMemoryInfo = NewType(
@@ -93,3 +93,6 @@ class DataManager:
         shm = self._add_to_shared_memory(nparray)
         self._datasets.update({dataset: (shm, nparray.shape, nparray.dtype)})
         return shm, nparray.shape, nparray.dtype
+
+    def get_datasets(self, datasets: List[Dataset]) -> List[SharedMemoryInfo]:
+        return [self.get_dataset(dataset) for dataset in datasets]

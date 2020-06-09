@@ -9,14 +9,14 @@ from multiprocessing import Pipe
 if __name__ == "__main__":
     print('run!')
 
-    measures = [sample_measure] * 10
+    measures = [sample_measure]
     research_assistants = []
 
     with DataManager() as dm:
         # TODO: load data asynchronously
         for m in measures:
-            shared_memory_info = dm.get_dataset(m.dataset)
-            task = shared_memory_info, m.name, m.dataset, m.estimate
+            lst_shared_memory_info = dm.get_datasets(m.datasets)
+            task = lst_shared_memory_info, m.name, m.datasets, m.estimate
             (ra := RA(task, dm.queue)).start()
             research_assistants.append(ra)
 
