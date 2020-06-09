@@ -19,15 +19,18 @@ class DataManager:
         self.smm = SharedMemoryManager()
         self.smm.start()
         self.queue = Queue()
+        self.conns = dict()
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.smm.shutdown()
+        self.shutdown()
 
     def shutdown(self):
         self.smm.shutdown()
+        for conn in self.conns.values():
+            conn.close()
 
     def _add_to_shared_memory(self, nparray: recarray) -> SharedMemory:
         """Internal function to copy an array into shared memory.
@@ -60,17 +63,18 @@ class DataManager:
         recarray
             `numpy.recarry` of the downloaded dataset.
         """
-        module = import_module(f'frds.data.{dataset.source}')
-        assert hasattr(module, 'Connection')
         # TODO: generic login data for different data sources
-        usr = os.getenv('WRDS_USRNAME')
-        pwd = os.getenv("WRDS_PASSWORD")
-        with module.Connection(usr=usr, pwd=pwd) as conn:
-            df = conn.get_table(library=dataset.library,
-                                table=dataset.table,
-                                columns=dataset.vars,
-                                date_cols=dataset.date_vars,
-                                obs=1000)
+        usr, pwd = os.getenv('WRDS_USRNAME'), os.getenv('WRDS_PASSWORD')
+        # If there exists a connection for the data source, use it!
+        if (conn := self.conns.get(dataset.source, None)) is None:
+            module = import_module(f'frds.data.{dataset.source}')
+            conn = module.Connection(usr=usr, pwd=pwd)
+            self.conns.update({dataset.source: conn})
+        df = conn.get_table(library=dataset.library,
+                            table=dataset.table,
+                            columns=dataset.vars,
+                            date_cols=dataset.date_vars,
+                            obs=1000)
         assert isinstance(df, DataFrame)
         return df.to_records(index=False)
 
