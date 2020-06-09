@@ -1,15 +1,15 @@
 import os
-from .data import wrds
+import numpy as np
 from .ra import ra
+from .data import DataManager
+from .measures import sample_measure
+from multiprocessing.shared_memory import SharedMemory
 
 if __name__ == "__main__":
     print('run!')
-    usr = os.getenv('WRDS_USRNAME')
-    pwd = os.getenv("WRDS_PASSWORD")
-    conn = wrds.Connection(usr, pwd)
-    libs = conn.list_libraries()
-    from pprint import pprint
-    pprint(libs)
-    pprint(conn.list_tables('crsp'))
-    pprint(conn.describe_table('crsp', 'crsp_daily_data'))
-    pprint(conn.get_table('crsp', 'dsi', obs=10))
+
+    with DataManager() as dm:
+        shm, shape, dtype = dm.get_dataset(sample_measure.dataset)
+        print(f'{shm=}, {shape=}, {dtype=}')
+        nparray = np.recarray(shape=shape, dtype=dtype, buf=shm.buf)
+        print(f'{nparray=}')
