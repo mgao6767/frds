@@ -14,12 +14,13 @@ SharedMemoryInfo = NewType(
 
 class DataManager:
 
-    def __init__(self):
+    def __init__(self, obs=1000):
         self._datasets = dict()
         self.smm = SharedMemoryManager()
         self.smm.start()
         self.result = Manager().list()
         self.conns = dict()
+        self.obs = obs
 
     def __enter__(self):
         return self
@@ -74,7 +75,7 @@ class DataManager:
                             table=dataset.table,
                             columns=dataset.vars,
                             date_cols=dataset.date_vars,
-                            obs=1000)
+                            obs=self.obs)
         assert isinstance(df, DataFrame)
         return df.to_records(index=False)
 

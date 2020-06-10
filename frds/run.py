@@ -1,6 +1,6 @@
 from .ra import RA
 from .data import DataManager, Dataset
-from .measures import sample_measure
+from .measures import tangibility
 from frds import result_dir
 from typing import List
 from itertools import chain
@@ -8,10 +8,10 @@ from itertools import chain
 if __name__ == "__main__":
     print('run!')
 
-    measures = [sample_measure]
+    measures = [tangibility]
     research_assistants = []
 
-    with DataManager() as dm:
+    with DataManager(obs=-1) as dm:
         # TODO: load data asynchronously
         for m in measures:
             lst_shared_memory_info = dm.get_datasets(m.datasets)
