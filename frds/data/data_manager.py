@@ -1,6 +1,6 @@
 from multiprocessing.shared_memory import SharedMemory
 from multiprocessing.managers import SharedMemoryManager
-from multiprocessing import Queue
+from multiprocessing import Manager
 from importlib import import_module
 from numpy import recarray, copyto, dtype
 from pandas import DataFrame
@@ -18,7 +18,7 @@ class DataManager:
         self._datasets = dict()
         self.smm = SharedMemoryManager()
         self.smm.start()
-        self.queue = Queue()
+        self.result = Manager().list()
         self.conns = dict()
 
     def __enter__(self):
