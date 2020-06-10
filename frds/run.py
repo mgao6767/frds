@@ -1,10 +1,7 @@
-import os
-import numpy as np
 from .ra import RA
 from .data import DataManager
 from .measures import sample_measure
-from multiprocessing.shared_memory import SharedMemory
-from multiprocessing import Pipe
+from frds import result_dir
 
 if __name__ == "__main__":
     print('run!')
@@ -25,4 +22,4 @@ if __name__ == "__main__":
 
         while not dm.queue.empty():
             item = dm.queue.get()
-            item['result'].to_stata(f'~/{item["name"]}.dta')
+            item['result'].to_stata(f'{result_dir}/{item["name"]}.dta')
