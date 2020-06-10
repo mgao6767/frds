@@ -1,5 +1,6 @@
 # FRDS
 
+![LICENSE](https://img.shields.io/github/license/mgao6767/frds?color=green)
 
 General purpose financial research data services.
 
