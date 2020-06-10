@@ -7,15 +7,10 @@ if sys.version_info.major < 3 and sys.version_info.minor < 8:
     print('Python3.8 and higher is required.')
     sys.exit(1)
 
-# default config.ini comes with the frds module
-default_config = os.path.join(os.path.dirname(__file__), 'config.ini')
-
 config = ConfigParser(interpolation=ExtendedInterpolation())
-config.read(default_config)
-base_dir = pathlib.Path(config['Paths']['base_dir']).expanduser()
 
 # custom config.ini in user's directory
-custom_config = os.path.join(base_dir, 'config.ini')
+custom_config = os.path.join(pathlib.Path('~/frds').expanduser(), 'config.ini')
 config.read(custom_config)
 
 data_dir = pathlib.Path(config['Paths']['data_dir']).expanduser()

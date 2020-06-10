@@ -1,7 +1,8 @@
 from setuptools import setup, find_namespace_packages
 from setuptools.command.install import install
-from frds import default_config, custom_config
+import pathlib
 import shutil
+import os
 
 requires = [
     'pandas',
@@ -13,11 +14,15 @@ requires = [
 class PostInstallCommand(install):
     def run(self):
         install.run(self)
-        shutil.copyfile(default_config, custom_config)
+        base_dir = str(pathlib.Path('~/frds').expanduser())
+        os.makedirs(base_dir, exist_ok=True)
+        os.makedirs(os.path.join(base_dir, 'data'), exist_ok=True)
+        os.makedirs(os.path.join(base_dir, 'result'), exist_ok=True)
+        shutil.copy('frds/config.ini', base_dir)
 
 
 setup(name='frds',
-      version='0.1.3',
+      version='0.1.5.56',
       description='Financial Research Data Services',
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
@@ -26,7 +31,8 @@ setup(name='frds',
       url='https://github.com/mgao6767/frds/',
       packages=find_namespace_packages(),
       package_data={
-          "": ["config.ini"],
+          '': ['LICENSE', 'README.md'],
+          'frds': ['config.ini']
       },
       install_requires=requires,
       cmdclass={

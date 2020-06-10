@@ -54,7 +54,7 @@ defined as the Property, Plant and Equipment (Net) scaled by Assets (Total),
 estimated for all firms in the Compustat Fundamental Annual. The result dataset
 is saved in `/result/Tangibility.dta`.
 
-![result-tangibility](https://github.com/mgao6767/frds/blob/master/images/result-tangibility.png)
+![result-tangibility](https://github.com/mgao6767/frds/raw/master/images/result-tangibility.png)
 
 ## Structure
 
