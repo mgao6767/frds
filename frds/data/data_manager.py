@@ -6,7 +6,7 @@ from numpy import recarray, copyto, dtype
 from pandas import DataFrame
 from .dataset import Dataset
 from typing import NewType, Tuple, List
-import os
+from frds import wrds_username, wrds_password
 
 SharedMemoryInfo = NewType(
     'SharedMemoryInfo', Tuple[SharedMemory, tuple, dtype])
@@ -65,7 +65,8 @@ class DataManager:
             `numpy.recarry` of the downloaded dataset.
         """
         # TODO: generic login data for different data sources
-        usr, pwd = os.getenv('WRDS_USRNAME'), os.getenv('WRDS_PASSWORD')
+        if dataset.source == 'wrds':
+            usr, pwd = wrds_username, wrds_password
         # If there exists a connection for the data source, use it!
         if (conn := self.conns.get(dataset.source, None)) is None:
             module = import_module(f'frds.data.{dataset.source}')
