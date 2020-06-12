@@ -29,9 +29,9 @@ def estimate(nparrays: List[np.recarray]):
     ]
 
     nparray = filter_funda(nparrays[0])
-
-    nparray = rfn.rec_append_fields(nparray, name, nparray.ppent/nparray.at)
-    cols = set(rfn.get_names_flat(nparray.dtype))
-    nparray.sort(order=(keys := ['gvkey', 'datadate']))
-    exclude_cols = cols - set([*keys, name])
-    return pd.DataFrame.from_records(nparray, exclude=exclude_cols), variable_labels
+    tangibility = np.true_divide(
+        nparray.ppent, nparray.at, where=(nparray.at != 0))
+    tangibility[np.isnan(nparray.at)] = np.nan
+    nparray = rfn.rec_append_fields(nparray, name, tangibility)
+    nparray.sort(order=['gvkey', 'datadate'])
+    return pd.DataFrame.from_records(nparray), variable_labels
