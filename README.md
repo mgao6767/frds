@@ -66,8 +66,9 @@ is saved in `/result/Tangibility.dta`.
 
 ## Measures
 
-| Measure                                                                                  | Description                                                       | Datasets Used |
-|------------------------------------------------------------------------------------------|-------------------------------------------------------------------|---------------|
-| [tangibility](https://github.com/mgao6767/frds/blob/master/frds/measures/tangibility.py) | Property, Plant and Equipment (Net) scaled by Assets (Total)      | wrds.funda    |
-| [roa](https://github.com/mgao6767/frds/blob/master/frds/measures/roa.py)                 | Income Before Extraordinary Items scaled by Assets (Total)        | wrds.funda    |
-| [roe](https://github.com/mgao6767/frds/blob/master/frds/measures/roe.py)                 | Income Before Extraordinary Items scaled by Common Equity (Total) | wrds.funda    |
+| Measure                                                                                      | Description                                                                                                     | Datasets Used |
+|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------------|
+| [tangibility](https://github.com/mgao6767/frds/blob/master/frds/measures/tangibility.py)     | Property, Plant and Equipment (Net) scaled by Assets (Total)                                                    | wrds.funda    |
+| [roa](https://github.com/mgao6767/frds/blob/master/frds/measures/roa.py)                     | Income Before Extraordinary Items scaled by Assets (Total)                                                      | wrds.funda    |
+| [roe](https://github.com/mgao6767/frds/blob/master/frds/measures/roe.py)                     | Income Before Extraordinary Items scaled by Common Equity (Total)                                               | wrds.funda    |
+| [book leverage](https://github.com/mgao6767/frds/blob/master/frds/measures/book_leverage.py) | (Long-term Debt + Debt in Current Liabilities) / (Long-term Debt + Debt in Current Liabilities + Common Equity) | wrds.funda    |
