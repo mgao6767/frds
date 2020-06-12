@@ -18,7 +18,8 @@ class PostInstallCommand(install):
         os.makedirs(base_dir, exist_ok=True)
         os.makedirs(os.path.join(base_dir, 'data'), exist_ok=True)
         os.makedirs(os.path.join(base_dir, 'result'), exist_ok=True)
-        shutil.copy('frds/config.ini', base_dir)
+        if not os.path.exists(os.path.join(base_dir, 'config.ini')):
+            shutil.copy('frds/config.ini', base_dir)
 
 
 setup(name='frds',
