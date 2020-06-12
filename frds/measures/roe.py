@@ -4,7 +4,7 @@ from numpy.lib import recfunctions as rfn
 from typing import List
 from ..data import Dataset
 
-name = 'ROE''
+name = 'ROE'
 description = 'Return on Equity'
 datasets = [
     Dataset(source='wrds', library='comp',
