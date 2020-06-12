@@ -69,3 +69,4 @@ is saved in `/result/Tangibility.dta`.
 | Measure                                                                                  | Description                                                  | Datasets Used |
 |------------------------------------------------------------------------------------------|--------------------------------------------------------------|---------------|
 | [tangibility](https://github.com/mgao6767/frds/blob/master/frds/measures/tangibility.py) | Property, Plant and Equipment (Net) scaled by Assets (Total) | wrds.funda    |
+| [roa](https://github.com/mgao6767/frds/blob/master/frds/measures/roa.py)                 | Income Before Extraordinary Items scaled by Assets (Total)   | wrds.funda    |
