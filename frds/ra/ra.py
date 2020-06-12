@@ -15,6 +15,7 @@ class RA(Process):
         ]
 
     def run(self):
+        result, variable_labels = self.func(self.nparrays)
         self.result.append(
             dict(name=self.name, datasets=self.datasets,
-                 result=self.func(self.nparrays)))
+                 result=result, variable_labels=variable_labels))

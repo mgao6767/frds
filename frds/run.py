@@ -25,7 +25,9 @@ if __name__ == "__main__":
         for item in dm.result:
             stata_file = f'{result_dir}/{item["name"]}.dta'
             datasets: List[Dataset] = item['datasets']
+            variable_labels: dict = item['variable_labels']
             date_vars = chain.from_iterable(
                 dataset.date_vars for dataset in datasets)
             item['result'].to_stata(stata_file, write_index=False,
-                                    convert_dates={v: 'td' for v in date_vars})
+                                    convert_dates={v: 'td' for v in date_vars},
+                                    variable_labels=variable_labels)

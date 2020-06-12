@@ -14,6 +14,9 @@ datasets = [
                   'datafmt', 'popsrc', 'consol'],
             date_vars=['datadate'])
 ]
+variable_labels = {
+    name: 'Property, Plant and Equipment (Net) scaled by Assets (Total)'
+}
 
 
 def estimate(nparrays: List[np.recarray]):
@@ -30,5 +33,5 @@ def estimate(nparrays: List[np.recarray]):
     nparray = rfn.rec_append_fields(nparray, name, nparray.ppent/nparray.at)
     cols = set(rfn.get_names_flat(nparray.dtype))
     nparray.sort(order=(keys := ['gvkey', 'datadate']))
-    (cols_to_keep := set(keys)).add(name)
-    return pd.DataFrame.from_records(nparray, exclude=list(cols-cols_to_keep))
+    exclude_cols = cols - set([*keys, name])
+    return pd.DataFrame.from_records(nparray, exclude=exclude_cols), variable_labels
