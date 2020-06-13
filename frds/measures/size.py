@@ -9,7 +9,8 @@ description = 'Firm size defined as the natural logarithm of total assets.'
 datasets = [
     Dataset(source='wrds', library='comp',
             table='funda',
-            vars=['datadate', 'gvkey', 'at', 'indfmt', 'datafmt', 'popsrc', 'consol'],
+            vars=['datadate', 'gvkey', 'at', 'indfmt',
+                  'datafmt', 'popsrc', 'consol'],
             date_vars=['datadate'])
 ]
 variable_labels = {
@@ -27,7 +28,7 @@ def estimate(nparrays: List[np.recarray]):
     ]
 
     nparray = filter_funda(nparrays[0])
-    size = np.log(nparray.at, where=(nparrat.at>0))
+    size = np.log(nparray.at, where=(nparray.at > 0))
     size[np.isnan(nparray.at)] = np.nan
     nparray = rfn.rec_append_fields(nparray, name, size)
     # keep only useful columns
