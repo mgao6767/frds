@@ -5,7 +5,7 @@ from importlib import import_module
 from numpy import recarray, copyto, dtype
 from pandas import DataFrame
 from .dataset import Dataset
-from typing import NewType, Tuple, List
+from typing import NewType, Tuple, List, Dict
 from frds import wrds_username, wrds_password
 
 SharedMemoryInfo = NewType(
@@ -100,5 +100,17 @@ class DataManager:
         self._datasets.update({dataset: (shm, nparray.shape, nparray.dtype)})
         return shm, nparray.shape, nparray.dtype
 
-    def get_datasets(self, datasets: List[Dataset]) -> List[SharedMemoryInfo]:
-        return [self.get_dataset(dataset) for dataset in datasets]
+    def get_datasets(self, datasets: List[Dataset]) -> Dict[Dataset, SharedMemoryInfo]:
+        """Return a dictionary of {Dataset: SharedMemoryInfo} given a list of datasets.
+
+        Parameters
+        ----------
+        datasets : List[Dataset]
+            List of requried datasets.
+
+        Returns
+        -------
+        Dict[Dataset, SharedMemoryInfo]
+            Dictionary of Dataset to SharedMemoryInfo.
+        """
+        return {dataset: self.get_dataset(dataset) for dataset in datasets}
