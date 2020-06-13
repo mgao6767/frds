@@ -31,5 +31,8 @@ def estimate(nparrays: List[np.recarray]):
     roa = np.true_divide(nparray.ib, nparray.ceq, where=(nparray.ceq != 0))
     roa[np.isnan(nparray.ceq)] = np.nan
     nparray = rfn.rec_append_fields(nparray, name, roa)
-    nparray.sort(order=['gvkey', 'datadate'])
-    return pd.DataFrame.from_records(nparray), variable_labels
+    # keep only useful columns
+    cols = set(rfn.get_names_flat(nparray.dtype))
+    nparray.sort(order=(keys := ['gvkey', 'datadate']))
+    exclude_cols = cols - set([*keys, 'ib', 'ceq', name])
+    return pd.DataFrame.from_records(nparray, exclude=exclude_cols), variable_labels

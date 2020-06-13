@@ -39,6 +39,8 @@ def estimate(nparrays: List[np.recarray]):
     bleverage[np.isnan(nparray.ceq)] = np.nan
     # add book leverage to the result
     nparray = rfn.rec_append_fields(nparray, name, bleverage)
-    nparray.sort(order=['gvkey', 'datadate'])
-    # keep all variables in case users want to verify
-    return pd.DataFrame.from_records(nparray), variable_labels
+    # keep only useful columns
+    cols = set(rfn.get_names_flat(nparray.dtype))
+    nparray.sort(order=(keys := ['gvkey', 'datadate']))
+    exclude_cols = cols - set([*keys, 'dltt', 'dlc', 'ceq', name])
+    return pd.DataFrame.from_records(nparray, exclude=exclude_cols), variable_labels
