@@ -29,7 +29,7 @@ def estimate(nparrays: List[np.recarray]):
 
     nparray = filter_funda(nparrays[0])
     # market value at fiscal year
-    mv = nparray.prccf_f * nparray.csho
+    mv = nparray.prcc_f * nparray.csho
     # market-to-book = market value of equity / common equity
     mtb = np.true_divide(mv, nparray.ceq, where=(nparray.ceq != 0))
     # set mtb to missing if common equity is somehow missing
