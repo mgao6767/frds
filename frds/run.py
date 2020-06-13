@@ -1,15 +1,17 @@
 from .ra import RA
 from .data import DataManager, Dataset
 from .data.data_manager import SharedMemoryInfo
-from .measures import tangibility, book_leverage, roa, roe
+from frds.measures import *
 from frds import result_dir
 from typing import List, Dict, Tuple, Set
 from itertools import chain
+import inspect
+import frds
 
 if __name__ == "__main__":
     print('run!')
-
-    measures = [roa, tangibility, roe, book_leverage]
+    measures = [measure for _, measure in inspect.getmembers(
+        frds.measures, inspect.ismodule)]
     research_assistants = []
 
     # Consolidate data sources and make one request for one table
