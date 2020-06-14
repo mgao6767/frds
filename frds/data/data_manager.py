@@ -6,7 +6,6 @@ from numpy import recarray, copyto, dtype
 from pandas import DataFrame
 from .dataset import Dataset
 from typing import NewType, Tuple, List, Dict
-from frds import wrds_username, wrds_password
 
 SharedMemoryInfo = NewType(
     'SharedMemoryInfo', Tuple[SharedMemory, tuple, dtype])
@@ -14,13 +13,14 @@ SharedMemoryInfo = NewType(
 
 class DataManager:
 
-    def __init__(self, obs=1000):
+    def __init__(self, obs=1000, config=None):
         self._datasets = dict()
         self.smm = SharedMemoryManager()
         self.smm.start()
         self.result = Manager().list()
         self.conns = dict()
         self.obs = obs
+        self.config = config
 
     def __enter__(self):
         return self
@@ -66,7 +66,8 @@ class DataManager:
         """
         # TODO: generic login data for different data sources
         if dataset.source == 'wrds':
-            usr, pwd = wrds_username, wrds_password
+            usr = self.config.get('wrds_username')
+            pwd = self.config.get('wrds_password')
         # If there exists a connection for the data source, use it!
         if (conn := self.conns.get(dataset.source, None)) is None:
             module = import_module(f'frds.data.{dataset.source}')

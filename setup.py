@@ -7,7 +7,8 @@ import os
 requires = [
     'pandas',
     'sqlalchemy',
-    'psycopg2-binary'
+    'psycopg2-binary',
+    'PyQt5'
 ]
 
 
@@ -23,7 +24,7 @@ class PostInstallCommand(install):
 
 
 setup(name='frds',
-      version='0.1.6',
+      version='0.2.0rc1',
       description='Financial Research Data Services',
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
