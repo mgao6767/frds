@@ -24,7 +24,7 @@ class PostInstallCommand(install):
 
 
 setup(name='frds',
-      version='0.2.0rc1',
+      version='0.2.0',
       description='Financial Research Data Services',
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',

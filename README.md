@@ -2,13 +2,13 @@
 
 ![LICENSE](https://img.shields.io/github/license/mgao6767/frds?color=green)
 
-[frds](https://gihub.com/mgao6767/frds/) is a Python framework that aims to provide the simplest way to compute a collection of major academic measures used in the finance literature, one-click with a Graphical User Interface (GUI).
+[frds](https://github.com/mgao6767/frds/) is a Python framework that aims to provide the simplest way to compute a collection of major academic measures used in the finance literature, one-click with a Graphical User Interface (GUI).
 
-![GUI](/images/frds_demo.gif)
+![GUI](https://github.com/mgao6767/frds/raw/master/images/frds_demo.gif)
 
 ## Installation & Configuration
 
-[frds](https://gihub.com/mgao6767/frds/) requires Python3.8 or higher. To install using `pip`:
+[frds](https://github.com/mgao6767/frds/) requires Python3.8 or higher. To install using `pip`:
 
 ```bash
 $ pip install frds
