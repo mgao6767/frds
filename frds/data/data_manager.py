@@ -1,9 +1,10 @@
+import os
 from multiprocessing.shared_memory import SharedMemory
 from multiprocessing.managers import SharedMemoryManager
 from multiprocessing import Manager
 from importlib import import_module
 from numpy import recarray, copyto, dtype
-from pandas import DataFrame
+import pandas as pd
 from .dataset import Dataset
 from typing import NewType, Tuple, List, Dict
 
@@ -51,7 +52,7 @@ class DataManager:
         copyto(array, nparray)
         return shm
 
-    def _download_dataset(self, dataset: Dataset) -> recarray:
+    def _download_dataset(self, dataset: Dataset) -> pd.DataFrame:
         """Internal function to download the dataset.
 
         Parameters
@@ -61,8 +62,8 @@ class DataManager:
 
         Returns
         -------
-        recarray
-            `numpy.recarry` of the downloaded dataset.
+        pd.DataFrame
+            DataFrame of the downloaded dataset.
         """
         # TODO: generic login data for different data sources
         if dataset.source == 'wrds':
@@ -78,8 +79,7 @@ class DataManager:
                             columns=dataset.vars,
                             date_cols=dataset.date_vars,
                             obs=self.obs)
-        assert isinstance(df, DataFrame)
-        return df.to_records(index=False)
+        return df
 
     def get_dataset(self, dataset: Dataset) -> SharedMemoryInfo:
         """Get the shared memory object, shape and dtype of the given dataset.
@@ -96,7 +96,38 @@ class DataManager:
         """
         if dataset in self._datasets:
             return self._datasets.get(dataset)
-        nparray = self._download_dataset(dataset)
+        dataset_name = f'{dataset.source}_{dataset.library}_{dataset.table}'
+        path = os.path.join(self.config.get('data_dir'), f'{dataset_name}.dta')
+        # If local data directory has the table
+        if os.path.exists(path):
+            df = next(pd.read_stata(path, chunksize=1))
+            print(set(df.columns))
+            print(dataset.vars)
+            # If required variables are all in the table
+            if set(dataset.vars).issubset(set(df.columns)):
+                df = pd.read_stata(path, columns=dataset.vars)
+            # Some variables are missing and need to be downloaded
+            else:
+                # Should find out the missing variables and only download them
+                # But since we don't know the identifiers, might as well just
+                # download everything and merge with existing one.
+                df = self._download_dataset(dataset)
+                df_in_datadir = pd.read_stata(path)
+                common_cols = [col for col in df.columns if col in
+                               df_in_datadir.columns]
+                df_to_save = df.merge(df_in_datadir, on=common_cols)
+                df_to_save.to_stata(path, write_index=False,
+                                    convert_dates={v: 'td' for v in dataset.date_vars})
+                del df_in_datadir
+                del df_to_save
+        # No such table in the local data directory
+        else:
+            # Download the entire table from source
+            df = self._download_dataset(dataset)
+            # Store the table in local data directory
+            df.to_stata(path, write_index=False, convert_dates={
+                v: 'td' for v in dataset.date_vars})
+        nparray = df.to_records(index=False)
         shm = self._add_to_shared_memory(nparray)
         self._datasets.update({dataset: (shm, nparray.shape, nparray.dtype)})
         return shm, nparray.shape, nparray.dtype

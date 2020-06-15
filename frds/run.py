@@ -15,8 +15,8 @@ def main(measures=None, gui=False, config=None, progress_callback=None):
         config = dict(
             wrds_username=wrds_username,
             wrds_password=wrds_password,
-            result_dir=result_dir,
-            data_dir=data_dir,
+            result_dir=str(result_dir),
+            data_dir=str(data_dir),
         )
     if gui:
         from importlib import import_module
