@@ -1,4 +1,5 @@
 import sys
+import os
 import pkgutil
 from importlib import import_module
 from multiprocessing import Queue, Pool
@@ -8,6 +9,7 @@ from PyQt5.QtCore import (Qt, QRunnable, QObject,
 from PyQt5.QtWidgets import (QApplication, QDialog, QStatusBar, QGroupBox,
                              QVBoxLayout, QPushButton, QLabel, QHBoxLayout,
                              QGridLayout, QCheckBox, QLineEdit)
+from PyQt5.QtGui import QIcon
 from frds import wrds_username, wrds_password, data_dir, result_dir
 import frds.measures
 import frds.run
@@ -85,6 +87,9 @@ class GUI(QDialog):
 
         # Set window title
         self.setWindowTitle(frds_title)
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        icon_path = os.path.join(script_dir, 'favicon.ico')
+        self.setWindowIcon(QIcon(icon_path))
         # Set style
         QApplication.setStyle(style_name)
 

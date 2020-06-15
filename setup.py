@@ -24,7 +24,7 @@ class PostInstallCommand(install):
 
 
 setup(name='frds',
-      version='0.2.0',
+      version='0.2.1',
       description='Financial Research Data Services',
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
@@ -33,7 +33,7 @@ setup(name='frds',
       url='https://github.com/mgao6767/frds/',
       packages=find_namespace_packages(),
       package_data={
-          '': ['LICENSE', 'README.md'],
+          '': ['LICENSE', 'README.md', '*.ico'],
           'frds': ['config.ini']
       },
       install_requires=requires,
