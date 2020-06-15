@@ -1,0 +1,11 @@
+# Supported Measures
+
+| Measure                                                    | Description                                                                                                     | Datasets Used                            |
+|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|------------------------------------------|
+| [tangibility](/measures/tangibility)                       | Property, Plant and Equipment (Net) scaled by Assets (Total)                                                    | wrds.comp.funda                          |
+| [roa](/measures/roa)                                       | Income Before Extraordinary Items scaled by Assets (Total)                                                      | wrds.comp.funda                          |
+| [roe](/measures/roe)                                       | Income Before Extraordinary Items scaled by Common Equity (Total)                                               | wrds.comp.funda                          |
+| [book leverage](/measures/book_leverage)                   | (Long-term Debt + Debt in Current Liabilities) / (Long-term Debt + Debt in Current Liabilities + Common Equity) | wrds.comp.funda                          |
+| [capital expenditure](/measures/capital_expenditure)       | Capital Expenditures scaled by Assets (Total)                                                                   | wrds.comp.funda                          |
+| [market to book](/measures/market_to_book)                 | Market Value of Common Equity to Book Common Equity                                                             | wrds.comp.funda                          |
+| [accounting restatement](/measures/accounting_restatement) | Number of various accounting restatements during the fiscal year                                                | wrds.comp.funda, wrds.audit.auditnonreli |

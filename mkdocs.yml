@@ -1,0 +1,76 @@
+# Project information
+site_name: Financial Research Data Services
+site_description: Financial Research Data Services
+site_author: Mingze Gao
+site_url: https://frds.io/
+
+# Repository
+repo_name: mgao6767/frds
+repo_url: https://github.com/mgao6767/frds/
+
+# Copyright
+copyright: Copyright &copy; 2020 frds.io
+
+# Configuration
+theme:
+  name: material
+  language: en
+  palette:
+    primary: blue
+    accent: light blue
+  font:
+    text: Roboto
+    code: Roboto Mono
+  # favicon: favicon.ico
+  # logo: favicon.png
+  # custom_dir: overrides
+
+# Plugins
+plugins:
+  - search # necessary for search to work
+  - git-revision-date-localized
+  - minify:
+      minify_html: true
+  - mkapi
+
+# Extensions
+markdown_extensions:
+  - meta
+  - admonition
+  - footnotes
+  - codehilite:
+      linenums: true
+      guess_lang: false
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tabbed
+  - pymdownx.tilde
+
+extra_javascript:
+- javascripts/extra.js
+- https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
+
+nav:
+- Home: index.md
+- Installation: installation.md
+- Configuration: configuration.md
+- Usage: usage.md
+- Measures Supported: measures.md
+- Measures Documentation:
+  - "Asset Tangibility": measures/tangibility.md
