@@ -1,6 +1,7 @@
 from numpy import recarray
 from multiprocessing import Process
 from ..data import DataManager, Dataset
+from itertools import chain
 
 
 def table_of(dataset: Dataset):
@@ -9,9 +10,9 @@ def table_of(dataset: Dataset):
 
 class RA(Process):
 
-    def __init__(self, task, result):
+    def __init__(self, task, config: dict):
         super(RA, self).__init__()
-        self.result = result
+        self.config = config
         datasets_related, self.name, self.datasets, self.func = task
         # must keep the order of required datasets
         self.nparrays = []
@@ -23,6 +24,11 @@ class RA(Process):
 
     def run(self):
         result, variable_labels = self.func(self.nparrays)
-        self.result.append(
-            dict(name=self.name, datasets=self.datasets,
-                 result=result, variable_labels=variable_labels))
+        # RAs can save results themselves. No need to return to main process
+        stata_file = f'{self.config.get("result_dir")}/{self.name}.dta'
+        date_vars = chain.from_iterable(
+            dataset.date_vars for dataset in self.datasets)
+        result.to_stata(stata_file, write_index=False,
+                        convert_dates={
+                            v: 'td' for v in date_vars if v in result.columns},
+                        variable_labels=variable_labels)

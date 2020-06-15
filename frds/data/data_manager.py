@@ -101,8 +101,6 @@ class DataManager:
         # If local data directory has the table
         if os.path.exists(path):
             df = next(pd.read_stata(path, chunksize=1))
-            print(set(df.columns))
-            print(dataset.vars)
             # If required variables are all in the table
             if set(dataset.vars).issubset(set(df.columns)):
                 df = pd.read_stata(path, columns=dataset.vars)
