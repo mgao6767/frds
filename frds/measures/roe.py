@@ -1,38 +1,56 @@
-import pandas as pd
+from typing import List, Tuple, Dict
 import numpy as np
 from numpy.lib import recfunctions as rfn
-from typing import List
-from ..data import Dataset
+import pandas as pd
+from frds.data import Dataset
+from frds.measures import Measure
+from frds.data.utils import filter_funda
 
-name = 'ROE'
-description = 'Return on Equity'
-datasets = [
-    Dataset(source='wrds', library='comp',
-            table='funda',
-            vars=['datadate', 'gvkey', 'ceq', 'ib', 'indfmt',
-                  'datafmt', 'popsrc', 'consol'],
-            date_vars=['datadate'])
+
+NAME = "ROE"
+DATASETS_REQUIRED: List[Dataset] = [
+    Dataset(
+        source="wrds",
+        library="comp",
+        table="funda",
+        vars=[
+            "datadate",
+            "gvkey",
+            "ceq",
+            "ib",
+            "indfmt",
+            "datafmt",
+            "popsrc",
+            "consol",
+        ],
+        date_vars=["datadate"],
+    )
 ]
-variable_labels = {
-    name: 'Income Before Extraordinary Items scaled by Common Equity (Total)'
+VARIABLE_LABELS = {
+    NAME: "Income Before Extraordinary Items scaled by Common Equity (Total)"
 }
 
 
-def estimate(nparrays: List[np.recarray]):
+class ROE(Measure):
+    """ROE:
+        Income Before Extraordinary Items scaled by Assets (Total)
+     =  ----------------------------------------------------------
+        Common Equity
+    """
 
-    def filter_funda(x): return x[
-        np.in1d(x.datafmt, ('STD')) &
-        np.in1d(x.indfmt, ('INDL')) &
-        np.in1d(x.popsrc, ('D')) &
-        np.in1d(x.consol, ('C'))
-    ]
+    def __init__(self):
+        super().__init__("ROE", DATASETS_REQUIRED)
 
-    nparray = filter_funda(nparrays[0])
-    roa = np.true_divide(nparray.ib, nparray.ceq, where=(nparray.ceq != 0))
-    roa[np.isnan(nparray.ceq)] = np.nan
-    nparray = rfn.rec_append_fields(nparray, name, roa)
-    # keep only useful columns
-    cols = set(rfn.get_names_flat(nparray.dtype))
-    nparray.sort(order=(keys := ['gvkey', 'datadate']))
-    exclude_cols = cols - set([*keys, 'ib', 'ceq', name])
-    return pd.DataFrame.from_records(nparray, exclude=exclude_cols), variable_labels
+    def estimate(self, nparrays: List[np.recarray]):
+        nparray = filter_funda(nparrays[0])
+        roa = np.true_divide(nparray.ib, nparray.ceq, where=(nparray.ceq != 0))
+        roa[np.isnan(nparray.ceq)] = np.nan
+        nparray = rfn.rec_append_fields(nparray, NAME, roa)
+        # keep only useful columns
+        cols = set(rfn.get_names_flat(nparray.dtype))
+        nparray.sort(order=(keys := ["gvkey", "datadate"]))
+        exclude_cols = cols - set([*keys, "ib", "ceq", NAME])
+        return (
+            pd.DataFrame.from_records(nparray, exclude=exclude_cols),
+            VARIABLE_LABELS,
+        )
