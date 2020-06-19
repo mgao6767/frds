@@ -55,8 +55,16 @@ measures = [
     FirmSize(),
 ]
 
-with Professor() as prof:
-    prof.calculate(measures)
+config = dict(
+        wrds_username="your_wrds_username",
+        wrds_password="you_wrds_password",
+        result_dir="path/to/where/you/want/to/store/the/result/",
+        data_dir="path/to/where/you/want/to/store/the/data/",
+    )
+
+if __name__ == "__main__":
+    with Professor(config=config) as prof:
+        prof.calculate(measures)
 ```
 
 The output data will be saved as STATA `.dta` file in the `result` folder.
@@ -132,6 +140,14 @@ measures = [
     NewMeasure(),
 ]
 
-with Professor() as prof:
-    prof.calculate(measures)
+config = dict(
+        wrds_username="your_wrds_username",
+        wrds_password="you_wrds_password",
+        result_dir="path/to/where/you/want/to/store/the/result/",
+        data_dir="path/to/where/you/want/to/store/the/data/",
+    )
+
+if __name__ == "__main__":
+    with Professor(config=config) as prof:
+        prof.calculate(measures)
 ```

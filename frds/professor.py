@@ -32,7 +32,7 @@ class Professor:
         # The configuration of login info and data/result directories
         self.office.config = config
         # Function to update progress message
-        self.progress = progress
+        self.progress = print if progress is None else progress
 
     def __enter__(self):
         return self
@@ -135,4 +135,3 @@ class Professor:
                 assistant.join()
         result_dir = self.office.config.get("result_dir")
         self.progress(f"Completed! Results saved in {result_dir}")
-
