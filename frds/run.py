@@ -57,4 +57,14 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+
+    from frds import wrds_username, wrds_password, result_dir, data_dir
+
+    config = dict(
+        wrds_username=wrds_username,
+        wrds_password=wrds_password,
+        result_dir=str(result_dir),
+        data_dir=str(data_dir),
+    )
+
+    main(config=config)
