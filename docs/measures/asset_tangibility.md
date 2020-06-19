@@ -1,6 +1,6 @@
 ---
 path: tree/master/frds
-source: measures/tangibility.py
+source: measures/asset_tangibility.py
 ---
 
 # Asset Tangibility
@@ -14,3 +14,7 @@ $$
 $$
 
 where $PPENT$ and $AT$ are from Compustat Fundamentals Annual `WRDS.COMP.FUNDA`.
+
+## API
+
+![mkapi](frds.measures.asset_tangibility.AssetTangibility)

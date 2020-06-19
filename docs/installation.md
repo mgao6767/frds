@@ -7,7 +7,7 @@
 Using `pip` is the simplest way. To install using `pip`:
 
 ```bash
-$ pip install frds
+$ pip install frds --upgrade
 ```
 
 ## Install from source
@@ -19,6 +19,6 @@ You can download the source code and install:
 $ cd ~
 $ git clone https://github.com/mgao6767/frds.git
 $ cd frds
-$ pip install . --upgrade
+$ pip install .
 ```
 
