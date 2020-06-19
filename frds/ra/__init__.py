@@ -1,1 +1,1 @@
-from .ra import RA
+from .research_assistant import ResearchAssistant

@@ -1,14 +1,28 @@
 import sys
 import os
-import pkgutil
-from importlib import import_module
-from multiprocessing import Queue, Pool
-from typing import List, Callable
-from PyQt5.QtCore import (Qt, QRunnable, QObject,
-                          QThreadPool, pyqtSignal, pyqtSlot)
-from PyQt5.QtWidgets import (QApplication, QDialog, QStatusBar, QGroupBox,
-                             QVBoxLayout, QPushButton, QLabel, QHBoxLayout,
-                             QGridLayout, QCheckBox, QLineEdit)
+import inspect
+from typing import List
+from PyQt5.QtCore import (
+    Qt,
+    QRunnable,
+    QObject,
+    QThreadPool,
+    pyqtSignal,
+    pyqtSlot,
+)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QDialog,
+    QStatusBar,
+    QGroupBox,
+    QVBoxLayout,
+    QPushButton,
+    QLabel,
+    QHBoxLayout,
+    QGridLayout,
+    QCheckBox,
+    QLineEdit,
+)
 from PyQt5.QtGui import QIcon
 from frds import wrds_username, wrds_password, data_dir, result_dir
 import frds.measures
@@ -24,7 +38,7 @@ class Worker(QRunnable):
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
-        self.kwargs['progress_callback'] = self.signals.progress
+        self.kwargs["progress_callback"] = self.signals.progress
 
     @pyqtSlot()
     def run(self):
@@ -50,6 +64,7 @@ class WorkerSignals(QObject):
     result
         `object` data returned from processing, anything
     """
+
     finished = pyqtSignal()
     error = pyqtSignal(str)
     result = pyqtSignal(object)
@@ -68,7 +83,7 @@ class GUI(QDialog):
         github_url = "https://github.com/mgao6767/frds/"
         frds_title = "FRDS - Financial Research Data Services"
         style_name = "Fusion"
-        intro_html = f'''
+        intro_html = f"""
         <p>Estimate a collection of corporate finance metrics on one click!</p>
         <ol>
             <li>Select measures to estimate.</li>
@@ -77,18 +92,18 @@ class GUI(QDialog):
         </ol>
         <p>Author: <a href="{my_site_url}">{author}</a> |
         Email: <a href="mailto:{my_email}">{my_email}</a> |
-        Source code: <a href="{github_url}">{github_url}</a></p><hr>'''
+        Source code: <a href="{github_url}">{github_url}</a></p><hr>"""
 
         self.measures: List[(str, QCheckBox)] = []
         self.status_bar = QStatusBar()
-        self.status_bar.showMessage('Status: Ready.')
+        self.status_bar.showMessage("Status: Ready.")
         self.threadpool = QThreadPool()
         self.stopped = True
 
         # Set window title
         self.setWindowTitle(frds_title)
         script_dir = os.path.dirname(os.path.realpath(__file__))
-        icon_path = os.path.join(script_dir, 'favicon.ico')
+        icon_path = os.path.join(script_dir, "favicon.ico")
         self.setWindowIcon(QIcon(icon_path))
         # Set style
         QApplication.setStyle(style_name)
@@ -135,10 +150,11 @@ class GUI(QDialog):
             Layout for measure selection
         """
         layout = QVBoxLayout()
-        for measure in pkgutil.iter_modules(frds.measures.__path__):
-            (check_box := QCheckBox(measure.name)).setCheckState(Qt.Checked)
-            layout.addWidget(check_box)
-            self.measures.append((measure.name, check_box))
+        for name, measure in inspect.getmembers(frds.measures, inspect.isclass):
+            if not inspect.isabstract(measure):
+                (check_box := QCheckBox(name)).setCheckState(Qt.Checked)
+                layout.addWidget(check_box)
+                self.measures.append((name, check_box))
         (measure_selection := QGroupBox("Measures")).setLayout(layout)
         return measure_selection
 
@@ -159,13 +175,13 @@ class GUI(QDialog):
         self.frds_result_dir = QLineEdit(str(result_dir))
 
         layout = QGridLayout()
-        layout.addWidget(QLabel('WRDS Username'), 0, 0, 1, 1)
+        layout.addWidget(QLabel("WRDS Username"), 0, 0, 1, 1)
         layout.addWidget(self.wrds_username_qline, 0, 1, 1, 2)
-        layout.addWidget(QLabel('WRDS Password'), 1, 0, 1, 1)
+        layout.addWidget(QLabel("WRDS Password"), 1, 0, 1, 1)
         layout.addWidget(self.wrds_password_qline, 1, 1, 1, 2)
-        layout.addWidget(QLabel('Data directory'), 2, 0, 1, 1)
+        layout.addWidget(QLabel("Data directory"), 2, 0, 1, 1)
         layout.addWidget(self.frds_data_dir, 2, 1, 1, 2)
-        layout.addWidget(QLabel('Result directory'), 3, 0, 1, 1)
+        layout.addWidget(QLabel("Result directory"), 3, 0, 1, 1)
         layout.addWidget(self.frds_result_dir, 3, 1, 1, 2)
 
         (configuration_layout := QGroupBox("Configuration")).setLayout(layout)
@@ -177,7 +193,7 @@ class GUI(QDialog):
         self.measure_selection.setDisabled(True)
         self.configuration.setDisabled(True)
         self.start_btn.setDisabled(True)
-        self.start_btn.setText('Running')
+        self.start_btn.setText("Running")
         # TODO: modify config.ini and read config each time in frds.run.main?
         config = dict(
             wrds_username=self.wrds_username_qline.text(),
@@ -186,9 +202,14 @@ class GUI(QDialog):
             result_dir=self.frds_result_dir.text(),
         )
         measures_to_estimate = [
-            m for m, check_box in self.measures if check_box.isChecked()]
-        worker = Worker(frds.run.main, measures=measures_to_estimate,
-                        gui=True, config=config)
+            m for m, check_box in self.measures if check_box.isChecked()
+        ]
+        worker = Worker(
+            frds.run.main,
+            measures_to_estimate=measures_to_estimate,
+            gui=True,
+            config=config,
+        )
         worker.signals.finished.connect(self.on_completed)
         worker.signals.progress.connect(self.update_progress)
         worker.signals.error.connect(self.update_progress)
@@ -199,14 +220,14 @@ class GUI(QDialog):
         self.measure_selection.setDisabled(False)
         self.configuration.setDisabled(False)
         self.start_btn.setDisabled(False)
-        self.start_btn.setText('Start')
+        self.start_btn.setText("Start")
 
     def update_progress(self, msg: str) -> None:
         """Update progress"""
         self.status_bar.showMessage(msg)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication([])
     (gui := GUI()).show()
     sys.exit(app.exec_())

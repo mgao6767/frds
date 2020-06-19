@@ -1,17 +1,29 @@
+"""Define the base structure of a dataset"""
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from typing import List
+from frds.typing import TableID
 
 
 @dataclass
 class Dataset:
+    """The base class of a dataset"""
+
     source: str
     library: str
     table: str
     vars: List[str]
     date_vars: List[str]
-    start_date: datetime = datetime.today() - timedelta(days=365)
-    end_date: datetime = datetime.today()
 
     def __hash__(self):
         return id(self)
+
+    @property
+    def table_id(self) -> TableID:
+        """Return the tuple of (source, library, table)
+
+        Returns
+        -------
+        TableID
+            (source, library, table)
+        """
+        return TableID((self.source, self.library, self.table))
