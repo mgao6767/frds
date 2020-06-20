@@ -69,9 +69,9 @@ if __name__ == "__main__":
 
 The output data will be saved as STATA `.dta` file in the `result` folder.
 
-For example, below is a screenshot of the output for `frds.measures.asset_tangibility` (new versions also have variable labels).
+For example, below is a screenshot of the output for `frds.measures.AccountingRestatement`.
 
-![result-tangibility](https://github.com/mgao6767/frds/raw/master/images/result-tangibility.png)
+![result](https://github.com/mgao6767/frds/raw/master/images/result-restatements.png)
 
 ## Supported Measures
 
@@ -114,6 +114,7 @@ DATASETS_REQUIRED = [
             date_vars=["datadate"],
     )
 ]
+VARIABLE_LABELS = {}
 
 class NewMeasure(Measure):
     
@@ -128,7 +129,7 @@ class NewMeasure(Measure):
         # do something with nparrays and produce a `result` pandas DataFrame
         # ...
         assert isinstance(result, pd.DataFrame)
-        return result, variable_labels
+        return result, VARIABLE_LABELS
 ```
 
 Then to estimate `NewMeasure`:
