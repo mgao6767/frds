@@ -73,4 +73,6 @@ nav:
 - Usage: usage.md
 - Measures Supported: measures.md
 - Measures Documentation:
-  - "Asset Tangibility": measures/tangibility.md
+  - "Accounting Restatement": measures/accounting_restatement.md
+  - "Asset Tangibility": measures/asset_tangibility.md
+- API: api/index.md
