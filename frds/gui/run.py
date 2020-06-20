@@ -113,6 +113,8 @@ class GUI(QDialog):
         (intro_layout := QHBoxLayout()).addWidget(intro_label)
 
         # Control button
+        self.all_measures_btn = QCheckBox("All Measures")
+        self.all_measures_btn.setCheckState(Qt.Checked)
         self.start_btn = QPushButton("Start")
         (ctrl_layout := QHBoxLayout()).addWidget(self.start_btn)
 
@@ -138,6 +140,13 @@ class GUI(QDialog):
 
         # Connect
         self.start_btn.clicked.connect(self.on_start_btn_clicked)
+        self.all_measures_btn.clicked.connect(self.on_all_measures_btn_clicked)
+
+    def on_all_measures_btn_clicked(self) -> None:
+        """Select and deselect all measures"""
+        checked = self.all_measures_btn.isChecked()
+        for _, check_box in self.measures:
+            check_box.setCheckState(Qt.Checked if checked else Qt.Unchecked)
 
     def create_measure_selection_layout(self) -> QGroupBox:
         """Create layout for measure selection
@@ -150,6 +159,7 @@ class GUI(QDialog):
             Layout for measure selection
         """
         layout = QVBoxLayout()
+        layout.addWidget(self.all_measures_btn)
         for name, measure in inspect.getmembers(frds.measures, inspect.isclass):
             if not inspect.isabstract(measure):
                 (check_box := QCheckBox(name)).setCheckState(Qt.Checked)
