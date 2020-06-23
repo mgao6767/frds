@@ -20,7 +20,7 @@ class PostInstallCommand(install):
 
 setup(
     name="frds",
-    version="0.3.0",
+    version="0.3.1",
     description="Financial Research Data Services",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
