@@ -136,4 +136,14 @@ class AccountingRestatement(Measure):
         # Some cosmetic issues
         result = result[cols].drop_duplicates().sort_values(by=keys)
 
+        if self._years > 1:
+            for k, v in VARIABLE_LABELS.items():
+                VARIABLE_LABELS.update(
+                    {
+                        k: v.replace(
+                            "fiscal year", f"past {self._years} fiscal years"
+                        )
+                    }
+                )
+
         return result, VARIABLE_LABELS
