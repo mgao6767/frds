@@ -18,13 +18,13 @@ theme:
     - tabs
   language: en
   palette:
-    primary: blue
-    accent: light blue
+    primary: white
+    accent: indigo
   font:
     text: Roboto
     code: Roboto Mono
   favicon: images/frds_icon.png
-  logo: images/frds_logo.png
+  logo: images/frds_icon.png
   # custom_dir: overrides
 
 # Plugins
