@@ -75,8 +75,7 @@ nav:
 - Usage: usage.md
 - Measures Supported: measures.md
 - Measures Documentation:
-  - "Accounting Restatement": measures/accounting_restatement.md
-  - "Asset Tangibility": measures/asset_tangibility.md
-  - "ROA": measures/roa.md
-  - "ROE": measures/roe.md
-- API: api/index.md
+  - Accounting Restatement: measures/accounting_restatement.md
+  - Asset Tangibility: measures/asset_tangibility.md
+  - ROA: measures/roa.md
+  - ROE: measures/roe.md
