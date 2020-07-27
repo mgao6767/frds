@@ -70,9 +70,10 @@ extra_javascript:
 
 nav:
 - Home: index.md
-- Installation: installation.md
-- Configuration: configuration.md
-- Usage: usage.md
+- Getting Started: 
+  - Installation: getting-started.md
+  - Setup: setup.md
+  - Usage: usage.md
 - Measures Supported: measures.md
 - Measures Documentation:
   - Accounting Restatement: measures/accounting_restatement.md

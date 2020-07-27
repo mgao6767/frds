@@ -33,8 +33,7 @@ This will estimate all measures and save the results as STATA `.dta` file in the
 
 ## Example Output
 
-Below is an example output for [`Asset Tangibility`](/measures/asset_tangibility), defined as the Property, Plant and Equipment (Net) scaled by Assets (Total), estimated for all firms in the Compustat Fundamental Annual.
+For example, below is a screenshot of the output for `frds.measures.AccountingRestatement`.
 
-![result-tangibility](https://github.com/mgao6767/frds/raw/master/images/result-tangibility.png)
-
+![result-restatements](/images/result-restatements.png)
 
