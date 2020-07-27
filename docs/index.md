@@ -1,5 +1,4 @@
-<!-- # FRDS - Financial Research Data Services -->
-![logo](/images/frds_logo.png)
+# FRDS - Financial Research Data Services
 
 ![LICENSE](https://img.shields.io/github/license/mgao6767/frds?color=blue) 
 ![PyPIDownloads](https://img.shields.io/pypi/dm/frds)

@@ -20,12 +20,11 @@ theme:
   palette:
     primary: blue
     accent: light blue
-    scheme: slate
   font:
     text: Roboto
     code: Roboto Mono
-  # favicon: favicon.ico
-  # logo: favicon.png
+  favicon: images/frds_icon.png
+  logo: images/frds_logo.png
   # custom_dir: overrides
 
 # Plugins
