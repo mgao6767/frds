@@ -7,7 +7,7 @@ source: measures/roe.py
 
 ## Definition
 
-Income Before Extraordinary Items scaled by Assets (Total) scaled by Common Equity (Total).
+Income Before Extraordinary Items scaled by Common Equity (Total).
 
 $$
 ROE_{i,t} = \frac{IB_{i,t}}{CEQ_{i,t}}
