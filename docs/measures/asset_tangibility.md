@@ -14,7 +14,3 @@ $$
 $$
 
 where $PPENT$ and $AT$ are from Compustat Fundamentals Annual `WRDS.COMP.FUNDA`.
-
-## API
-
-![mkapi](frds.measures.asset_tangibility.AssetTangibility)

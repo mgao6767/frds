@@ -23,7 +23,3 @@ Specifically, the following variables from `WRDS.AUDIT.AUDITNONRELI` are used:
 | `res_sec_invest` | Restatement followed by SEC investigation |
 
 The dataset is merged with `WRDS.COMP.FUNDA` on `CIK`, grouped by `gvkey` and `datadate`. Then the frequency of each restatement type is counted.
-
-## API
-
-![mkapi](frds.measures.accounting_restatement.AccountingRestatement)
