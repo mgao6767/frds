@@ -32,11 +32,6 @@ VARIABLE_LABELS = {
 
 
 class ROE(Measure):
-    """ROE:
-        Income Before Extraordinary Items scaled by Assets (Total)
-     =  ----------------------------------------------------------
-        Common Equity
-    """
 
     def __init__(self):
         super().__init__("ROE", DATASETS_REQUIRED)

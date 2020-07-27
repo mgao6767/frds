@@ -31,11 +31,6 @@ VARIABLE_LABELS = {
 
 
 class ROA(Measure):
-    """ROA:
-        Income Before Extraordinary Items scaled by Assets (Total)
-     =  ----------------------------------------------------------
-        Assets (Total)
-    """
 
     def __init__(self):
         super().__init__("ROA", DATASETS_REQUIRED)
