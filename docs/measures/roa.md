@@ -7,7 +7,7 @@ source: measures/roa.py
 
 ## Definition
 
-Income Before Extraordinary Items scaled by Assets (Total) scaled by Assets (Total).
+Income Before Extraordinary Items scaled by Assets (Total).
 
 $$
 ROA_{i,t} = \frac{IB_{i,t}}{AT_{i,t}}
