@@ -20,7 +20,7 @@ theme:
   palette:
     primary: blue
     accent: light blue
-    scehme: slate
+    scheme: slate
   font:
     text: Roboto
     code: Roboto Mono
