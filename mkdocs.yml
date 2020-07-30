@@ -78,10 +78,11 @@ nav:
 - Measures Documentation:
   - Accounting Restatement: measures/accounting_restatement.md
   - Asset Tangibility: measures/asset_tangibility.md
+  - Book Leverage: measures/book_leverage.md
+  - Capital Expenditure: measures/capital_expenditure.md
+  - Executive Ownership: measures/executive_ownership.md
+  - Firm Size: measures/firm_size.md
+  - Market to Book: measures/market_to_book.md
   - ROA: measures/roa.md
   - ROE: measures/roe.md
-  - Capital Expenditure: measures/capital_expenditure.md
-  - Firm Size: measures/firm_size.md
-  - Book Leverage: measures/book_leverage.md
-  - Market to Book: measures/market_to_book.md
   
