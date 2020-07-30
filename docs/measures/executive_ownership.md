@@ -58,4 +58,4 @@ $$
 \text{ExecIncentivePct}_{e,t} = \frac{OPT\_EXER\_VAL_{e,t} + SHRS\_VEST\_NUM_{e,t}}{TDC1_{e,t}}
 $$
 
-where $OPT\_EXER\_VAL$ is the value realized on vesting by the executive from Compustat Execucomp Annual Compensation `EXECCOMP.ANNCOMP`, and $CSHO$ is the common shares outstanding from Compustat Fundamentals Annual `WRDS.COMP.FUNDA`.
+where $OPT\_EXER\_VAL$ is the value realized on vesting and $TDC1$ is the executive's total compensation, both from Compustat Execucomp Annual Compensation `EXECCOMP.ANNCOMP`. 
