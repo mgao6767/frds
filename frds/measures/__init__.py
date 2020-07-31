@@ -9,3 +9,4 @@ from .roe import ROE
 from .firm_size import FirmSize
 from .asset_tangibility import AssetTangibility
 from .board_independence import BoardIndependence
+from .stock_delisting import StockDelisting
