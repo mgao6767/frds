@@ -85,4 +85,9 @@ nav:
   - Market to Book: measures/market_to_book.md
   - ROA: measures/roa.md
   - ROE: measures/roe.md
-  
+  - BHC Size: measures/bhc_size.md
+  - BHC FX Exposure: measures/bhc_fx_exposure.md
+  - BHC NetIncome/Assets: measures/bhc_netincome_to_assets.md
+  - BHC Dividend/Assets: measures/bhc_dividend_to_assets.md
+  - BHC RegulatoryCapital/Assets: measures/bhc_regcap_to_assets.md
+  - BHC Tier1Capital/Assets: measures/bhc_tier1cap_to_assets.md
