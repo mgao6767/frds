@@ -45,3 +45,19 @@
     * Fee and interest income from loans in foreign offices (BHCK4059) scaled by total interest income (BHCK4107).
     * Source: `frb_chicago.bhc.bhcf`.
     * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868).
+* [BHC NetIncome/Assets](https://frds.io/measures/bhc_netincome_to_assets)
+    * Net income (BHCK4340) / total assets (BHCK2170).
+    * Source: `frb_chicago.bhc.bhcf`.
+    * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868).
+* [BHC Dividend/Assets](https://frds.io/measures/bhc_dividend_to_assets)
+    * Cash dividends on common stock (BHCK4460) / total assets (BHCK2170).
+    * Source: `frb_chicago.bhc.bhcf`.
+    * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868).
+* [BHC RegulatoryCapital/Assets](https://frds.io/measures/bhc_regcap_to_assets)
+    * Total qualifying capital allowable under the risk-based capital guidelines (BHCK3792) normalized by risk-weighted assets (BHCKA223).
+    * Source: `frb_chicago.bhc.bhcf`.
+    * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868).
+* [BHC Tier1Capital/Assets](https://frds.io/measures/bhc_tier1cap_to_assets)
+    * Tier 1 capital allowable under the risk-based capital guidelines (BHCK8274) normalized by risk-weighted assets (BHCKA223).
+    * Source: `frb_chicago.bhc.bhcf`.
+    * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868).
