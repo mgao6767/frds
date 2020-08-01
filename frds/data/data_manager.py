@@ -84,6 +84,8 @@ class DataManager(Singleton):
         if dataset.source == "wrds":
             usr = self.config.get("wrds_username")
             pwd = self.config.get("wrds_password")
+        if dataset.source == "frb_chicago":
+            usr, pwd = None, None
         # If there exists a connection for the data source, use it!
         if (conn := self.conns.get(dataset.source, None)) is None:
             module = import_module(f"frds.data.{dataset.source}")
