@@ -17,4 +17,5 @@ from .bhc import (
     BHCDividendToAssets,
     BHCRegCapToAssets,
     BHCTier1CapToAssets,
+    BHCGrossIRHedging,
 )

@@ -91,3 +91,4 @@ nav:
   - BHC Dividend/Assets: measures/bhc_dividend_to_assets.md
   - BHC RegulatoryCapital/Assets: measures/bhc_regcap_to_assets.md
   - BHC Tier1Capital/Assets: measures/bhc_tier1cap_to_assets.md
+  - BHC Gross IR Hedging: measures/bhc_gross_ir_hedging.md
