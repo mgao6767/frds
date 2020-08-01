@@ -3,11 +3,11 @@
 ## Firm Characteristics
 
 * [Accounting Restatements](https://frds.io/measures/accounting_restatement)
-  * Number of various accounting restatements during the past (*n*) fiscal year.
-  * Source: `wrds.comp.funda`, `wrds.audit.auditnonreli`. 
+    * Number of various accounting restatements during the past (*n*) fiscal year.
+    * Source: `wrds.comp.funda`, `wrds.audit.auditnonreli`. 
 * [Asset Tangibility](https://frds.io/measures/asset_tangibility) 
-  * Property, Plant and Equipment (Net) scaled by total assets.
-  * Source: `wrds.comp.funda`.
+    * Property, Plant and Equipment (Net) scaled by total assets.
+    * Source: `wrds.comp.funda`.
 * [Board Independence](https://frds.io/measures/board_independence)
     * Board size and independence measured as the ratio of independent board members to board size.
     * Source: `wrds.funda`, `wrds.boardex.na_wrds_company_profile`, `wrds.boardex.na_wrds_org_composition`.
