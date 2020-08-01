@@ -10,11 +10,13 @@ source: measures/bhc.py
 Total gross notional amount of interest rate derivatives held for purposes other than trading `BHCK8725` over total assets `BHCK2170`; for the period 1995 to 2000, contracts not marked to market `BHCK8729` are added.
 
 If $t \in [1995, 2000]$:
+
 $$
 \text{Gross IR Hedging}_{i,t}=\frac{\text{BHCK8725}_{i,t}+\text{BHCK8729}_{i,t}}{\text{BHCK2170}_{i,t}}
 $$
 
 Otherwise:
+
 $$
 \text{Gross IR Hedging}_{i,t}=\frac{\text{BHCK8725}_{i,t}}{\text{BHCK2170}_{i,t}}
 $$
