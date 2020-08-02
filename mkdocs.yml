@@ -11,6 +11,10 @@ repo_url: https://github.com/mgao6767/frds/
 # Copyright
 copyright: Copyright &copy; 2020 frds.io
 
+google_analytics:
+  - UA-114057186-3
+  - auto
+
 # Configuration
 theme:
   name: material
