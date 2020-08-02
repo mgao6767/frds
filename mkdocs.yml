@@ -92,3 +92,4 @@ nav:
   - BHC RegulatoryCapital/Assets: measures/bhc_regcap_to_assets.md
   - BHC Tier1Capital/Assets: measures/bhc_tier1cap_to_assets.md
   - BHC Gross IR Hedging: measures/bhc_gross_ir_hedging.md
+  - BHC Gross FX Hedging: measures/bhc_gross_fx_hedging.md

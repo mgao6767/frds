@@ -21,6 +21,8 @@ DATASETS = [
             "BHCK8274",  # Tier 1 capital allowable under the risk-based capital guidelines
             "BHCK8725",  # Total gross notional amount of interest rate derivatives held for purposes other than trading (marked to market)
             "BHCK8729",  # Total gross notional amount of interest rate derivatives held for purposes other than trading (not marked to market)
+            "BHCK8726",  # Total gross notional amount of foreign exchange rate derivatives held for purposes other than trading (marked to market)
+            "BHCK8730",  # Total gross notional amount of foreign exchange rate derivatives held for purposes other than trading (not marked to market)
         ],
         date_vars=["RSSD9999"],
     )
@@ -29,6 +31,7 @@ VARIABLE_LABELS = {
     "BHCSize": "Natural logarithm of total assets (BHCK2170)",
     "BHCFxExposure": "BHCK4059/BHCK4107",
     "BHCGrossIRHedging": "Gross interest rate hedging",
+    "BHCGrossFXHedging": "Gross foeign exchange rate hedging",
     "RSSD9001": "RSSD ID",
     "RSSD9999": "Reporting date",
     "BHCK2170": "Total assets",
@@ -39,6 +42,8 @@ VARIABLE_LABELS = {
     "BHCKA223": "Risk-weighted assets",
     "BHCK8725": "Total gross notional amount of IR derivatives held for non-trading purposes",
     "BHCK8729": "Total gross notional amount of IR derivatives held for non-trading purposes (not marked to market)",
+    "BHCK8726": "Total gross notional amount of FX derivatives held for non-trading purposes",
+    "BHCK8730": "Total gross notional amount of FX derivatives held for non-trading purposes (not marked to market)",
 }
 KEY_VARS = ["RSSD9001", "RSSD9999"]
 
@@ -116,7 +121,7 @@ class BHCTier1CapToAssets(Measure):
 
 class BHCGrossIRHedging(Measure):
     def __init__(self):
-        super().__init__("BankHoldingCompany GrossIRHeding", DATASETS)
+        super().__init__("BankHoldingCompany GrossIRHedging", DATASETS)
 
     def estimate(self, nparrays):
         bhcf = pd.DataFrame.from_records(nparrays[0])
@@ -128,6 +133,26 @@ class BHCGrossIRHedging(Measure):
             np.in1d(bhcf.RSSD9999.dt.year, range(1995, 2000 + 1)),
             (bhcf.BHCK8725 + bhcf.BHCK8729) / bhcf.BHCK2170,
             bhcf.BHCK8725 / bhcf.BHCK2170,
+        )
+        bhcf.replace([np.inf, -np.inf], np.nan, inplace=True)
+        keep_cols = [*KEY_VARS, type(self).__name__]
+        return bhcf[keep_cols], VARIABLE_LABELS
+
+
+class BHCGrossFXHedging(Measure):
+    def __init__(self):
+        super().__init__("BankHoldingCompany GrossFXHedging", DATASETS)
+
+    def estimate(self, nparrays):
+        bhcf = pd.DataFrame.from_records(nparrays[0])
+        # Total gross notional amount of foreign exchange rate derivatives held
+        # for purposes other than trading (bhck8726) over total assets;
+        # for the period 1995 to 2000, contracts not marked to market (bhck8730)
+        # are added;
+        bhcf[type(self).__name__] = np.where(
+            np.in1d(bhcf.RSSD9999.dt.year, range(1995, 2000 + 1)),
+            (bhcf.BHCK8726 + bhcf.BHCK8730) / bhcf.BHCK2170,
+            bhcf.BHCK8726 / bhcf.BHCK2170,
         )
         bhcf.replace([np.inf, -np.inf], np.nan, inplace=True)
         keep_cols = [*KEY_VARS, type(self).__name__]
