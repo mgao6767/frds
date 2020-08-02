@@ -182,7 +182,7 @@ class BHCMaturityGap(Measure):
         # minus commercial paper (bhck2309)
         # minus federal funds and repo liabilities (bhdmb993 + bhckb995),
         # normalized by total assets.
-        bhcf[type(self).__name__] = (
+        bhcf["BHCMaturityGap"] = (
             np.nansum(
                 [
                     bhcf.BHCK3197,
@@ -198,6 +198,22 @@ class BHCMaturityGap(Measure):
                 axis=0,
             )
         ) / bhcf.BHCK2170  # No propagation of NaNs
+        # Narrow maturity gap does not subtract bhck3296
+        bhcf["BHCNarrowMaturityGap"] = (
+            np.nansum(
+                [
+                    bhcf.BHCK3197,
+                    -bhcf.BHCK3298,
+                    -bhcf.BHCK3409,
+                    -bhcf.BHCK3408,
+                    -bhcf.BHCK2332,
+                    -bhcf.BHCK2309,
+                    -bhcf.BHDMB993,
+                    -bhcf.BHCKB995,
+                ],
+                axis=0,
+            )
+        ) / bhcf.BHCK2170  # No propagation of NaNs
         bhcf.replace([np.inf, -np.inf], np.nan, inplace=True)
-        keep_cols = [*KEY_VARS, type(self).__name__]
+        keep_cols = [*KEY_VARS, "BHCMaturityGap", "BHCNarrowMaturityGap"]
         return bhcf[keep_cols], VARIABLE_LABELS
