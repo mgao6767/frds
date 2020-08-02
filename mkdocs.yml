@@ -93,3 +93,4 @@ nav:
   - BHC Tier1Capital/Assets: measures/bhc_tier1cap_to_assets.md
   - BHC Gross IR Hedging: measures/bhc_gross_ir_hedging.md
   - BHC Gross FX Hedging: measures/bhc_gross_fx_hedging.md
+  - BHC Maturity Gap: measures/bhc_maturity_gap.md

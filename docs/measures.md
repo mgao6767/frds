@@ -69,3 +69,7 @@
     * Total gross notional amount of foreign exchange rate derivatives held for purposes other than trading (BHCK8726) over total assets (BHCK2170); for the period 1995 to 2000, contracts not marked to market (BHCK8730) are added.
     * Source: `frb_chicago.bhc.bhcf`.
     * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868).
+* [BHC Maturity Gap](https://frds.io/measures/bhc_maturity_gap)
+    * Earning assets that are repriceable or mature within one year (BHCK3197) minus interest-bearing deposits that mature or reprice within one year (BHCK3296) minus long-term debt that reprices or matures within one year (BHCK3298 + BHCK3409) minus variable rate preferred stock (BHCK3408) minus other borrowed money with a maturity of one year or less (BHCK2332) minus commercial paper (BHCK2309) minus federal funds and repo liabilities (BHDMB993 + BHCKB995), normalized by total assets. 
+    * Source: `frb_chicago.bhc.bhcf`.
+    * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868).

@@ -23,6 +23,15 @@ DATASETS = [
             "BHCK8729",  # Total gross notional amount of interest rate derivatives held for purposes other than trading (not marked to market)
             "BHCK8726",  # Total gross notional amount of foreign exchange rate derivatives held for purposes other than trading (marked to market)
             "BHCK8730",  # Total gross notional amount of foreign exchange rate derivatives held for purposes other than trading (not marked to market)
+            "BHCK3197",  # Earning assets that are repriceable or mature within one year
+            "BHCK3296",  # Interest-bearing deposits that mature or reprice within one year
+            "BHCK3298",  # Long term debt that reprices within one year
+            "BHCK3409",  # Long-term debt reported in schedule hc
+            "BHCK3408",  # Variable rate preferred stock
+            "BHCK2332",  # Other borrowed money with a remaining maturity of one year or less
+            "BHCK2309",  # Commercial paper
+            "BHDMB993",  # Federal funds purchased in domestic offices
+            "BHCKB995",  # Securities sold under agreements to repurchase (repo liabilities)
         ],
         date_vars=["RSSD9999"],
     )
@@ -154,6 +163,41 @@ class BHCGrossFXHedging(Measure):
             (bhcf.BHCK8726 + bhcf.BHCK8730) / bhcf.BHCK2170,
             bhcf.BHCK8726 / bhcf.BHCK2170,
         )
+        bhcf.replace([np.inf, -np.inf], np.nan, inplace=True)
+        keep_cols = [*KEY_VARS, type(self).__name__]
+        return bhcf[keep_cols], VARIABLE_LABELS
+
+
+class BHCMaturityGap(Measure):
+    def __init__(self):
+        super().__init__("BankHoldingCompany MaturityGap", DATASETS)
+
+    def estimate(self, nparrays):
+        bhcf = pd.DataFrame.from_records(nparrays[0])
+        # Earning assets that are repriceable or mature within one year (bhck3197)
+        # minus interest-bearing deposits that mature or reprice within one year (bhck3296)
+        # minus long-term debt that reprices or matures within one year (bhck3298 + bhck3409)
+        # minus variable rate preferred stock (bhck3408)
+        # minus other borrowed money with a maturity of one year or less (bhck2332)
+        # minus commercial paper (bhck2309)
+        # minus federal funds and repo liabilities (bhdmb993 + bhckb995),
+        # normalized by total assets.
+        bhcf[type(self).__name__] = (
+            np.nansum(
+                [
+                    bhcf.BHCK3197,
+                    -bhcf.BHCK3296,
+                    -bhcf.BHCK3298,
+                    -bhcf.BHCK3409,
+                    -bhcf.BHCK3408,
+                    -bhcf.BHCK2332,
+                    -bhcf.BHCK2309,
+                    -bhcf.BHDMB993,
+                    -bhcf.BHCKB995,
+                ],
+                axis=0,
+            )
+        ) / bhcf.BHCK2170  # No propagation of NaNs
         bhcf.replace([np.inf, -np.inf], np.nan, inplace=True)
         keep_cols = [*KEY_VARS, type(self).__name__]
         return bhcf[keep_cols], VARIABLE_LABELS
