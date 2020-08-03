@@ -17,6 +17,9 @@
 * [Capital Expenditure](https://frds.io/measures/capital_expenditure)
     * Capital expenditures scaled by total assets.
     * Source: `wrds.comp.funda`.
+* [Credit Rating](https://frds.io/measures/credit_rating)
+    * S&P credit rating.
+    * Source: `wrds.ciq.erating`, `wrds.ciq.gvkey`.
 * [Executive Ownership](https://frds.io/measures/executive_ownership)
     * Various measures of executive stock ownership.
     * Source: `wrds.comp.funda`, `wrds.execcomp.anncomp`.

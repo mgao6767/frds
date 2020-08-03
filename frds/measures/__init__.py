@@ -21,3 +21,4 @@ from .bhc import (
     BHCGrossFXHedging,
     BHCMaturityGap,
 )
+from .credit_rating import CreditRating
