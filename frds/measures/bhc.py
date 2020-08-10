@@ -32,6 +32,7 @@ DATASETS = [
             "BHCK2309",  # Commercial paper
             "BHDMB993",  # Federal funds purchased in domestic offices
             "BHCKB995",  # Securities sold under agreements to repurchase (repo liabilities)
+            "BHCK2122",  # Total loans and leases, net of unearned income
         ],
         date_vars=["RSSD9999"],
     )
@@ -41,6 +42,8 @@ VARIABLE_LABELS = {
     "BHCFxExposure": "BHCK4059/BHCK4107",
     "BHCGrossIRHedging": "Gross interest rate hedging",
     "BHCGrossFXHedging": "Gross foeign exchange rate hedging",
+    "BHCLoanGrowth": "ln(BHCK2122/last quarter's BHCK2122)",
+    "BHCLoanGrowthPct": "Percentage change (%) in the total loans and leases (BHCK2122)",
     "RSSD9001": "RSSD ID",
     "RSSD9999": "Reporting date",
     "BHCK2170": "Total assets",
@@ -217,3 +220,50 @@ class BHCMaturityGap(Measure):
         bhcf.replace([np.inf, -np.inf], np.nan, inplace=True)
         keep_cols = [*KEY_VARS, "BHCMaturityGap", "BHCNarrowMaturityGap"]
         return bhcf[keep_cols], VARIABLE_LABELS
+
+
+class BHCLoanGrowth(Measure):
+    def __init__(self):
+        super().__init__("BankHoldingCompany LoanGrowth", DATASETS)
+
+    def estimate(self, nparrays):
+        bhcf = pd.DataFrame.from_records(nparrays[0])[
+            ["RSSD9001", "RSSD9999", "BHCK2122"]
+        ]  # FIXME: somehow `columns=` doesn't work here. Is it a bug?
+
+        # No need to sort since we use "merge by" here. This is also the correct
+        # way since some banks may not report consistently every quarter.
+        bhcf["last_qtr"] = bhcf.RSSD9999 + pd.tseries.offsets.QuarterEnd(n=-1)
+        tmp = bhcf.merge(
+            bhcf,
+            left_on=["RSSD9001", "last_qtr"],
+            right_on=["RSSD9001", "RSSD9999"],
+            suffixes=("", "_lagged"),
+        )
+        current_to_lagged_loan = np.true_divide(
+            tmp.BHCK2122, tmp.BHCK2122_lagged, where=tmp.BHCK2122_lagged != 0,
+        )
+        current_to_lagged_loan[np.isnan(current_to_lagged_loan)] = np.nan
+        # The simple measure: percentage change (%)
+        # In Stata:
+        # ```stata
+        # use "~/frds/result/BankHoldingCompany LoanGrowth.dta", clear
+        # gen qtr = qofd(RSSD9999)
+        # format qtr %tq
+        # xtset RSSD9001 qtr, quarterly
+        # gen BHCLoanGrowthPct = (BHCK2122 / L.BHCK2122 - 1) * 100
+        # ```
+        tmp["BHCLoanGrowthPct"] = (current_to_lagged_loan - 1) * 100
+
+        # ln(current loan / lagged loan) as in Zheng (2020 JBF)
+        # If current loan is 0, ln(0) is undefined. The growth is -100% in fact.
+        current_to_lagged_loan = np.where(
+            current_to_lagged_loan == 0, 1 / np.e, current_to_lagged_loan
+        )
+        tmp["BHCLoanGrowth"] = np.log(current_to_lagged_loan)
+
+        tmp["BHCLoanGrowthPct"].replace([np.inf, -np.inf], np.nan, inplace=True)
+        tmp["BHCLoanGrowth"].replace([np.inf, -np.inf], np.nan, inplace=True)
+        keep_cols = [*KEY_VARS, "BHCK2122", "BHCLoanGrowthPct", "BHCLoanGrowth"]
+        return tmp[keep_cols], VARIABLE_LABELS
+

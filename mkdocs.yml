@@ -91,6 +91,7 @@ nav:
   - ROA: measures/roa.md
   - ROE: measures/roe.md
   - BHC Size: measures/bhc_size.md
+  - BHC Loan Growth: measures/bhc_loan_growth.md
   - BHC FX Exposure: measures/bhc_fx_exposure.md
   - BHC NetIncome/Assets: measures/bhc_netincome_to_assets.md
   - BHC Dividend/Assets: measures/bhc_dividend_to_assets.md

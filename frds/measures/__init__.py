@@ -20,5 +20,6 @@ from .bhc import (
     BHCGrossIRHedging,
     BHCGrossFXHedging,
     BHCMaturityGap,
+    BHCLoanGrowth,
 )
 from .credit_rating import CreditRating

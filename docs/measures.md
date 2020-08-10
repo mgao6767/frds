@@ -44,6 +44,10 @@
 * [BHC Size](https://frds.io/measures/bhc_size)
     * Natural logarithm of total assets.
     * Source: `frb_chicago.bhc.bhcf`.
+* [BHC Loan Growth](https://frds.io/measures/bhc_loan_growth)
+    * Natural logarithm of total loans in the current quarter divided by the total loans in the previous quarter.
+    * Source: `frb_chicago.bhc.bhcf`.
+    * Referece: [Zheng (2020 JBF)](https://doi.org/10.1016/j.jbankfin.2020.105900).
 * [BHC FX Exposure](https://frds.io/measures/bhc_fx_exposure)
     * Fee and interest income from loans in foreign offices (BHCK4059) scaled by total interest income (BHCK4107).
     * Source: `frb_chicago.bhc.bhcf`.
