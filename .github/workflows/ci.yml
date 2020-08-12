@@ -15,3 +15,11 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin
       - run: mkdocs gh-deploy --force
+      - name: Build package
+        run: python setup.py sdist
+      - name: Publish package
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
