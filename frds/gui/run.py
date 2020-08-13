@@ -12,6 +12,8 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWidgets import (
     QApplication,
+    QScrollArea,
+    QWidget,
     QDialog,
     QStatusBar,
     QGroupBox,
@@ -160,12 +162,22 @@ class GUI(QDialog):
         """
         layout = QVBoxLayout()
         layout.addWidget(self.all_measures_btn)
+        widget = QWidget()
+        _layout = QVBoxLayout()
         for name, measure in inspect.getmembers(frds.measures, inspect.isclass):
             if not inspect.isabstract(measure):
                 (check_box := QCheckBox(name)).setCheckState(Qt.Checked)
-                layout.addWidget(check_box)
+                _layout.addWidget(check_box)
                 self.measures.append((name, check_box))
+        widget.setLayout(_layout)
+        scroll = QScrollArea()
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(widget)
+        layout.addWidget(scroll)
         (measure_selection := QGroupBox("Measures")).setLayout(layout)
+        measure_selection.setMaximumWidth(300)
         return measure_selection
 
     def create_configuration_layout(self) -> QGroupBox:
