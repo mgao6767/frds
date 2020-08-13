@@ -1,24 +1,11 @@
-name: ci
+name: Publish to PyPI
+
 on:
-  push:
-    branches:
-      - master
   release:
     types:
       - created
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-      - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin
-      - run: mkdocs gh-deploy --force
   pypi:
     runs-on: ubuntu-latest
     steps:
