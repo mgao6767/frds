@@ -23,3 +23,4 @@ from .bhc import (
     BHCLoanGrowth,
 )
 from .credit_rating import CreditRating
+from .tobin_q import TobinQ
