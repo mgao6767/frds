@@ -1,11 +1,11 @@
 # FRDS - *for better and easier finance research*
 
-![LICENSE](https://img.shields.io/github/license/mgao6767/frds?color=blue) 
-![PyPIDownloads](https://img.shields.io/pypi/dm/frds)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![LICENSE](https://img.shields.io/github/license/mgao6767/frds?color=blue) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
 [frds](https://github.com/mgao6767/frds/) is a Python framework for computing [a collection of major academic measures](/measures) used in the finance literature in a simple and straightforward way.
+
+![GUI](/images/frds_gui.png)
 
 ```python linenums="1"
 from frds import Professor
