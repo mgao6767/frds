@@ -104,9 +104,7 @@ class GUI(QDialog):
 
         # Set window title
         self.setWindowTitle(frds_title)
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        icon_path = os.path.join(script_dir, "favicon.ico")
-        self.setWindowIcon(QIcon(icon_path))
+
         # Set style
         QApplication.setStyle(style_name)
 
@@ -251,5 +249,8 @@ class GUI(QDialog):
 
 if __name__ == "__main__":
     app = QApplication([])
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    icon_path = os.path.join(script_dir, "favicon.ico")
+    app.setWindowIcon(QIcon(icon_path))
     (gui := GUI()).show()
     sys.exit(app.exec_())
