@@ -2,7 +2,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 
 NAME = "StockDelisting"
 DATASETS_REQUIRED: List[Dataset] = [
@@ -17,7 +17,7 @@ DATASETS_REQUIRED: List[Dataset] = [
 VARIABLE_LABELS = {}
 
 
-class StockDelisting(Measure):
+class StockDelisting(CorporateFinanceMeasure):
     def __init__(self):
         super().__init__(NAME, DATASETS_REQUIRED)
 

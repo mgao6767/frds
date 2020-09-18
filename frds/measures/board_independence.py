@@ -2,7 +2,7 @@ from typing import List, Tuple, Dict
 import numpy as np
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 DATASETS_REQUIRED: List[Dataset] = [
@@ -53,7 +53,7 @@ VARIABLE_LABELS: Dict[str, str] = {
 }
 
 
-class BoardIndependence(Measure):
+class BoardIndependence(CorporateFinanceMeasure):
     def __init__(self, missing_independent_board_members_as_zero=True):
         super().__init__("Board Size and Independence", DATASETS_REQUIRED)
         self._missing_as_zero = missing_independent_board_members_as_zero

@@ -2,7 +2,7 @@ from typing import List, Tuple, Dict
 import numpy as np
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 NAME = "ExecutiveOwnership"
@@ -53,7 +53,7 @@ VARIABLE_LABELS: Dict[str, str] = {
 }
 
 
-class ExecutiveOwnership(Measure):
+class ExecutiveOwnership(CorporateFinanceMeasure):
     """Compute various executive ownership measures"""
 
     def __init__(self):

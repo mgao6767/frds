@@ -3,7 +3,7 @@ import numpy as np
 from numpy.lib import recfunctions as rfn
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 NAME = "ROA"
@@ -30,8 +30,7 @@ VARIABLE_LABELS = {
 }
 
 
-class ROA(Measure):
-
+class ROA(CorporateFinanceMeasure):
     def __init__(self):
         super().__init__("ROA", DATASETS_REQUIRED)
 

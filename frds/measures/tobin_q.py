@@ -2,7 +2,7 @@ import numpy as np
 from numpy.lib import recfunctions as rfn
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 NAME = "TobinQ"
@@ -35,7 +35,7 @@ DATASETS_REQUIRED = [
 VARIABLE_LABELS = {NAME: "Tobin's Q"}
 
 
-class TobinQ(Measure):
+class TobinQ(CorporateFinanceMeasure):
     def __init__(self):
         super().__init__(NAME, DATASETS_REQUIRED)
 

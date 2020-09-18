@@ -3,7 +3,7 @@ import numpy as np
 from numpy.lib import recfunctions as rfn
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 NAME = "MarketToBookRatio"
@@ -29,7 +29,7 @@ DATASETS_REQUIRED: List[Dataset] = [
 VARIABLE_LABELS = {NAME: "(PRCC_F*CSHO)/CEQ"}
 
 
-class MarketToBookRatio(Measure):
+class MarketToBookRatio(CorporateFinanceMeasure):
     """Market to book ratio
         common shares outstanding * share price at fiscal year end
      =  ----------------------------------------------------------

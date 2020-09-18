@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import BankingMeasure
 
 DATASETS = [
     Dataset(
@@ -60,7 +60,7 @@ VARIABLE_LABELS = {
 KEY_VARS = ["RSSD9001", "RSSD9999"]
 
 
-class BHCSize(Measure):
+class BHCSize(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany Size", DATASETS)
 
@@ -71,7 +71,7 @@ class BHCSize(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCFxExposure(Measure):
+class BHCFxExposure(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany FX Exposure", DATASETS)
 
@@ -82,7 +82,7 @@ class BHCFxExposure(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCNetIncomeToAssets(Measure):
+class BHCNetIncomeToAssets(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany NetIncomeToAssets", DATASETS)
 
@@ -93,7 +93,7 @@ class BHCNetIncomeToAssets(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCDividendToAssets(Measure):
+class BHCDividendToAssets(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany DividendToAssets", DATASETS)
 
@@ -105,7 +105,7 @@ class BHCDividendToAssets(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCRegCapToAssets(Measure):
+class BHCRegCapToAssets(BankingMeasure):
     def __init__(self):
         super().__init__(
             "BankHoldingCompany RegulatoryCapitalToAssets", DATASETS
@@ -119,7 +119,7 @@ class BHCRegCapToAssets(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCTier1CapToAssets(Measure):
+class BHCTier1CapToAssets(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany Tier1CapitalToAssets", DATASETS)
 
@@ -131,7 +131,7 @@ class BHCTier1CapToAssets(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCGrossIRHedging(Measure):
+class BHCGrossIRHedging(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany GrossIRHedging", DATASETS)
 
@@ -151,7 +151,7 @@ class BHCGrossIRHedging(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCGrossFXHedging(Measure):
+class BHCGrossFXHedging(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany GrossFXHedging", DATASETS)
 
@@ -171,7 +171,7 @@ class BHCGrossFXHedging(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCMaturityGap(Measure):
+class BHCMaturityGap(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany MaturityGap", DATASETS)
 
@@ -222,7 +222,7 @@ class BHCMaturityGap(Measure):
         return bhcf[keep_cols], VARIABLE_LABELS
 
 
-class BHCLoanGrowth(Measure):
+class BHCLoanGrowth(BankingMeasure):
     def __init__(self):
         super().__init__("BankHoldingCompany LoanGrowth", DATASETS)
 

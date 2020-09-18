@@ -3,7 +3,7 @@ import numpy as np
 from numpy.lib import recfunctions as rfn
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 NAME = "BookLeverage"
@@ -29,7 +29,7 @@ DATASETS_REQUIRED = [
 VARIABLE_LABEL: Dict[str, str] = {NAME: "(DLTT+DLC)/(DLTT+DLC+CEQ)"}
 
 
-class BookLeverage(Measure):
+class BookLeverage(CorporateFinanceMeasure):
     """Book leverage:
         (long-term debt + debt in current liabilities) 
      =  --------------------------------------------------------------

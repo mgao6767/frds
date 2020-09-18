@@ -3,7 +3,7 @@ import numpy as np
 from numpy.lib import recfunctions as rfn
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 NAME = "CapitalExpenditure"
@@ -30,7 +30,7 @@ VARIABLE_LABELS: Dict[str, str] = {
 }
 
 
-class CapitalExpenditure(Measure):
+class CapitalExpenditure(CorporateFinanceMeasure):
     """Capial expenditure scaled by total assets
 
         capital expenditures

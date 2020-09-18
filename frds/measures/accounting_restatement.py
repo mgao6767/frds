@@ -13,7 +13,7 @@ from typing import List, Tuple, Dict
 import numpy as np
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 DATASETS_REQUIRED: List[Dataset] = [
@@ -61,7 +61,7 @@ VARIABLE_LABELS: Dict[str, str] = {
 """Dict[str, str]: dict of the variable labels for the output Stata file"""
 
 
-class AccountingRestatement(Measure):
+class AccountingRestatement(CorporateFinanceMeasure):
     """Counts the numer of restatements during the past fiscal year"""
 
     def __init__(self, years=1):
@@ -73,7 +73,9 @@ class AccountingRestatement(Measure):
             Number of past fiscal years to consider, by default 1
         """
         super().__init__(
-            name="Accounting Restatement", datasets_required=DATASETS_REQUIRED
+            name="Accounting Restatement",
+            datasets_required=DATASETS_REQUIRED,
+            category=Category.CORPORATE_FINANCE,
         )
         self._years = int(years)
 

@@ -3,7 +3,7 @@ import numpy as np
 from numpy.lib import recfunctions as rfn
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 from frds.data.utils import filter_funda
 
 
@@ -28,7 +28,7 @@ DATASETS_REQUIRED: List[Dataset] = [
 VARIABLE_LABELS = {NAME: "Natural logarithm of total assets"}
 
 
-class FirmSize(Measure):
+class FirmSize(CorporateFinanceMeasure):
     """Firm size: the natural logarithm of total assets"""
 
     def __init__(self):

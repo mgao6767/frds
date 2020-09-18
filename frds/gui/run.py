@@ -12,6 +12,7 @@ from PyQt5.QtCore import (
     pyqtSignal,
     pyqtSlot,
     QSize,
+    QUrl,
 )
 from PyQt5.QtWidgets import (
     QApplication,
@@ -34,6 +35,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
 )
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from frds import credentials, data_dir, result_dir
 import frds.measures
 import frds.run
@@ -176,12 +178,13 @@ class TabCorporateFinance(QWidget):
         super().__init__(parent)
         self.app = parent.app
         self.status_bar = parent.status_bar
-        self._measures = {
-            name: {"measure": measure, "params": QLabel(name)}
-            for name, measure in inspect.getmembers(
-                frds.measures, inspect.isclass
-            )
-        }
+        self._measures = {}
+
+        for name, measure in self.corp_finc_measures():
+            b = QWebEngineView()
+            # TODO: maybe no need to have one WebEngineView for each measure
+            b.setUrl(QUrl("https://frds.io/measures/roa"))
+            self._measures.update({name: {"measure": measure, "params": b}})
         layout = QVBoxLayout()
 
         # Control button
@@ -208,6 +211,16 @@ class TabCorporateFinance(QWidget):
         self.start_btn.clicked.connect(self.on_start_btn_clicked)
         self.all_measures_btn.clicked.connect(self.on_all_measures_btn_clicked)
 
+    def corp_finc_measures(self):
+        for name, measure in inspect.getmembers(frds.measures, inspect.isclass):
+            if (
+                not inspect.isabstract(measure)
+                and hasattr(measure, "category")
+                and measure.category()
+                is frds.measures.Category.CORPORATE_FINANCE
+            ):
+                yield name, measure
+
     def on_all_measures_btn_clicked(self) -> None:
         """Select and deselect all measures"""
         checked = self.all_measures_btn.isChecked()
@@ -228,9 +241,8 @@ class TabCorporateFinance(QWidget):
     def create_measure_selection_layout(self) -> QGroupBox:
         layout = QVBoxLayout()
         layout.addWidget(self.all_measures_btn)
-        for name, measure in inspect.getmembers(frds.measures, inspect.isclass):
-            if not inspect.isabstract(measure):
-                self.list_of_measures.addItem(name)
+        for name, _ in self.corp_finc_measures():
+            self.list_of_measures.addItem(name)
         h = self.list_of_measures.height()
         for i in range(self.list_of_measures.count()):
             item = self.list_of_measures.item(i)
@@ -248,8 +260,8 @@ class TabCorporateFinance(QWidget):
     def on_measure_selected(self, item: QListWidgetItem) -> None:
         measure_name = item.text()
         params = self._measures.get(measure_name).get("params")
-        for _, item in self._measures.items():
-            item.get("params").hide()
+        for v in self._measures.values():
+            v.get("params").hide()
         params.show()
 
     def on_start_btn_clicked(self) -> None:

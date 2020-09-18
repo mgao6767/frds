@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from frds.data import Dataset
-from frds.measures import Measure
+from frds.measures import CorporateFinanceMeasure
 
 DATASETS = [
     Dataset(
@@ -25,7 +25,7 @@ VARIABLE_LABELS = {
 }
 
 
-class CreditRating(Measure):
+class CreditRating(CorporateFinanceMeasure):
     def __init__(self):
         super().__init__("CreditRating", DATASETS)
 

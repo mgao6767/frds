@@ -1,4 +1,5 @@
 """Defines the base class for all measures"""
+import enum
 import abc
 from typing import List, Tuple
 import numpy as np
@@ -7,8 +8,16 @@ from frds.data import Dataset
 from frds.typing import TableID
 
 
+class Category(enum.Enum):
+    CORPORATE_FINANCE = enum.auto()
+    BANKING = enum.auto()
+    MARKET_MICROSTRUCTURE = enum.auto()
+
+
 class Measure(abc.ABC):
     """Base class for all measures"""
+
+    _category: Category = None
 
     def __init__(self, name: str, datasets_required: List[Dataset]):
         self._name = name
@@ -70,6 +79,21 @@ class Measure(abc.ABC):
         """
         return list(set(dta.table_id for dta in self._datasets_required))
 
+    # @abc.abstractmethod
+    # def description(self) -> str:
+    #     """Return the description of the measure
+
+    #     Returns
+    #     -------
+    #     str
+    #         Description of the measure
+    #     """
+    #     raise NotImplementedError
+
+    @classmethod
+    def category(cls) -> Category:
+        return cls._category
+
     @abc.abstractmethod
     def estimate(
         self, nparrays: List[np.recarray]
@@ -87,3 +111,17 @@ class Measure(abc.ABC):
             Tuple of result `pandas.DataFrame` and dictionay of variable labels
         """
         raise NotImplementedError
+
+
+class CorporateFinanceMeasure(Measure):
+    _category = Category.CORPORATE_FINANCE
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class BankingMeasure(Measure):
+    _category = Category.BANKING
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
