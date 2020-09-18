@@ -3,6 +3,7 @@ import os
 import inspect
 import webbrowser
 from typing import List
+from importlib import import_module
 from PyQt5.QtCore import (
     Qt,
     QRunnable,
@@ -10,11 +11,14 @@ from PyQt5.QtCore import (
     QThreadPool,
     pyqtSignal,
     pyqtSlot,
+    QSize,
 )
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QTabWidget,
+    QListWidget,
+    QListWidgetItem,
     QDialogButtonBox,
     QScrollArea,
     QWidget,
@@ -30,8 +34,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
 )
 from PyQt5.QtGui import QIcon
-from frds import credentials
-from frds import data_dir, result_dir
+from frds import credentials, data_dir, result_dir
 import frds.measures
 import frds.run
 
@@ -142,11 +145,13 @@ class GUI(QWidget):
 
         self.tabs = QTabWidget()
         self.tab_corporate_finance = TabCorporateFinance(self)
-        # self.tab_2 = TabCorporateFinance(self)
-        # self.tab_3 = TabCorporateFinance(self)
+        self.tab_banking = TabBanking(self)
+        self.tab_market_microstructure = TabMarketMicrostructure(self)
         self.tabs.addTab(self.tab_corporate_finance, "Corporate Finance")
-        # self.tabs.addTab(self.tab_2, "Market Microstructure")
-        # self.tabs.addTab(self.tab_3, "Banking")
+        self.tabs.addTab(self.tab_banking, "Banking")
+        self.tabs.addTab(
+            self.tab_market_microstructure, "Market Microstructure"
+        )
 
         # Main layout
         main_layout = QGridLayout()
@@ -171,7 +176,12 @@ class TabCorporateFinance(QWidget):
         super().__init__(parent)
         self.app = parent.app
         self.status_bar = parent.status_bar
-        self.measures: List[(str, QCheckBox)] = []
+        self._measures = {
+            name: {"measure": measure, "params": QLabel(name)}
+            for name, measure in inspect.getmembers(
+                frds.measures, inspect.isclass
+            )
+        }
         layout = QVBoxLayout()
 
         # Control button
@@ -180,9 +190,17 @@ class TabCorporateFinance(QWidget):
         self.start_btn = QPushButton("Start")
         (ctrl_layout := QHBoxLayout()).addWidget(self.start_btn)
         # Measure selection
+        self.list_of_measures = QListWidget()
         self.measure_selection = self.create_measure_selection_layout()
+        # Description and measure params
+        self.measure_params = self.create_measure_params_widget()
+        measure_selection_and_params = QGridLayout()
+        measure_selection_and_params.addWidget(
+            self.measure_selection, 1, 1, 1, 1
+        )
+        measure_selection_and_params.addWidget(self.measure_params, 1, 2, 1, 2)
 
-        layout.addWidget(self.create_measure_selection_layout())
+        layout.addLayout(measure_selection_and_params)
         layout.addLayout(ctrl_layout)
         self.setLayout(layout)
 
@@ -193,38 +211,46 @@ class TabCorporateFinance(QWidget):
     def on_all_measures_btn_clicked(self) -> None:
         """Select and deselect all measures"""
         checked = self.all_measures_btn.isChecked()
-        for _, check_box in self.measures:
-            check_box.setCheckState(Qt.Checked if checked else Qt.Unchecked)
+        for i in range(self.list_of_measures.count()):
+            item = self.list_of_measures.item(i)
+            item.setCheckState(Qt.Checked if checked else Qt.Unchecked)
+
+    def create_measure_params_widget(self) -> QGroupBox:
+        layout = QVBoxLayout()
+        for v in self._measures.values():
+            params_widget = v.get("params")
+            params_widget.hide()
+            layout.addWidget(params_widget)
+        measures_params = QGroupBox("Description")
+        measures_params.setLayout(layout)
+        return measures_params
 
     def create_measure_selection_layout(self) -> QGroupBox:
-        """Create layout for measure selection
-
-        It also populates `self.measures`, a list of (measure_name, QCheckBox).
-
-        Returns
-        -------
-        QGroupBox
-            Layout for measure selection
-        """
         layout = QVBoxLayout()
         layout.addWidget(self.all_measures_btn)
-        widget = QWidget()
-        _layout = QVBoxLayout()
         for name, measure in inspect.getmembers(frds.measures, inspect.isclass):
             if not inspect.isabstract(measure):
-                (check_box := QCheckBox(name)).setCheckState(Qt.Checked)
-                _layout.addWidget(check_box)
-                self.measures.append((name, check_box))
-        widget.setLayout(_layout)
-        scroll = QScrollArea()
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scroll.setWidgetResizable(True)
-        scroll.setWidget(widget)
-        layout.addWidget(scroll)
-        (measure_selection := QGroupBox("Measures")).setLayout(layout)
-        measure_selection.setMaximumWidth(300)
+                self.list_of_measures.addItem(name)
+        h = self.list_of_measures.height()
+        for i in range(self.list_of_measures.count()):
+            item = self.list_of_measures.item(i)
+            item.setSizeHint(QSize(0, int(h / 20)))
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Checked)
+        self.list_of_measures.itemPressed.connect(self.on_measure_selected)
+        layout.addWidget(self.list_of_measures)
+        measure_selection = QGroupBox("Measures")
+        measure_selection.setLayout(layout)
+        measure_selection.setMaximumWidth(MAIN_WINDOW_WIDTH // 3 - 20)
+        measure_selection.setMinimumHeight(int(MAIN_WINDOW_HEIGHT * 0.7))
         return measure_selection
+
+    def on_measure_selected(self, item: QListWidgetItem) -> None:
+        measure_name = item.text()
+        params = self._measures.get(measure_name).get("params")
+        for _, item in self._measures.items():
+            item.get("params").hide()
+        params.show()
 
     def on_start_btn_clicked(self) -> None:
         """Start running estimation"""
@@ -232,9 +258,11 @@ class TabCorporateFinance(QWidget):
         self.measure_selection.setDisabled(True)
         self.start_btn.setDisabled(True)
         self.start_btn.setText("Running")
-        measures_to_estimate = [
-            m for m, check_box in self.measures if check_box.isChecked()
-        ]
+        measures_to_estimate = []
+        for i in range(self.list_of_measures.count()):
+            item = self.list_of_measures.item(i)
+            if item.checkState() == Qt.Checked:
+                measures_to_estimate.append(item.text())
         worker = Worker(
             frds.run.main, measures_to_estimate=measures_to_estimate, gui=True,
         )
@@ -252,6 +280,20 @@ class TabCorporateFinance(QWidget):
     def update_progress(self, msg: str) -> None:
         """Update progress"""
         self.status_bar.showMessage(msg)
+
+
+class TabMarketMicrostructure(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.app = parent.app
+        self.status_bar = parent.status_bar
+
+
+class TabBanking(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.app = parent.app
+        self.status_bar = parent.status_bar
 
 
 class DialogAbout(QDialog):
@@ -293,8 +335,8 @@ class DialogConfig(QDialog):
         self.wrds_username_qline = QLineEdit(credentials.get("wrds_username"))
         self.wrds_password_qline = QLineEdit(credentials.get("wrds_password"))
         self.wrds_password_qline.setEchoMode(QLineEdit.Password)
-        self.dss_username_qline = QLineEdit()
-        self.dss_password_qline = QLineEdit()
+        self.dss_username_qline = QLineEdit(credentials.get("dss_username"))
+        self.dss_password_qline = QLineEdit(credentials.get("dss_password"))
         self.dss_password_qline.setEchoMode(QLineEdit.Password)
 
         layout = QGridLayout()
