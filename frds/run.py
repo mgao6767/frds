@@ -1,4 +1,5 @@
 from typing import Callable, Dict
+from frds import credentials, data_dir, result_dir
 from .professor import Professor
 
 
@@ -26,6 +27,13 @@ def main(
         set_start_method,
         get_start_method,
     )
+
+    if config is None:
+        config = {
+            **credentials,
+            "data_dir": data_dir,
+            "result_dir": result_dir,
+        }
 
     # Use 'fork' if available
     if get_start_method(allow_none=True) is None:
@@ -58,13 +66,10 @@ def main(
 
 if __name__ == "__main__":
 
-    from frds import wrds_username, wrds_password, result_dir, data_dir
+    from frds import credentials, result_dir, data_dir
 
     config = dict(
-        wrds_username=wrds_username,
-        wrds_password=wrds_password,
-        result_dir=str(result_dir),
-        data_dir=str(data_dir),
+        **credentials, result_dir=str(result_dir), data_dir=str(data_dir),
     )
 
     main(config=config)

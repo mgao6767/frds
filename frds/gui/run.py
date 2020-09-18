@@ -1,6 +1,7 @@
 import sys
 import os
 import inspect
+import webbrowser
 from typing import List
 from PyQt5.QtCore import (
     Qt,
@@ -13,6 +14,8 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
+    QTabWidget,
+    QDialogButtonBox,
     QScrollArea,
     QWidget,
     QDialog,
@@ -27,14 +30,18 @@ from PyQt5.QtWidgets import (
     QLineEdit,
 )
 from PyQt5.QtGui import QIcon
-from frds import wrds_username, wrds_password, data_dir, result_dir
+from frds import credentials
+from frds import data_dir, result_dir
 import frds.measures
 import frds.run
 
+
+MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT = 800, 600
 author = "Mingze Gao"
 my_email = "mingze.gao@sydney.edu.au"
 my_site_url = "https://mingze-gao.com/"
 github_url = "https://github.com/mgao6767/frds/"
+homepage = "https://frds.io"
 frds_title = "FRDS - Financial Research Data Services"
 style_name = "Fusion"
 intro_html = f"""
@@ -46,7 +53,9 @@ intro_html = f"""
 </ol>
 <p>Author: <a href="{my_site_url}">{author}</a> |
 Email: <a href="mailto:{my_email}">{my_email}</a> |
-Source code: <a href="{github_url}">{github_url}</a></p><hr>"""
+Source code: <a href="{github_url}">{github_url}</a></p>"""
+intro_home = f'<em>Made for better and easier finance research, \
+    by <a href="{my_site_url}">{author}</a>.</em>'
 
 
 class Worker(QRunnable):
@@ -92,9 +101,14 @@ class WorkerSignals(QObject):
 
 
 class App(QMainWindow):
+    """Main entrance of the application"""
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle(frds_title)
+        self.setFixedSize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
+        self.threadpool = QThreadPool()
+        self.stopped = True
         QApplication.setStyle(style_name)
         self.setCentralWidget(GUI(self))
         self.show()
@@ -105,41 +119,71 @@ class GUI(QWidget):
 
     def __init__(self, parent):
         super(GUI, self).__init__(parent)
+        self.app = parent
 
-        self.measures: List[(str, QCheckBox)] = []
         self.status_bar = QStatusBar()
         self.status_bar.showMessage("Status: Ready.")
-        self.threadpool = QThreadPool()
-        self.stopped = True
 
         # Intro layout
-        (intro_label := QLabel(intro_html)).setOpenExternalLinks(True)
-        (intro_layout := QHBoxLayout()).addWidget(intro_label)
+        intro_layout = QVBoxLayout()
+        (lbl := QLabel(intro_home)).setOpenExternalLinks(True)
+        intro_layout.addWidget(lbl)
+        buttons = QHBoxLayout()
+        intro_layout.addLayout(buttons)
+        homepage_button = QPushButton("Homepage")
+        abt_button = QPushButton("About")
+        config_button = QPushButton("Settings")
+        buttons.addWidget(homepage_button)
+        buttons.addWidget(abt_button)
+        buttons.addWidget(config_button)
+        homepage_button.clicked.connect(lambda: webbrowser.open(homepage))
+        abt_button.clicked.connect(self.on_about_btn_clicked)
+        config_button.clicked.connect(self.on_config_btn_clicked)
+
+        self.tabs = QTabWidget()
+        self.tab_corporate_finance = TabCorporateFinance(self)
+        # self.tab_2 = TabCorporateFinance(self)
+        # self.tab_3 = TabCorporateFinance(self)
+        self.tabs.addTab(self.tab_corporate_finance, "Corporate Finance")
+        # self.tabs.addTab(self.tab_2, "Market Microstructure")
+        # self.tabs.addTab(self.tab_3, "Banking")
+
+        # Main layout
+        main_layout = QGridLayout()
+        main_layout.addLayout(intro_layout, 0, 0, 1, 4)
+        main_layout.addWidget(self.tabs, 1, 0, 2, 4)
+
+        (layout := QVBoxLayout()).addLayout(main_layout)
+        layout.addWidget(self.status_bar)
+        self.setLayout(layout)
+
+    def on_about_btn_clicked(self) -> None:
+        about = DialogAbout(self)
+        about.exec_()
+
+    def on_config_btn_clicked(self) -> None:
+        config = DialogConfig(self)
+        config.exec_()
+
+
+class TabCorporateFinance(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.app = parent.app
+        self.status_bar = parent.status_bar
+        self.measures: List[(str, QCheckBox)] = []
+        layout = QVBoxLayout()
 
         # Control button
         self.all_measures_btn = QCheckBox("All Measures")
         self.all_measures_btn.setCheckState(Qt.Checked)
         self.start_btn = QPushButton("Start")
         (ctrl_layout := QHBoxLayout()).addWidget(self.start_btn)
-
         # Measure selection
         self.measure_selection = self.create_measure_selection_layout()
-        # Configuration
-        self.configuration = self.create_configuration_layout()
 
-        # Main layout
-        main_layout = QGridLayout()
-        # - Top intro section
-        main_layout.addLayout(intro_layout, 0, 0, 1, 4)
-        # - Left panel for measure selection
-        main_layout.addWidget(self.measure_selection, 1, 0, 2, 1)
-        # - Right panel top: configuration
-        main_layout.addWidget(self.configuration, 1, 1, 1, 3)
-        # - Right panel bottom: controls
-        main_layout.addLayout(ctrl_layout, 2, 1, 1, 3)
-
-        (layout := QVBoxLayout()).addLayout(main_layout)
-        layout.addWidget(self.status_bar)
+        layout.addWidget(self.create_measure_selection_layout())
+        layout.addLayout(ctrl_layout)
         self.setLayout(layout)
 
         # Connect
@@ -182,73 +226,101 @@ class GUI(QWidget):
         measure_selection.setMaximumWidth(300)
         return measure_selection
 
-    def create_configuration_layout(self) -> QGroupBox:
-        """Create layout for configuration
-
-        It uses the default configuration from `config.ini`.
-
-        Returns
-        -------
-        QGroupBox
-            Layout for configuration
-        """
-        self.wrds_username_qline = QLineEdit(wrds_username)
-        self.wrds_password_qline = QLineEdit(wrds_password)
-        self.wrds_password_qline.setEchoMode(QLineEdit.Password)
-        self.frds_data_dir = QLineEdit(str(data_dir))
-        self.frds_result_dir = QLineEdit(str(result_dir))
-
-        layout = QGridLayout()
-        layout.addWidget(QLabel("WRDS Username"), 0, 0, 1, 1)
-        layout.addWidget(self.wrds_username_qline, 0, 1, 1, 2)
-        layout.addWidget(QLabel("WRDS Password"), 1, 0, 1, 1)
-        layout.addWidget(self.wrds_password_qline, 1, 1, 1, 2)
-        layout.addWidget(QLabel("Data directory"), 2, 0, 1, 1)
-        layout.addWidget(self.frds_data_dir, 2, 1, 1, 2)
-        layout.addWidget(QLabel("Result directory"), 3, 0, 1, 1)
-        layout.addWidget(self.frds_result_dir, 3, 1, 1, 2)
-
-        (configuration_layout := QGroupBox("Configuration")).setLayout(layout)
-        return configuration_layout
-
     def on_start_btn_clicked(self) -> None:
         """Start running estimation"""
-        self.stopped = False
+        self.app.stopped = False
         self.measure_selection.setDisabled(True)
-        self.configuration.setDisabled(True)
         self.start_btn.setDisabled(True)
         self.start_btn.setText("Running")
-        # TODO: modify config.ini and read config each time in frds.run.main?
-        config = dict(
-            wrds_username=self.wrds_username_qline.text(),
-            wrds_password=self.wrds_password_qline.text(),
-            data_dir=self.frds_data_dir.text(),
-            result_dir=self.frds_result_dir.text(),
-        )
         measures_to_estimate = [
             m for m, check_box in self.measures if check_box.isChecked()
         ]
         worker = Worker(
-            frds.run.main,
-            measures_to_estimate=measures_to_estimate,
-            gui=True,
-            config=config,
+            frds.run.main, measures_to_estimate=measures_to_estimate, gui=True,
         )
         worker.signals.finished.connect(self.on_completed)
         worker.signals.progress.connect(self.update_progress)
         worker.signals.error.connect(self.update_progress)
-        self.threadpool.start(worker)
+        self.app.threadpool.start(worker)
 
     def on_completed(self) -> None:
         """Callback when estimation is completed"""
         self.measure_selection.setDisabled(False)
-        self.configuration.setDisabled(False)
         self.start_btn.setDisabled(False)
         self.start_btn.setText("Start")
 
     def update_progress(self, msg: str) -> None:
         """Update progress"""
         self.status_bar.showMessage(msg)
+
+
+class DialogAbout(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setFixedWidth(int(MAIN_WINDOW_WIDTH * 0.8))
+        # Intro layout
+        (intro_label := QLabel(intro_html)).setOpenExternalLinks(True)
+        (intro_layout := QVBoxLayout()).addWidget(intro_label)
+        btn = QDialogButtonBox.Ok
+        btn_box = QDialogButtonBox(btn)
+        intro_layout.addWidget(btn_box)
+        btn_box.accepted.connect(self.accept)
+        self.setLayout(intro_layout)
+        self.setWindowTitle("About FRDS")
+
+
+class DialogConfig(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle("Settings")
+        self.setFixedWidth(int(MAIN_WINDOW_WIDTH * 0.8))
+        layout = QVBoxLayout()
+        layout.addLayout(self.create_configuration())
+        self.setLayout(layout)
+        btn = QDialogButtonBox.Save | QDialogButtonBox.Cancel
+        btn_box = QDialogButtonBox(btn)
+        layout.addWidget(btn_box)
+        btn_box.accepted.connect(self.on_save_btn_clicked)
+        btn_box.rejected.connect(self.reject)
+
+    def on_save_btn_clicked(self) -> None:
+        # TODO: save settings to `config.ini`
+        self.accept()
+
+    def create_configuration(self):
+        self.frds_data_dir = QLineEdit(str(data_dir))
+        self.frds_result_dir = QLineEdit(str(result_dir))
+        self.wrds_username_qline = QLineEdit(credentials.get("wrds_username"))
+        self.wrds_password_qline = QLineEdit(credentials.get("wrds_password"))
+        self.wrds_password_qline.setEchoMode(QLineEdit.Password)
+        self.dss_username_qline = QLineEdit()
+        self.dss_password_qline = QLineEdit()
+        self.dss_password_qline.setEchoMode(QLineEdit.Password)
+
+        layout = QGridLayout()
+        layout.addWidget(QLabel("Data directory"), 0, 0, 1, 1)
+        layout.addWidget(QLabel("Result directory"), 1, 0, 1, 1)
+        layout.addWidget(self.frds_data_dir, 0, 1, 1, 2)
+        layout.addWidget(self.frds_result_dir, 1, 1, 1, 2)
+        general = QGroupBox("General Settings")
+        general.setLayout(layout)
+
+        login_layout = QGridLayout()
+        login_layout.addWidget(QLabel("WRDS Username"), 0, 0, 1, 1)
+        login_layout.addWidget(QLabel("WRDS Password"), 1, 0, 1, 1)
+        login_layout.addWidget(QLabel("DSS Username"), 2, 0, 1, 1)
+        login_layout.addWidget(QLabel("DSS Username"), 3, 0, 1, 1)
+        login_layout.addWidget(self.wrds_username_qline, 0, 1, 1, 2)
+        login_layout.addWidget(self.wrds_password_qline, 1, 1, 1, 2)
+        login_layout.addWidget(self.dss_username_qline, 2, 1, 1, 2)
+        login_layout.addWidget(self.dss_password_qline, 3, 1, 1, 2)
+        login = QGroupBox("Database Credentials")
+        login.setLayout(login_layout)
+
+        configuration_layout = QHBoxLayout()
+        configuration_layout.addWidget(general)
+        configuration_layout.addWidget(login)
+        return configuration_layout
 
 
 if __name__ == "__main__":
