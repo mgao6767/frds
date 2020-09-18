@@ -12,6 +12,7 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWidgets import (
     QApplication,
+    QMainWindow,
     QScrollArea,
     QWidget,
     QDialog,
@@ -29,6 +30,23 @@ from PyQt5.QtGui import QIcon
 from frds import wrds_username, wrds_password, data_dir, result_dir
 import frds.measures
 import frds.run
+
+author = "Mingze Gao"
+my_email = "mingze.gao@sydney.edu.au"
+my_site_url = "https://mingze-gao.com/"
+github_url = "https://github.com/mgao6767/frds/"
+frds_title = "FRDS - Financial Research Data Services"
+style_name = "Fusion"
+intro_html = f"""
+<p>Estimate a collection of corporate finance metrics on one click!</p>
+<ol>
+    <li>Select measures to estimate.</li>
+    <li>Enter your WRDS username and password, click "Start".</li>
+    <li>Output datasets will be saved in the result directory.</li>
+</ol>
+<p>Author: <a href="{my_site_url}">{author}</a> |
+Email: <a href="mailto:{my_email}">{my_email}</a> |
+Source code: <a href="{github_url}">{github_url}</a></p><hr>"""
 
 
 class Worker(QRunnable):
@@ -73,40 +91,26 @@ class WorkerSignals(QObject):
     progress = pyqtSignal(str)
 
 
-class GUI(QDialog):
+class App(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle(frds_title)
+        QApplication.setStyle(style_name)
+        self.setCentralWidget(GUI(self))
+        self.show()
+
+
+class GUI(QWidget):
     """Main GUI"""
 
-    def __init__(self):
-        super(GUI, self).__init__(parent=None)
-
-        author = "Mingze Gao"
-        my_email = "mingze.gao@sydney.edu.au"
-        my_site_url = "https://mingze-gao.com/"
-        github_url = "https://github.com/mgao6767/frds/"
-        frds_title = "FRDS - Financial Research Data Services"
-        style_name = "Fusion"
-        intro_html = f"""
-        <p>Estimate a collection of corporate finance metrics on one click!</p>
-        <ol>
-            <li>Select measures to estimate.</li>
-            <li>Enter your WRDS username and password, click "Start".</li>
-            <li>Output datasets will be saved in the result directory.</li>
-        </ol>
-        <p>Author: <a href="{my_site_url}">{author}</a> |
-        Email: <a href="mailto:{my_email}">{my_email}</a> |
-        Source code: <a href="{github_url}">{github_url}</a></p><hr>"""
+    def __init__(self, parent):
+        super(GUI, self).__init__(parent)
 
         self.measures: List[(str, QCheckBox)] = []
         self.status_bar = QStatusBar()
         self.status_bar.showMessage("Status: Ready.")
         self.threadpool = QThreadPool()
         self.stopped = True
-
-        # Set window title
-        self.setWindowTitle(frds_title)
-
-        # Set style
-        QApplication.setStyle(style_name)
 
         # Intro layout
         (intro_label := QLabel(intro_html)).setOpenExternalLinks(True)
@@ -252,5 +256,5 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.realpath(__file__))
     icon_path = os.path.join(script_dir, "favicon.ico")
     app.setWindowIcon(QIcon(icon_path))
-    (gui := GUI()).show()
+    ex = App()
     sys.exit(app.exec_())
