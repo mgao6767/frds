@@ -383,7 +383,7 @@ class DialogConfig(QDialog):
 if __name__ == "__main__":
     app = QApplication([])
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    icon_path = os.path.join(script_dir, "favicon.ico")
+    icon_path = os.path.join(script_dir, "frds_icon.png")
     app.setWindowIcon(QIcon(icon_path))
     ex = App()
     sys.exit(app.exec_())
