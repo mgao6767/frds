@@ -8,12 +8,12 @@ window.MathJax = {
 
 // This is for hiding unnecessary elements when displayed in the FRDS app
 if (navigator.userAgent.indexOf("FRDS") !== -1) {
-    // Hide all
-    var classList = document.getElementsByTagName("*");
-    classList.forEach(element => {
-        element.style.display = "none";
-    });
-    // Display only the main article
+    var elems = document.getElementsByTagName("*");
     var article = document.getElementsByTagName("article")[0];
-    article.style.display = "block";
+    for (var i = 0; i < elems.length; i++) {
+        var elem = elems[i];
+        if (!article.contains(elem) && !elem.contains(article)) {
+            elem.style.display = "none"
+        }
+    }
 }
