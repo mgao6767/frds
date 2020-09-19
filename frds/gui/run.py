@@ -178,13 +178,15 @@ class TabCorporateFinance(QWidget):
         super().__init__(parent)
         self.app = parent.app
         self.status_bar = parent.status_bar
-        self._measures = {}
+        self._measures = {
+            name: {
+                "measure": measure,
+                "url": QUrl("https://frds.io/measures/roa"),
+            }
+            for name, measure in self.corp_finc_measures()
+        }
 
-        for name, measure in self.corp_finc_measures():
-            b = QWebEngineView()
-            # TODO: maybe no need to have one WebEngineView for each measure
-            b.setUrl(QUrl("https://frds.io/measures/roa"))
-            self._measures.update({name: {"measure": measure, "params": b}})
+        self.descripion_browser = QWebEngineView()
         layout = QVBoxLayout()
 
         # Control button
@@ -230,10 +232,7 @@ class TabCorporateFinance(QWidget):
 
     def create_measure_params_widget(self) -> QGroupBox:
         layout = QVBoxLayout()
-        for v in self._measures.values():
-            params_widget = v.get("params")
-            params_widget.hide()
-            layout.addWidget(params_widget)
+        layout.addWidget(self.descripion_browser)
         measures_params = QGroupBox("Description")
         measures_params.setLayout(layout)
         return measures_params
@@ -259,10 +258,11 @@ class TabCorporateFinance(QWidget):
 
     def on_measure_selected(self, item: QListWidgetItem) -> None:
         measure_name = item.text()
-        params = self._measures.get(measure_name).get("params")
-        for v in self._measures.values():
-            v.get("params").hide()
-        params.show()
+        url = self._measures.get(measure_name).get("url")
+        self.descripion_browser.setUrl(url)
+        # for v in self._measures.values():
+        #     v.get("params").hide()
+        # params.show()
 
     def on_start_btn_clicked(self) -> None:
         """Start running estimation"""
