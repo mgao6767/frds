@@ -173,14 +173,15 @@ class GUI(QWidget):
         config.exec_()
 
 
-class TabCorporateFinance(QWidget):
-    def __init__(self, parent):
+class TabBase(QWidget):
+    def __init__(self, parent, category):
         super().__init__(parent)
+        self.category = category
         self.app = parent.app
         self.status_bar = parent.status_bar
         self._measures = {
             name: {"measure": measure, "url": QUrl(measure.description()),}
-            for name, measure in self.corp_finc_measures()
+            for name, measure in self.collect_measures()
         }
 
         self.descripion_browser = QWebEngineView()
@@ -216,13 +217,12 @@ class TabCorporateFinance(QWidget):
         self.start_btn.clicked.connect(self.on_start_btn_clicked)
         self.all_measures_btn.clicked.connect(self.on_all_measures_btn_clicked)
 
-    def corp_finc_measures(self):
+    def collect_measures(self):
         for name, measure in inspect.getmembers(frds.measures, inspect.isclass):
             if (
                 not inspect.isabstract(measure)
                 and hasattr(measure, "category")
-                and measure.category()
-                is frds.measures.Category.CORPORATE_FINANCE
+                and measure.category() is self.category
             ):
                 yield name, measure
 
@@ -243,7 +243,7 @@ class TabCorporateFinance(QWidget):
     def create_measure_selection_layout(self) -> QGroupBox:
         layout = QVBoxLayout()
         layout.addWidget(self.all_measures_btn)
-        for name, _ in self.corp_finc_measures():
+        for name, _ in self.collect_measures():
             self.list_of_measures.addItem(name)
         h = self.list_of_measures.height()
         for i in range(self.list_of_measures.count()):
@@ -301,11 +301,14 @@ class TabMarketMicrostructure(QWidget):
         self.status_bar = parent.status_bar
 
 
-class TabBanking(QWidget):
+class TabCorporateFinance(TabBase):
     def __init__(self, parent):
-        super().__init__(parent)
-        self.app = parent.app
-        self.status_bar = parent.status_bar
+        super().__init__(parent, frds.measures.Category.CORPORATE_FINANCE)
+
+
+class TabBanking(TabBase):
+    def __init__(self, parent):
+        super().__init__(parent, frds.measures.Category.BANKING)
 
 
 class DialogAbout(QDialog):

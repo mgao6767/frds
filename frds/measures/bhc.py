@@ -59,8 +59,12 @@ VARIABLE_LABELS = {
 }
 KEY_VARS = ["RSSD9001", "RSSD9999"]
 
+url_docs_base = "https://frds.io/measures"
+
 
 class BHCSize(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_size/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany Size", DATASETS)
 
@@ -72,6 +76,8 @@ class BHCSize(BankingMeasure):
 
 
 class BHCFxExposure(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_fx_exposure/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany FX Exposure", DATASETS)
 
@@ -83,6 +89,8 @@ class BHCFxExposure(BankingMeasure):
 
 
 class BHCNetIncomeToAssets(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_netincome_to_assets/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany NetIncomeToAssets", DATASETS)
 
@@ -94,6 +102,8 @@ class BHCNetIncomeToAssets(BankingMeasure):
 
 
 class BHCDividendToAssets(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_dividend_to_assets/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany DividendToAssets", DATASETS)
 
@@ -106,6 +116,8 @@ class BHCDividendToAssets(BankingMeasure):
 
 
 class BHCRegCapToAssets(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_regcap_to_assets/"
+
     def __init__(self):
         super().__init__(
             "BankHoldingCompany RegulatoryCapitalToAssets", DATASETS
@@ -120,6 +132,8 @@ class BHCRegCapToAssets(BankingMeasure):
 
 
 class BHCTier1CapToAssets(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_tier1cap_to_assets/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany Tier1CapitalToAssets", DATASETS)
 
@@ -132,6 +146,8 @@ class BHCTier1CapToAssets(BankingMeasure):
 
 
 class BHCGrossIRHedging(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_gross_ir_hedging/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany GrossIRHedging", DATASETS)
 
@@ -152,6 +168,8 @@ class BHCGrossIRHedging(BankingMeasure):
 
 
 class BHCGrossFXHedging(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_gross_fx_hedging/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany GrossFXHedging", DATASETS)
 
@@ -172,6 +190,8 @@ class BHCGrossFXHedging(BankingMeasure):
 
 
 class BHCMaturityGap(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_maturity_gap/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany MaturityGap", DATASETS)
 
@@ -223,6 +243,8 @@ class BHCMaturityGap(BankingMeasure):
 
 
 class BHCLoanGrowth(BankingMeasure):
+    url_docs = url_docs_base + "/bhc_loan_growth/"
+
     def __init__(self):
         super().__init__("BankHoldingCompany LoanGrowth", DATASETS)
 
