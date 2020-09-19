@@ -187,6 +187,11 @@ class TabCorporateFinance(QWidget):
         }
 
         self.descripion_browser = QWebEngineView()
+        useragent = self.descripion_browser.page().profile().httpUserAgent()
+        self.descripion_browser.page().profile().setHttpUserAgent(
+            f"{useragent} FRDS"
+        )
+
         layout = QVBoxLayout()
 
         # Control button
@@ -260,9 +265,6 @@ class TabCorporateFinance(QWidget):
         measure_name = item.text()
         url = self._measures.get(measure_name).get("url")
         self.descripion_browser.setUrl(url)
-        # for v in self._measures.values():
-        #     v.get("params").hide()
-        # params.show()
 
     def on_start_btn_clicked(self) -> None:
         """Start running estimation"""
