@@ -31,6 +31,8 @@ VARIABLE_LABELS = {NAME: "Natural logarithm of total assets"}
 class FirmSize(CorporateFinanceMeasure):
     """Firm size: the natural logarithm of total assets"""
 
+    url_docs = "https://frds.io/measures/firm_size/"
+
     def __init__(self):
         super().__init__("Firm Size", DATASETS_REQUIRED)
 

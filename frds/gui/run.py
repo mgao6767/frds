@@ -179,10 +179,7 @@ class TabCorporateFinance(QWidget):
         self.app = parent.app
         self.status_bar = parent.status_bar
         self._measures = {
-            name: {
-                "measure": measure,
-                "url": QUrl("https://frds.io/measures/roa"),
-            }
+            name: {"measure": measure, "url": QUrl(measure.description()),}
             for name, measure in self.corp_finc_measures()
         }
 
@@ -191,6 +188,7 @@ class TabCorporateFinance(QWidget):
         self.descripion_browser.page().profile().setHttpUserAgent(
             f"{useragent} FRDS"
         )
+        self.descripion_browser.setZoomFactor(0.75)
 
         layout = QVBoxLayout()
 

@@ -54,6 +54,9 @@ VARIABLE_LABELS: Dict[str, str] = {
 
 
 class BoardIndependence(CorporateFinanceMeasure):
+
+    url_docs = "https://frds.io/measures/board_independence/"
+
     def __init__(self, missing_independent_board_members_as_zero=True):
         super().__init__("Board Size and Independence", DATASETS_REQUIRED)
         self._missing_as_zero = missing_independent_board_members_as_zero

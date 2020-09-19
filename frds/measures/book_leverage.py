@@ -30,14 +30,8 @@ VARIABLE_LABEL: Dict[str, str] = {NAME: "(DLTT+DLC)/(DLTT+DLC+CEQ)"}
 
 
 class BookLeverage(CorporateFinanceMeasure):
-    """Book leverage:
-        (long-term debt + debt in current liabilities) 
-     =  --------------------------------------------------------------
-        (long-term debt + debt in current liabilities + common equity)
 
-    If CEQ is missing, the book leverage is treated as missing. 
-    This avoids a book leverage of 100%."
-    """
+    url_docs = "https://frds.io/measures/book_leverage"
 
     def __init__(self):
         super().__init__("Book Leverage", datasets_required=DATASETS_REQUIRED)

@@ -32,6 +32,9 @@ VARIABLE_LABELS = {
 
 
 class ROE(CorporateFinanceMeasure):
+
+    url_docs = "https://frds.io/measures/roe/"
+
     def __init__(self):
         super().__init__("ROE", DATASETS_REQUIRED)
 

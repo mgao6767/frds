@@ -16,10 +16,10 @@ if (navigator.userAgent.indexOf("FRDS") !== -1) {
             elem.style.display = "none"
         }
     }
-    var h1 = document.getElementsByTagName("h1")[0];
-    h1.style.display = "none";
-    var icons = document.getElementsByClassName("md-icon");
-    for (var i = 0; i < icons.length; i++) {
-        icons[i].style.display = "none";
-    }
+    // var h1 = document.getElementsByTagName("h1")[0];
+    // h1.style.display = "none";
+    // var icons = document.getElementsByClassName("md-icon");
+    // for (var i = 0; i < icons.length; i++) {
+    //     icons[i].style.display = "none";
+    // }
 }

@@ -30,11 +30,8 @@ VARIABLE_LABELS = {NAME: "(PRCC_F*CSHO)/CEQ"}
 
 
 class MarketToBookRatio(CorporateFinanceMeasure):
-    """Market to book ratio
-        common shares outstanding * share price at fiscal year end
-     =  ----------------------------------------------------------
-        book value common equity
-    """
+
+    url_docs = "https://frds.io/measures/market_to_book/"
 
     def __init__(self):
         super().__init__("Market to Book Ratio", DATASETS_REQUIRED)

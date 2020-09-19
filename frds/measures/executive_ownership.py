@@ -56,6 +56,8 @@ VARIABLE_LABELS: Dict[str, str] = {
 class ExecutiveOwnership(CorporateFinanceMeasure):
     """Compute various executive ownership measures"""
 
+    url_docs = "https://frds.io/measures/executive_ownership/"
+
     def __init__(self):
         super().__init__("Executive Ownership", DATASETS_REQUIRED)
 

@@ -26,6 +26,9 @@ VARIABLE_LABELS = {
 
 
 class CreditRating(CorporateFinanceMeasure):
+
+    url_docs = "https://frds.io/measures/credit_rating/"
+
     def __init__(self):
         super().__init__("CreditRating", DATASETS)
 

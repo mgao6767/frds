@@ -31,6 +31,9 @@ VARIABLE_LABELS = {
 
 
 class ROA(CorporateFinanceMeasure):
+
+    url_docs = "https://frds.io/measures/roa/"
+
     def __init__(self):
         super().__init__("ROA", DATASETS_REQUIRED)
 

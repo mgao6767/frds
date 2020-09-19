@@ -31,12 +31,8 @@ VARIABLE_LABELS: Dict[str, str] = {
 
 
 class CapitalExpenditure(CorporateFinanceMeasure):
-    """Capial expenditure scaled by total assets
 
-        capital expenditures
-     =  --------------------
-        total assets
-    """
+    url_docs = "https://frds.io/measures/capital_expenditure/"
 
     def __init__(self):
         super().__init__("Capital Expendture", DATASETS_REQUIRED)

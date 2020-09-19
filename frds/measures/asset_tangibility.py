@@ -32,11 +32,8 @@ VARIABLE_LABELS = {
 
 
 class AssetTangibility(CorporateFinanceMeasure):
-    """Asset tangibility:
-        Plant, Property and Equipment (Net)
-     =  -----------------------------------
-        Assets (Total)
-    """
+
+    url_docs = "https://frds.io/measures/asset_tangibility/"
 
     def __init__(self):
         super().__init__("Asset Tangibility", DATASETS_REQUIRED)

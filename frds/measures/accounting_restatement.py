@@ -64,6 +64,8 @@ VARIABLE_LABELS: Dict[str, str] = {
 class AccountingRestatement(CorporateFinanceMeasure):
     """Counts the numer of restatements during the past fiscal year"""
 
+    url_docs = "https://frds.io/measures/accounting_restatement/"
+
     def __init__(self, years=1):
         """Set numer of fiscal years to consider
 

@@ -36,6 +36,9 @@ VARIABLE_LABELS = {NAME: "Tobin's Q"}
 
 
 class TobinQ(CorporateFinanceMeasure):
+
+    url_docs = "https://frds.io/measures/tobin_q/"
+
     def __init__(self):
         super().__init__(NAME, DATASETS_REQUIRED)
 

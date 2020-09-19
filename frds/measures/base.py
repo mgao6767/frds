@@ -18,6 +18,7 @@ class Measure(abc.ABC):
     """Base class for all measures"""
 
     _category: Category = None
+    url_docs: str = None
 
     def __init__(self, name: str, datasets_required: List[Dataset]):
         self._name = name
@@ -79,16 +80,16 @@ class Measure(abc.ABC):
         """
         return list(set(dta.table_id for dta in self._datasets_required))
 
-    # @abc.abstractmethod
-    # def description(self) -> str:
-    #     """Return the description of the measure
+    @classmethod
+    def description(cls) -> str:
+        """Return the description of the measure
 
-    #     Returns
-    #     -------
-    #     str
-    #         Description of the measure
-    #     """
-    #     raise NotImplementedError
+        Returns
+        -------
+        str
+            URL of the description of the measure
+        """
+        return cls.url_docs
 
     @classmethod
     def category(cls) -> Category:

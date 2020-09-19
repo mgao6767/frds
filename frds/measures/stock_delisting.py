@@ -18,6 +18,9 @@ VARIABLE_LABELS = {}
 
 
 class StockDelisting(CorporateFinanceMeasure):
+
+    url_docs = "https://frds.io/measures/stock_delisting/"
+
     def __init__(self):
         super().__init__(NAME, DATASETS_REQUIRED)
 
