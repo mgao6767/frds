@@ -1,3 +1,7 @@
+import os
+from frds import data_dir
+
+from datetime import datetime
 from PyQt5.QtCore import Qt, QDateTime
 from PyQt5.QtWidgets import (
     QDialog,
@@ -141,28 +145,44 @@ class DialogDataLoading(QDialog):
         self.app.threadpool.start(worker)
 
     def get_index_components(self, progress_callback=None):
-        progress_func = progress_callback.emit
+        # progress_func = progress_callback.emit
+        progress_func = lambda msg: progress_callback.emit(
+            f"{datetime.now().strftime('%H:%M:%S')}: {msg}"
+        )
         progress_func("Connecting to TRTH...")
         trth = TRTHConnection(
-            frds.credentials["dss_username"], frds.credentials["dss_password"]
+            frds.credentials["dss_username"],
+            frds.credentials["dss_password"],
+            token=None,
+            progress_callback=progress_func,
         )
 
         date_start = self.date_start_picker.date().toString(Qt.ISODate)
         date_end = self.date_end_picker.date().toString(Qt.ISODate)
-        progress_func(
-            f"Loading component stocks of {self.selected_index} from {date_start} to {date_end}..."
-        )
+        start_date = f"{date_start}T00:00:00.000Z"
+        end_date = f"{date_end}T00:00:00.000Z"
+
+        progress_func("Loading index components...")
         self._index_components = extract_index_components_ric(
             trth.get_index_components(
-                self.selected_index,
-                date_start=f"{date_start}T00:00:00.000Z",
-                date_end=f"{date_end}T00:00:00.000Z",
+                self.selected_index, start_date, end_date
             ),
             mkt_index=self.selected_index,
         )
         progress_func(f"Loaded {len(self._index_components)} securities.")
-        # for i, stock in enumerate(self._index_components):
-        #     progress_func(f"{i+1}: {stock}")
+
+        progress_func("Downloading data...")
+        data = trth.get_table(self._index_components, start_date, end_date)
+        # data = trth.get_table(["A.N"], start_date, end_date)
+        temp_dir = os.path.join(data_dir, "TRTH", "temp")
+        os.makedirs(temp_dir, exist_ok=True)
+        path = os.path.join(
+            temp_dir,
+            f"{'_'.join(self.selected_index)}.{date_start}.{date_end}.csv.gz",
+        )
+        progress_func(f"Saving data to {path}...")
+        trth.save_results(data, path)
+        progress_func("Downloading finished.")
 
     def update_progress(self, msg: str):
         self.logs.append(msg)

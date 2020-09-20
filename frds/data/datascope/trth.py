@@ -8,8 +8,7 @@ import os
 
 import pandas as pd
 
-from .utils import make_request_index_components
-from .request_templates import INTRADAY_TICKS
+from .utils import make_request_index_components, make_request_tick_history
 
 URL_BASE = "https://hosted.datascopeapi.reuters.com/RestApi/v1"
 
@@ -20,10 +19,12 @@ RESULTS_URL = f"{URL_BASE}/Extractions/RawExtractionResults('<JobId>')/$value"
 
 
 class Connection:
-    def __init__(self, usr, pwd, token=None, queryString=None, *args, **kwargs):
+    def __init__(
+        self, usr, pwd, token=None, progress_callback=print, *args, **kwargs
+    ):
+        self.print_fn = progress_callback
         self._username = usr
         self._password = pwd
-        self.queryString = queryString
         self.session = requests.Session()
         self.session.headers.update(
             {
@@ -33,7 +34,7 @@ class Connection:
             }
         )
         self.session.hooks["response"] = [
-            self._printRequestURL,
+            # self._printRequestURL,
             self._checkResponseForError,
         ]
         self._accessToken = self._getAccessToken() if token is None else token
@@ -48,9 +49,9 @@ class Connection:
         resp = self.session.post(SEARCH_HIST_CHAIN_URL, payload)
         return resp.json()
 
-    def get_table(self, library, table, columns, date_cols, obs):
-        if library.lower() == "datascope" and table.lower() == "trth":
-            return self.extract_raw(INTRADAY_TICKS)
+    def get_table(self, rics, start_date, end_date):
+        req = make_request_tick_history(rics, start_date, end_date)
+        return self.extract_raw(req)
 
     def _getAccessToken(self) -> str:
         """Return the access Token"""
@@ -66,10 +67,9 @@ class Connection:
     def updateAccessTokenInRequestHeaders(self, token: str) -> None:
         self.session.headers.update({"Authorization": f"Token {token}"})
 
-    @staticmethod
-    def _printRequestURL(resp, *args, **kwargs):
-        """Hook function to print the request URL"""
-        print(f"Request url: {resp.url} Status: {resp.status_code}")
+    def _printRequestURL(self, resp, *args, **kwargs):
+        """Hook function to self.print_fn the request URL"""
+        self.print_fn(f"Request url: {resp.url} Status: {resp.status_code}")
 
     # @staticmethod
     def _checkResponseForError(self, resp, *args, **kwargs):
@@ -87,36 +87,44 @@ class Connection:
                 self.session.send(resp.request)  # Resend the request
             # Raise the error if it's not due to invalid token.
             if resp.status_code == 400:
-                print(f"Error: {resp.text}")
+                self.print_fn(f"Error: {resp.text}")
 
     def extract_raw(self, payload: dict):
         resp = self.session.post(EXTRACT_RAW_URL, json=payload)
         _location = resp.headers.get("location").replace("http://", "https://")
         while resp.status_code != 200:
+            self.print_fn(
+                f"Waiting for data delivery... Polling in {self.pollingIntervalSeconds}s."
+            )
             time.sleep(self.pollingIntervalSeconds)
             resp = self.session.get(_location)
-        print(f"Location: {_location}")
+        # self.print_fn(f"Location: {_location}")
         resp_json = resp.json()
         job_id = resp_json.get("JobId")
-        print(f"Job ID is {job_id}")
-        # Check if the response contains Notes.If the note exists print it to console.
+        # self.print_fn(f"Job ID is {job_id}")
+        # Check if the response contains Notes.If the note exists self.print_fn it to console.
         if len(resp_json.get("Notes")) > 0:
-            print("Notes:\n======================================")
             for var in resp_json.get("Notes"):
-                print(var)
-            print("======================================\n")
+                if "Quota" in var:
+                    for line in var.split(";")[-3:]:
+                        self.print_fn(line)
         # Request should be completed then Get the result by passing jobID to RAWExtractionResults URL
         resultURL = RESULTS_URL.replace("<JobId>", job_id)
-        print(f"Retrieve result from {resultURL}")
+        # self.print_fn(f"Retrieve result from {resultURL}")
         # Allow downloading directly from AWS
         resp = self.session.get(
             resultURL, stream=True, headers={"X-Direct-Download": "true"}
         )
-        _output_file = tempfile.NamedTemporaryFile()
+        return resp
+
+    @staticmethod
+    def save_results(resp, path):
+        # _output_file = tempfile.NamedTemporaryFile()
         # Write Output to file
-        for chunk in resp.iter_content(chunk_size=1024):
-            _output_file.write(chunk)
-        _output_file.seek(0)
-        df = pd.read_csv(_output_file, compression="gzip")
-        _output_file.close()
-        return df
+        with open(path, "wb") as f:
+            for chunk in resp.iter_content(chunk_size=1024):
+                f.write(chunk)
+        # _output_file.seek(0)
+        # df = pd.read_csv(_output_file, compression="gzip")
+        # _output_file.close()
+        # return df
