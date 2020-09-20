@@ -176,5 +176,6 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.realpath(__file__))
     icon_path = os.path.join(script_dir, "frds_icon.png")
     app.setWindowIcon(QIcon(icon_path))
+    app.setApplicationName("FRDS")
     ex = App()
     sys.exit(app.exec_())
