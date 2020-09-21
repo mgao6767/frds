@@ -24,3 +24,4 @@ from .bhc import (
 )
 from .credit_rating import CreditRating
 from .tobin_q import TobinQ
+from .executive_tenure import ExecutiveTenure
