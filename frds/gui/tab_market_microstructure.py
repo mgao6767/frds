@@ -186,7 +186,9 @@ class DialogDataLoading(QDialog):
         progress_func("Downloading finished.")
 
         progress_func("Start parsing the downloaded data...")
-        parse_to_data_dir(path, os.path.join(data_dir, "TRTH"), "1")
+        parsed_data_dir = os.path.join(data_dir, "TRTH", "parsed_data")
+        os.makedirs(parse_to_data_dir, exist_ok=True)
+        parse_to_data_dir(path, parsed_data_dir, "1")  # "1": replace existing
         progress_func("Parsing completed.")
 
     def update_progress(self, msg: str):
