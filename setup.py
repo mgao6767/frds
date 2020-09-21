@@ -4,7 +4,7 @@ import pathlib
 import shutil
 import os
 
-requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5", "QtWebEngine"]
+requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5", "PyQtWebEngine"]
 
 trth_parser = Extension(
     "frds.data.datascope.trth_parser",
