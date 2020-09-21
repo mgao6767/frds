@@ -1,10 +1,15 @@
-from setuptools import setup, find_namespace_packages
+from setuptools import setup, find_namespace_packages, Extension
 from setuptools.command.install import install
 import pathlib
 import shutil
 import os
 
-requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5"]
+requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5", "QtWebEngine"]
+
+trth_parser = Extension(
+    "frds.data.datascope.trth_parser",
+    sources=["frds/data/datascope/trth_parser.c"],
+)
 
 
 class PostInstallCommand(install):
@@ -45,4 +50,5 @@ setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
     ],
     license="MIT",
+    ext_modules=[trth_parser],
 )

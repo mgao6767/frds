@@ -1,3 +1,7 @@
+#include <Python.h>
+#if PY_MAJOR_VERSION >= 3
+#define PY3K
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -467,3 +471,48 @@ int mkdir_p(const char *dir, const int mode)
     }
     return 0;
 }
+
+static PyObject *trth_parser_wrapper(PyObject *self, PyObject *args)
+{
+    char *input_file, *output_dir, *replace = NULL;
+    /* Parse arguments */
+    if (!PyArg_ParseTuple(args, "sss", &input_file, &output_dir, &replace))
+    {
+        return NULL;
+    }
+
+    char const *args_to_main[4] = {
+        "trth_parser",
+        input_file,
+        output_dir,
+        replace};
+    return PyLong_FromLong(main(4, args_to_main));
+};
+
+static PyMethodDef trth_parser_methods[] = {
+    {"parse_to_data_dir",
+     trth_parser_wrapper,
+     METH_VARARGS,
+     "C parser for downloaded intraday tick data from TRTH."},
+    {NULL, NULL, 0, NULL}};
+
+#ifdef PY3K
+// module definition structure for python3
+static struct PyModuleDef trth_parser = {
+    PyModuleDef_HEAD_INIT,
+    "trth_parser",
+    "Python interface for the C parser for TRTH data",
+    -1,
+    trth_parser_methods};
+// module initializer for python3
+PyMODINIT_FUNC PyInit_trth_parser()
+{
+    return PyModule_Create(&trth_parser);
+}
+#else
+// module initializer for python2
+PyMODINIT_FUNC init_trth_parser()
+{
+    Py_InitModule3("trth_parser", trth_parser_methods, "Python interface for the C parser for TRTH data");
+}
+#endif

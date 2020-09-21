@@ -1,5 +1,6 @@
 import os
 from frds import data_dir
+from frds.data.datascope.trth_parser import parse_to_data_dir
 
 from datetime import datetime
 from PyQt5.QtCore import Qt, QDateTime
@@ -183,6 +184,10 @@ class DialogDataLoading(QDialog):
         progress_func(f"Saving data to {path}...")
         trth.save_results(data, path)
         progress_func("Downloading finished.")
+
+        progress_func("Start parsing the downloaded data...")
+        parse_to_data_dir(path, os.path.join(data_dir, "TRTH"), "1")
+        progress_func("Parsing completed.")
 
     def update_progress(self, msg: str):
         self.logs.append(msg)
