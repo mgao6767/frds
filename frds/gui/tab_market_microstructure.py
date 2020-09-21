@@ -139,13 +139,13 @@ class DialogDataLoading(QDialog):
         self.btn_box.clear()
         self.btn_box.addButton(QDialogButtonBox.Abort)
         self.btn_box.clicked.connect(self.on_abort)
-        worker = Worker(self.get_index_components)
+        worker = Worker(self.loading_data)
         worker.signals.finished.connect(self.on_completed)
         worker.signals.progress.connect(self.update_progress)
         worker.signals.error.connect(self.update_progress)
         self.app.threadpool.start(worker)
 
-    def get_index_components(self, progress_callback=None):
+    def loading_data(self, progress_callback=None):
         # progress_func = progress_callback.emit
         progress_func = lambda msg: progress_callback.emit(
             f"{datetime.now().strftime('%H:%M:%S')}: {msg}"
@@ -187,7 +187,7 @@ class DialogDataLoading(QDialog):
 
         progress_func("Start parsing the downloaded data...")
         parsed_data_dir = os.path.join(data_dir, "TRTH", "parsed_data")
-        os.makedirs(parse_to_data_dir, exist_ok=True)
+        os.makedirs(parsed_data_dir, exist_ok=True)
         parse_to_data_dir(path, parsed_data_dir, "1")  # "1": replace existing
         progress_func("Parsing completed.")
 
