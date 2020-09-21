@@ -4,7 +4,7 @@ import pathlib
 import shutil
 import os
 
-requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5"]
+requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5", "PyQtWebEngine"]
 
 
 class PostInstallCommand(install):
@@ -28,10 +28,7 @@ setup(
     author_email="adrian.gao@outlook.com",
     url="https://github.com/mgao6767/frds/",
     packages=find_namespace_packages(),
-    package_data={
-        "": ["LICENSE", "README.md", "*.ico"],
-        "frds": ["config.ini"],
-    },
+    package_data={"": ["LICENSE", "README.md", "*.ico"], "frds": ["config.ini"],},
     install_requires=requires,
     cmdclass={"install": PostInstallCommand},
     classifiers=[
