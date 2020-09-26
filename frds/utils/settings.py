@@ -3,21 +3,23 @@ import os
 import pathlib
 import configparser
 
-from frds.settings import CONFIG_FILE_PATH
+from frds.settings import CONFIG_FILE_PATH, CONFIG_FILE_NAME
 
 
 def _get_config_file_path(path=CONFIG_FILE_PATH) -> pathlib.Path:
     path = pathlib.Path(path).expanduser()
     if not path.is_dir:
         os.makedirs(path.as_posix(), exist_ok=True)
-    return path.joinpath("config_gui.ini")
+    return path.joinpath(CONFIG_FILE_NAME)
 
 
 def _read_config_file() -> Dict:
     path = _get_config_file_path()
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(
+        interpolation=configparser.ExtendedInterpolation()
+    )
     config.read(path)
-    return config._sections.copy()
+    return {section: config[section] for section in config.sections()}
 
 
 def save_config_to_file(config_to_save: Dict) -> None:
