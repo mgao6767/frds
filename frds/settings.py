@@ -2,6 +2,8 @@
 
 import os
 
+FRDS_HOME_PAGE = "https://frds.io"
+
 CONFIG_FILE_PATH = "~/frds"
 CONFIG_FILE_NAME = "config.ini"
 

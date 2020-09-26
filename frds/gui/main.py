@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore, QtGui
 from frds.gui.multiprocessing.processes import ProcessManager
 from frds.gui.ui_components import (
     MainWindow,
@@ -6,6 +6,7 @@ from frds.gui.ui_components import (
     DialogSettings,
     DialogAbout,
 )
+from frds.settings import FRDS_HOME_PAGE
 
 
 class FRDSApplication:
@@ -33,6 +34,9 @@ class FRDSApplication:
         self.main_window.actionAbout.triggered.connect(self.about_dialog.show)
         self.main_window.actionProgressMonitor.triggered.connect(
             self.progress_monitor.show
+        )
+        self.main_window.actionDocumentation.triggered.connect(
+            lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(FRDS_HOME_PAGE))
         )
 
     def add_worker_job(self, job):
