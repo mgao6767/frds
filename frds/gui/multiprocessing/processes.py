@@ -90,15 +90,15 @@ class ProcessManager(QtCore.QAbstractListModel):
         for job_id, f in self.jobs.copy().items():
             if f.done():
                 self.jobs.pop(job_id)  # remove completed jobs
-                result = f.result()
-                self.signals.finished.emit(job_id)
-                self._state[job_id]["status"] = STATUS_COMPLETE
                 self._state[job_id]["progress"] = 100
                 err = f.exception()
                 if err:
-                    self.signals.error.emit(job_id, err)
+                    self.signals.error.emit(job_id, str(err))
+                    self._state[job_id]["status"] = STATUS_ERROR
                 else:
+                    result = f.result()
                     self.signals.result.emit(job_id, result)
+                    self._state[job_id]["status"] = STATUS_COMPLETE
             elif f.running():
                 self._state[job_id]["status"] = STATUS_RUNNING
                 self._state[job_id]["progress"] = latest_progress.get(job_id, 0)

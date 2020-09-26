@@ -54,10 +54,14 @@ class FRDSApplication:
 def job_test(job_id, queue, n):
     print(f"{job_id=}, {n=}")
     import time
+    import random
 
     for i in range(n):
         queue.put((job_id, int((i + 1) / n * 100)))
         time.sleep(0.03)
+
+    if random.random() > 0.8:
+        raise ValueError
 
     print(f"{job_id=}, finished")
     return 1
