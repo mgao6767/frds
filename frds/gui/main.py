@@ -28,9 +28,7 @@ class FRDSApplication:
         self.test_progress_monitor()  # test only
 
     def _connect_signals_slots(self):
-        self.main_window.actionGeneral.triggered.connect(
-            self.settings_dialog.show
-        )
+        self.main_window.actionGeneral.triggered.connect(self.settings_dialog.show)
         self.main_window.actionAbout.triggered.connect(self.about_dialog.show)
         self.main_window.actionProgressMonitor.triggered.connect(
             self.progress_monitor.show
@@ -49,23 +47,8 @@ class FRDSApplication:
 
     def test_progress_monitor(self):
         from frds.gui.multiprocessing import Worker
+        from frds.measures_func import roa
 
         for i in range(50):
-            job = Worker(job_id=f"id{i}", fn=job_test, n=100,)
+            job = Worker(job_id=f"id_{i+1}", fn=roa.estimation, n=100,)
             self.add_worker_job(job)
-
-
-def job_test(job_id, queue, n):
-    print(f"{job_id=}, {n=}")
-    import time
-    import random
-
-    for i in range(n):
-        queue.put((job_id, int((i + 1) / n * 100)))
-        time.sleep(0.03)
-
-    if random.random() > 0.8:
-        raise ValueError
-
-    print(f"{job_id=}, finished")
-    return 1

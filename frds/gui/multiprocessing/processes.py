@@ -57,9 +57,9 @@ class ProcessManager(QtCore.QAbstractListModel):
     def add_estimation_job(self, worker) -> None:
         self.jobs[worker.job_id] = self.executor.submit(
             worker.fn,
-            worker.job_id,
-            self.msg_queue,
             *worker.args,
+            job_id=worker.job_id,
+            progress=self.msg_queue.put,
             **worker.kwargs,
         )
         self._state[worker.job_id] = DEFAULT_STATE.copy()
@@ -101,7 +101,10 @@ class ProcessManager(QtCore.QAbstractListModel):
                     self._state[job_id]["status"] = STATUS_COMPLETE
             elif f.running():
                 self._state[job_id]["status"] = STATUS_RUNNING
-                self._state[job_id]["progress"] = latest_progress.get(job_id, 0)
+                # Mark default progress as 1 in case the running estimation function
+                # doesn't update progress to the monitor. If set to 0, it will not show
+                # up in the monitor.
+                self._state[job_id]["progress"] = latest_progress.get(job_id, 1)
             elif f.cancelled():
                 pass
             self.layoutChanged.emit()
