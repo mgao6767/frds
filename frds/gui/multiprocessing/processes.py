@@ -34,6 +34,11 @@ class ProcessManager(QtCore.QAbstractListModel):
         self.status_timer.timeout.connect(self.notify_status)
         self.status_timer.start()
 
+    def close(self):
+        self.cleanup()
+        self.status_timer.stop()
+        self.executor.shutdown(wait=False)
+
     @staticmethod
     def _process_initializer(*args, **kwargs):
         """Initializer function runs before every process submitted to the executor"""
