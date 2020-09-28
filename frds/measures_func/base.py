@@ -5,9 +5,9 @@ from functools import wraps
 class MeasureCategory(enum.Enum):
     """Categories of measures"""
 
-    CORPORATE_FINANCE = enum.auto()
-    BANKING = enum.auto()
-    MARKET_MICROSTRUCTURE = enum.auto()
+    CORPORATE_FINANCE = "Corporate Finance Measures"
+    BANKING = "Banking Measures"
+    MARKET_MICROSTRUCTURE = "Market Micro-structure Measures"
 
 
 def update_progress():
