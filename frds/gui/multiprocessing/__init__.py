@@ -31,6 +31,7 @@ class WorkerSignals(QtCore.QObject):
 
     error = QtCore.pyqtSignal(str, str)
     result = QtCore.pyqtSignal(str, object)  # We can send anything back.
+    finished_no_error = QtCore.pyqtSignal(str)
     finished = QtCore.pyqtSignal(str)
     progress = QtCore.pyqtSignal(str, int)
     status = QtCore.pyqtSignal(str, str)
@@ -68,5 +69,6 @@ class ThreadWorker(QtCore.QRunnable):
             self.signals.status.emit(self.job_id, STATUS_ERROR)
         else:
             self.signals.result.emit(self.job_id, result)
+            self.signals.finished_no_error.emit(self.job_id)
             self.signals.status.emit(self.job_id, STATUS_COMPLETE)
         self.signals.finished.emit(self.job_id)

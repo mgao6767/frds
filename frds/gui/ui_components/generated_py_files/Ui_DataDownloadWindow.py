@@ -43,6 +43,9 @@ class Ui_DataDownloadWindow(object):
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout_2.addWidget(self.buttonBox, 1, 0, 1, 1)
         DataDownloadWindow.setCentralWidget(self.centralwidget)
+        self.statusBar = QtWidgets.QStatusBar(DataDownloadWindow)
+        self.statusBar.setObjectName("statusBar")
+        DataDownloadWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(DataDownloadWindow)
         QtCore.QMetaObject.connectSlotsByName(DataDownloadWindow)
