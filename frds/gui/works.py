@@ -53,13 +53,16 @@ def make_worker_download_and_save_wrds_table(source, library, table) -> ThreadWo
     """Return a ThreadWorker to download the dataset"""
 
     def download_and_save(library, table):
-        conn = get_wrds_connection()
-        df = conn.get_table(library, table, obs=100)
         settings = read_general_settings()
         data_dir = settings.get("data_dir")
         dataset_dir = pathlib.Path(data_dir).joinpath(source, library).expanduser()
         os.makedirs(dataset_dir.as_posix(), exist_ok=True)
-        df.to_csv(dataset_dir.joinpath(f"{table}.csv").as_posix())
+        filepath = dataset_dir.joinpath(f"{table}.csv")
+        if filepath.exists():
+            return
+        conn = get_wrds_connection()
+        df = conn.get_table(library, table, obs=100)
+        df.to_csv(filepath.as_posix(), index=False)
 
     return ThreadWorker(
         f"Download & Save {source}.{library}.{table}", download_and_save, library, table

@@ -111,6 +111,7 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
             src, lib, table = dataset.text().split(".")
             if src == "wrds":
                 worker = make_worker_download_and_save_wrds_table(src, lib, table)
+                # FIXME: if jobs finish too quick, sometimes mark_job_done is not called
                 worker.signals.finished_no_error.connect(self.mark_job_done)
                 worker.signals.error.connect(
                     lambda job_id, msg: self.mark_job_error(job_id)
