@@ -12,7 +12,7 @@ from frds.gui.ui_components import (
 from frds.gui.ui_components.generated_py_files import resources_rc
 from frds.settings import FRDS_HOME_PAGE
 from frds.measures_func import MeasureCategory
-from .works import worker_list_wrds_libaries
+from .works import make_worker_list_wrds_libraries
 
 
 class FRDSApplication:
@@ -74,11 +74,12 @@ class FRDSApplication:
         self.main_window.actionLoad_data.triggered.connect(self.initDataDownloadWindow)
 
     def _start_background_workers(self):
-        worker_list_wrds_libaries.signals.result.connect(
+        worker = make_worker_list_wrds_libraries()
+        worker.signals.result.connect(
             # discard the first parameter job_id from the worker.signals
             lambda job_id, result: self.data_download_window.display_libraries(result),
         )
-        self.thread_manager.enqueue(worker_list_wrds_libaries)
+        self.thread_manager.enqueue(worker)
 
     def initDataDownloadWindow(self):
         self.data_download_window.show()

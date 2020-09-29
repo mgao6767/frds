@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets, Qt, QtGui, QtCore
 from .generated_py_files.Ui_DataDownloadWindow import Ui_DataDownloadWindow
 from frds.data.wrds import Connection
 from frds.utils.settings import read_data_source_credentials
-from frds.gui.works import get_worker_list_wrds_tables
+from frds.gui.works import make_worker_list_wrds_tables
 
 
 class StandardItem(Qt.QStandardItem):
@@ -58,8 +58,11 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
     def view_double_cliced(self, val: QtCore.QModelIndex):
         item: StandardItem = self.treeModel.itemFromIndex(val)
         if item.type == "library" and not item.hasChildren():
-            worker = get_worker_list_wrds_tables(val.data())
-            worker.signals.result.connect(self.add_tables_to_library)
+            worker = make_worker_list_wrds_tables(val.data())
+            worker.signals.result.connect(
+                # discard job_id, data=(library, tables)
+                lambda job_id, data: self.add_tables_to_library(data)
+            )
             self.thread_manager.enqueue(worker)
         if item.type == "table":
             if item.checkState() == QtCore.Qt.Checked:
@@ -67,7 +70,8 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
             else:
                 item.setCheckState(QtCore.Qt.Checked)
 
-    def add_tables_to_library(self, library, tables):
+    def add_tables_to_library(self, data):
+        library, tables = data
         root: QtGui.QStandardItem = self.treeModel.invisibleRootItem()
         wrds: StandardItem = root.child(0, 0)
         for row in range(wrds.rowCount()):
@@ -81,6 +85,8 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
 
     def connect_signals(self):
         self.treeModel.itemChanged.connect(self.on_dataset_selection)
+        self.buttonBox.accepted.connect(self.start_downloading)
+        self.buttonBox.rejected.connect(self.hide)
 
     def on_dataset_selection(self, item: Qt.QStandardItem):
         lib = item.parent()
@@ -93,3 +99,13 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
             for dataset in self.listWidget.findItems(full_name, QtCore.Qt.MatchExactly):
                 self.listWidget.takeItem(self.listWidget.row(dataset))
                 del dataset
+
+    def start_downloading(self):
+        from frds.gui.works import make_worker_download_and_save_wrds_table
+
+        datasets = [self.listWidget.item(i) for i in range(self.listWidget.count())]
+        for dataset in datasets:
+            src, lib, table = dataset.text().split(".")
+            if src == "wrds":
+                worker = make_worker_download_and_save_wrds_table(src, lib, table)
+                self.thread_manager.enqueue(worker)
