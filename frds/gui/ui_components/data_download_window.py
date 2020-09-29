@@ -40,6 +40,9 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
         self.treeModel = Qt.QStandardItemModel()
         self.treeView.header().hide()
 
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText("Start")
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText("Hide")
+
         self.initOtherComponents()
         self.connect_signals()
 
@@ -90,6 +93,7 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
         self.treeModel.itemChanged.connect(self.on_dataset_selection)
         self.buttonBox.accepted.connect(self.start_downloading)
         self.buttonBox.rejected.connect(self.hide)
+        self.statusBar.messageChanged.connect(self.toggle_start_button)
 
     def on_dataset_selection(self, item: Qt.QStandardItem):
         lib = item.parent()
@@ -104,8 +108,6 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
                 del dataset
 
     def start_downloading(self):
-        from frds.gui.works import make_worker_download_and_save_wrds_table
-
         datasets = [self.listWidget.item(i) for i in range(self.listWidget.count())]
         for dataset in datasets:
             src, lib, table = dataset.text().split(".")
@@ -130,3 +132,7 @@ class DataDownloadWindow(QtWidgets.QMainWindow, Ui_DataDownloadWindow):
             item = self.listWidget.item(i)
             if item.text() in job_id:
                 item.setForeground(QtGui.QColor(STATUS_COLORS[STATUS_ERROR]))
+
+    def toggle_start_button(self, message):
+        btn = self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok)
+        btn.setEnabled("0 running" in message)
