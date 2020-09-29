@@ -42,3 +42,31 @@ class Worker:
         self.fn = fn
         self.args = args
         self.kwargs = kwargs
+
+
+class ThreadWorker(QtCore.QRunnable):
+    def __init__(self, job_id: str, fn: Callable, *args, **kwargs):
+        super().__init__()
+        self.job_id = job_id
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = WorkerSignals()
+        self.signals.status.emit(self.job_id, STATUS_WAITING)
+
+    @QtCore.pyqtSlot()
+    def run(self):
+        """
+        Initialize the runner function with passed args, kwargs.
+        """
+
+        self.signals.status.emit(self.job_id, STATUS_RUNNING)
+        try:
+            result = self.fn(*self.args, **self.kwargs)
+        except Exception as e:
+            self.signals.error.emit(self.job_id, str(e))
+            self.signals.status.emit(self.job_id, STATUS_ERROR)
+        else:
+            self.signals.result.emit(self.job_id, result)
+            self.signals.status.emit(self.job_id, STATUS_COMPLETE)
+        self.signals.finished.emit(self.job_id)

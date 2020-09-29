@@ -1,13 +1,18 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from frds.gui.multiprocessing.processes import ProcessManager
+from frds.gui.multiprocessing.threads import ThreadsManager
 from frds.gui.ui_components import (
     MainWindow,
     ProgressWindow,
     DialogSettings,
     DialogAbout,
     DialogMeasuresSelection,
+    DataDownloadWindow,
 )
+from frds.gui.ui_components.generated_py_files import resources_rc
 from frds.settings import FRDS_HOME_PAGE
+from frds.measures_func import MeasureCategory
+from .works import worker_list_wrds_libaries
 
 
 class FRDSApplication:
@@ -15,21 +20,37 @@ class FRDSApplication:
 
     def __init__(self, *args, **kwargs):
         self.app = QtWidgets.QApplication(*args, **kwargs)
-        self.manager = ProcessManager()
+        self.app.setWindowIcon(QtGui.QIcon(":/images/frds_icon.png"))
+        # Process-based manager for CPU-bound tasks
+        self.process_manager = ProcessManager()
+        # Thread-based manager for I/O-bound tasks
+        self.thread_manager = ThreadsManager()
         # Init UI components
         self.main_window = MainWindow()
         self.progress_monitor = ProgressWindow(
-            manager=self.manager, parent=self.main_window
+            manager=self.process_manager, parent=self.main_window
         )
         self.settings_dialog = DialogSettings()
         self.about_dialog = DialogAbout()
-        self.measures_selection_dialog = DialogMeasuresSelection(
-            parent=self.main_window
+        self.data_download_window = DataDownloadWindow(
+            parent=self.main_window, thread_manager=self.thread_manager
+        )
+        self.measures_selection_dialog_corp_finc = DialogMeasuresSelection(
+            parent=self.main_window, measures_category=MeasureCategory.CORPORATE_FINANCE
+        )
+        self.measures_selection_dialog_mkt_structure = DialogMeasuresSelection(
+            parent=self.main_window,
+            measures_category=MeasureCategory.MARKET_MICROSTRUCTURE,
+        )
+        self.measures_selection_dialog_banking = DialogMeasuresSelection(
+            parent=self.main_window, measures_category=MeasureCategory.BANKING
         )
         # Connect signals to slots
         self._connect_signals_slots()
 
-        self.test_progress_monitor()  # test only
+        # Start background tasks
+        self._start_background_workers()
+        # self.test_progress_monitor()  # test only
 
     def _connect_signals_slots(self):
         self.main_window.actionExit.triggered.connect(self.close)
@@ -41,12 +62,29 @@ class FRDSApplication:
         self.main_window.actionDocumentation.triggered.connect(
             lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(FRDS_HOME_PAGE))
         )
-        self.main_window.actionNew.triggered.connect(
-            self.measures_selection_dialog.show
+        self.main_window.actionCorporate_finance_measures.triggered.connect(
+            self.measures_selection_dialog_corp_finc.show
         )
+        self.main_window.actionBanking_measures.triggered.connect(
+            self.measures_selection_dialog_banking.show
+        )
+        self.main_window.actionMarket_micro_structure_measures.triggered.connect(
+            self.measures_selection_dialog_mkt_structure.show
+        )
+        self.main_window.actionLoad_data.triggered.connect(self.initDataDownloadWindow)
+
+    def _start_background_workers(self):
+        worker_list_wrds_libaries.signals.result.connect(
+            # discard the first parameter job_id from the worker.signals
+            lambda job_id, result: self.data_download_window.display_libraries(result),
+        )
+        self.thread_manager.enqueue(worker_list_wrds_libaries)
+
+    def initDataDownloadWindow(self):
+        self.data_download_window.show()
 
     def add_worker_job(self, job):
-        self.manager.add_estimation_job(job)
+        self.process_manager.add_estimation_job(job)
 
     def run(self):
         self.main_window.show()
@@ -55,7 +93,7 @@ class FRDSApplication:
 
     def close(self):
         # FIXME: quit when there're still running processes
-        if self.manager.running_jobs > 0:
+        if self.process_manager.running_jobs > 0:
             btn = QtWidgets.QMessageBox.question(
                 self.main_window,
                 "Warning",
@@ -68,7 +106,7 @@ class FRDSApplication:
                 self.main_window.close()
         else:
             self.main_window.close()
-        # self.manager.close()
+        # self.process_manager.close()
 
     def test_progress_monitor(self):
         from frds.gui.multiprocessing import Worker

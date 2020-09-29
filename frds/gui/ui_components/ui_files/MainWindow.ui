@@ -189,8 +189,16 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuNew_estimation">
+     <property name="title">
+      <string>New estimation</string>
+     </property>
+     <addaction name="actionCorporate_finance_measures"/>
+     <addaction name="actionBanking_measures"/>
+     <addaction name="actionMarket_micro_structure_measures"/>
+    </widget>
     <addaction name="actionLoad_data"/>
-    <addaction name="actionNew"/>
+    <addaction name="menuNew_estimation"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -225,17 +233,6 @@ p, li { white-space: pre-wrap; }
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionNew">
-   <property name="text">
-    <string>New estimation</string>
-   </property>
-   <property name="statusTip">
-    <string>Start new estimation</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
-  </action>
   <action name="actionSettings">
    <property name="text">
     <string>Settings</string>
@@ -292,26 +289,24 @@ p, li { white-space: pre-wrap; }
     <string>Download data from source</string>
    </property>
   </action>
+  <action name="actionCorporate_finance_measures">
+   <property name="text">
+    <string>Corporate finance measures</string>
+   </property>
+  </action>
+  <action name="actionBanking_measures">
+   <property name="text">
+    <string>Banking measures</string>
+   </property>
+  </action>
+  <action name="actionMarket_micro_structure_measures">
+   <property name="text">
+    <string>Market micro-structure measures</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../resources_files/resources.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>actionExit</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

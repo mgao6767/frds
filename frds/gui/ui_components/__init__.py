@@ -4,3 +4,5 @@ from .dialog_settings import DialogSettings  # noqa: F401
 from .progress_window import ProgressWindow  # noqa: F401
 from .dialog_about import DialogAbout  # noqa: F401
 from .dialog_measures_selection import DialogMeasuresSelection  # noqa: F401
+from .data_download_window import DataDownloadWindow  # noqa: F401
+

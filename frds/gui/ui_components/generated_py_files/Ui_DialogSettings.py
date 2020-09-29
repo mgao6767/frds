@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/adriangao/Code/frds/frds/gui/ui_components/ui_files/DialogSettings.ui'
+# Form implementation generated from reading ui file '/Users/mgao/Code/frds/frds/gui/ui_components/ui_files/DialogSettings.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
