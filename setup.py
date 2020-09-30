@@ -7,8 +7,7 @@ import os
 requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5", "PyQtWebEngine"]
 
 trth_parser = Extension(
-    "frds.data.datascope.trth_parser",
-    sources=["frds/data/datascope/trth_parser.c"],
+    "frds.data.datascope.trth_parser", sources=["frds/data/datascope/trth_parser.c"],
 )
 
 
@@ -33,10 +32,7 @@ setup(
     author_email="adrian.gao@outlook.com",
     url="https://github.com/mgao6767/frds/",
     packages=find_namespace_packages(),
-    package_data={
-        "": ["LICENSE", "README.md", "*.ico"],
-        "frds": ["config.ini"],
-    },
+    package_data={"": ["LICENSE", "README.md", "*.ico"], "frds": ["config.ini"],},
     install_requires=requires,
     cmdclass={"install": PostInstallCommand},
     classifiers=[
@@ -51,4 +47,5 @@ setup(
     ],
     license="MIT",
     ext_modules=[trth_parser],
+    entry_points={"console_scripts": ["frds=frds.run:main"]},
 )
