@@ -1,3 +1,5 @@
+import typing
+import datetime
 from PyQt5 import QtWidgets, QtCore
 
 from .generated_py_files.Ui_MeasureSelectionWidget import Ui_Measures
@@ -77,9 +79,19 @@ class DialogMeasuresSelection(QtWidgets.QDialog, Ui_Measures):
                 job_id = item.text()
                 fn = self.measures_module.get(job_id).estimation
                 # TODO: Custom parameters to pass to the estiamtion function
+                self.update_estimation_func_params(fn)
                 worker = Worker(job_id, fn)
                 self.progress_monitor.workers.add_estimation_job(worker)
 
     def toggle_start_button(self, message):
         btn = self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok)
         btn.setEnabled("0 running" in message)
+
+    def update_estimation_func_params(self, fn):
+        # TODO: make GUI for params selection based on its function parameters
+        for param_name, param_type in typing.get_type_hints(fn).items():
+            if param_name == "return":  # don't care about the return type
+                continue
+            print(param_name, param_type)
+            if param_type is datetime.datetime:
+                print("is datetime")
