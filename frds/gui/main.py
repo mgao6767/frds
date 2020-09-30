@@ -11,7 +11,7 @@ from frds.gui.ui_components import (
 )
 from frds.gui.ui_components.generated_py_files import resources_rc
 from frds.settings import FRDS_HOME_PAGE
-from frds.measures_func import MeasureCategory
+from frds.measures import MeasureCategory
 from .works import make_worker_list_wrds_libraries
 
 
@@ -36,14 +36,19 @@ class FRDSApplication:
             parent=self.main_window, thread_manager=self.thread_manager
         )
         self.measures_selection_dialog_corp_finc = DialogMeasuresSelection(
-            parent=self.main_window, measures_category=MeasureCategory.CORPORATE_FINANCE
+            parent=self.main_window,
+            measures_category=MeasureCategory.CORPORATE_FINANCE,
+            progress_monitor=self.progress_monitor,
         )
         self.measures_selection_dialog_mkt_structure = DialogMeasuresSelection(
             parent=self.main_window,
             measures_category=MeasureCategory.MARKET_MICROSTRUCTURE,
+            progress_monitor=self.progress_monitor,
         )
         self.measures_selection_dialog_banking = DialogMeasuresSelection(
-            parent=self.main_window, measures_category=MeasureCategory.BANKING
+            parent=self.main_window,
+            measures_category=MeasureCategory.BANKING,
+            progress_monitor=self.progress_monitor,
         )
         # Connect signals to slots
         self._connect_signals_slots()

@@ -6,7 +6,7 @@ import importlib
 
 def get_all_measures(category=None):
     """Return a list of (name, module) sorted by name"""
-    measures_mod = importlib.import_module("frds.measures_func")
+    measures_mod = importlib.import_module("frds.measures")
     for name, module in inspect.getmembers(measures_mod, inspect.ismodule):
         funcs = [f.lower() for f, _ in inspect.getmembers(module, inspect.isfunction)]
         if "estimation" in funcs:

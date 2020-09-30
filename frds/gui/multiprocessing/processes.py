@@ -99,6 +99,7 @@ class ProcessManager(QtCore.QAbstractListModel):
                 err = f.exception()
                 if err:
                     self.signals.error.emit(job_id, str(err))
+                    print(err)
                     self._state[job_id]["status"] = STATUS_ERROR
                 else:
                     result = f.result()
