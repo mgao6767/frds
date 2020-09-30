@@ -1,4 +1,5 @@
 import enum
+import inspect
 from functools import wraps
 
 
@@ -34,3 +35,18 @@ def update_progress():
         return decorator
 
     return variable_injector
+
+
+def setup(
+    measure_name: str, measure_type: MeasureCategory, doc_url: str, *args, **kwargs
+):
+    """Setup the estimation code"""
+    # A hack to inject variables into the caller's scope
+    stack = inspect.stack()
+    try:
+        locals_ = stack[1][0].f_locals
+    finally:
+        del stack
+    locals_["MEASURE_NAME"] = measure_name
+    locals_["MEASURE_TYPE"] = measure_type
+    locals_["DOC_URL"] = doc_url
