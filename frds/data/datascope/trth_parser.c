@@ -138,7 +138,8 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
     char *lastRIC = NULL, *lastLocalDate = NULL;
     // Keep track of current RIC and local date.
     char *thisRIC = NULL, *thisDateTime = NULL;
-    char *thisGMTOffset = NULL, *thisLocalDate = NULL;
+    char *thisGMTOffset = NULL;
+    char thisLocalDate[11];
     // Pointers to use in parsing each line.
     char *context = NULL, *field = NULL;
     // Array of pointers to transactions of a security in a day (a chunk).
@@ -182,7 +183,7 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
         // Compute local date.
         // thisLocalDate = get_local_date(thisDateTime, atoi(thisGMTOffset));
         // Keep files as based on GMT
-        thisLocalDate = get_gmt_date(thisDateTime);
+        snprintf(thisLocalDate, sizeof thisLocalDate, "%.10s", thisDateTime);
         // Extend chunk if necessary.
         if (numTransactions > CHUNK_LENGTH)
             chunk = realloc(chunk, sizeof(char *) * numTransactions * 1.2);
@@ -207,7 +208,7 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
                     // Same RIC and local date as previous rows.
                     // Add this data row to chunk.
                     chunk[numTransactions++] = current_data;
-                    free(thisLocalDate);
+                    // free(thisLocalDate);
                     // Need to free thisRIC as well. Since next iteration will make a new thisRIC.
                     free(thisRIC);
                 }
@@ -221,7 +222,7 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
                     numTransactions = 0;
                     // Add this data row to chunk.
                     chunk[numTransactions++] = current_data;
-                    free(lastLocalDate);
+                    // free(lastLocalDate);
                     lastLocalDate = thisLocalDate;
                 }
             }
@@ -237,7 +238,7 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
                 // New RIC also means new local date.
                 free(lastRIC);
                 lastRIC = thisRIC;
-                free(lastLocalDate);
+                // free(lastLocalDate);
                 lastLocalDate = thisLocalDate;
             }
         }
@@ -246,32 +247,13 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
     // Case 1: the file contains only one RIC and one local date.
     // Case 2: the last valid chunk.
     if (numTransactions > 0)
-        save_chunk(thisRIC, thisLocalDate, meta->fields, chunk, numTransactions,
+        // thisRIC and thisLocalDate are freed
+        save_chunk(lastRIC, lastLocalDate, meta->fields, chunk, numTransactions,
                    output_dir, replace);
 
     // Free chunk.
     free(chunk);
     chunk = NULL;
-}
-
-// Compute the GMT date based on GMTUTC.
-char *get_gmt_date(char *datetimeISO)
-{
-    int Y, M, d, h, m;
-    float s;
-    sscanf(datetimeISO, "%d-%d-%dT%d:%d:%f+00:00", &Y, &M, &d, &h, &m, &s);
-    struct tm a =
-        {
-            .tm_year = Y - 1900,
-            .tm_mon = M - 1,
-            .tm_mday = d,
-            .tm_sec = s,
-            .tm_min = m,
-            .tm_hour = h};
-    const int len = strlen("1994-10-21");
-    char *date = malloc(len + 1);
-    strftime(date, len + 1, "%Y-%m-%d", &a);
-    return date;
 }
 
 // Compute the local date based on GMTUTC and GMT offset.
