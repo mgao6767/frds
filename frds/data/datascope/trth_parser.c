@@ -29,6 +29,7 @@
          (I) != 0;                                   \
          (I) = get_next_token(&(CTX), D))
 
+char *get_gmt_date(char *datetimeISO);
 char *get_local_date(char *datetimeISO, int GMT_offset);
 char *get_next_token(char **context, const char *delim);
 struct Fields *get_meta_info(gzFile file, int close_after_read);
@@ -179,7 +180,9 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
                 break;
         }
         // Compute local date.
-        thisLocalDate = get_local_date(thisDateTime, atoi(thisGMTOffset));
+        // thisLocalDate = get_local_date(thisDateTime, atoi(thisGMTOffset));
+        // Keep files as based on GMT
+        thisLocalDate = get_gmt_date(thisDateTime);
         // Extend chunk if necessary.
         if (numTransactions > CHUNK_LENGTH)
             chunk = realloc(chunk, sizeof(char *) * numTransactions * 1.2);
@@ -249,6 +252,26 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
     // Free chunk.
     free(chunk);
     chunk = NULL;
+}
+
+// Compute the GMT date based on GMTUTC.
+char *get_gmt_date(char *datetimeISO)
+{
+    int Y, M, d, h, m;
+    float s;
+    sscanf(datetimeISO, "%d-%d-%dT%d:%d:%f+00:00", &Y, &M, &d, &h, &m, &s);
+    struct tm a =
+        {
+            .tm_year = Y - 1900,
+            .tm_mon = M - 1,
+            .tm_mday = d,
+            .tm_sec = s,
+            .tm_min = m,
+            .tm_hour = h};
+    const int len = strlen("1994-10-21");
+    char *date = malloc(len + 1);
+    strftime(date, len + 1, "%Y-%m-%d", &a);
+    return date;
 }
 
 // Compute the local date based on GMTUTC and GMT offset.
