@@ -77,7 +77,8 @@ class DialogMeasuresSelection(QtWidgets.QDialog, Ui_Measures):
             item = self.listWidgetMeasures.item(i)
             if item.checkState() == QtCore.Qt.Checked:
                 job_id = item.text()
-                fn = self.measures_module.get(job_id).estimation
+                module = self.measures_module.get(job_id)
+                fn = module.estimation
                 # TODO: Custom parameters to pass to the estiamtion function
                 self.update_estimation_func_params(fn)
                 worker = Worker(job_id, fn)

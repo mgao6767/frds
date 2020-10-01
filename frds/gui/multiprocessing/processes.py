@@ -21,7 +21,7 @@ class ProcessManager(QtCore.QAbstractListModel):
 
     def __init__(self, *args, **kwargs):
         super().__init__()
-        self.msg_queue = multiprocessing.Manager().Queue()
+        self.progress_dict = multiprocessing.Manager().dict()
         self.max_workers = MAX_WORKERS
         self.executor = concurrent.futures.ProcessPoolExecutor(
             max_workers=self.max_workers,
@@ -64,7 +64,7 @@ class ProcessManager(QtCore.QAbstractListModel):
             worker.fn,
             *worker.args,
             job_id=worker.job_id,
-            progress=self.msg_queue.put,
+            progress=self.progress_dict.update,
             **worker.kwargs,
         )
         self._state[worker.job_id] = DEFAULT_STATE.copy()
@@ -88,10 +88,6 @@ class ProcessManager(QtCore.QAbstractListModel):
 
     def update_progress(self) -> None:
         latest_progress = {}
-        # FIXME: may not need to exhaust all messages, we can read a fixed number everytime
-        while not self.msg_queue.empty():
-            job_id, progress_pct = self.msg_queue.get()
-            latest_progress.update({job_id: progress_pct})
         for job_id, f in self.jobs.copy().items():
             if f.done():
                 self.jobs.pop(job_id)  # remove completed jobs
@@ -110,7 +106,9 @@ class ProcessManager(QtCore.QAbstractListModel):
                 # Mark default progress as 1 in case the running estimation function
                 # doesn't update progress to the monitor. If set to 0, it will not show
                 # up in the monitor.
-                self._state[job_id]["progress"] = latest_progress.get(job_id, 1)
+                self._state[job_id]["progress"] = min(
+                    max(self.progress_dict.get(job_id, 1), 1), 100
+                )
             elif f.cancelled():
                 pass
             self.layoutChanged.emit()

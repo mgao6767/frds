@@ -6,10 +6,14 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from frds.measures import MeasureCategory, setup, update_progress
-from frds.utils.data import get_market_microstructure_data
+from frds.utils.data import (
+    get_market_microstructure_data_from_disk,
+    get_total_files_of_market_microstructure_data_on_disk,
+)
 
+name = "Bid-Ask Spread"
 setup(
-    measure_name="Bid-Ask Spread",
+    measure_name=name,
     measure_type=MeasureCategory.MARKET_MICROSTRUCTURE,
     doc_url="https://frds.io/measures/bid_ask_spread",
     author="Mingze Gao",
@@ -19,11 +23,11 @@ setup(
 
 @update_progress()  # voluntarily update progress
 def estimation(
-    securities: typing.List[str],
-    start_date: datetime,
-    end_date: datetime,
+    securities: typing.List[str] = None,
+    start_date: datetime = None,
+    end_date: datetime = None,
     *args,
-    **kwargs
+    **kwargs,
 ) -> pd.DataFrame:
     """
     Given a list of securities and start/end dates, return a dataframe of daily average
@@ -31,16 +35,18 @@ def estimation(
         Date    Security    Bid-Ask Spread
         ...     ...         ...
     """
-    data_period = pd.date_range(start_date, end_date)
-    results, total_jobs, completed_jobs = [], len(data_period) * len(securities), 0
-    for date, security, data in get_market_microstructure_data(
-        securities, start_date, end_date
-    ):
+    total_jobs = get_total_files_of_market_microstructure_data_on_disk()
+    results, completed_jobs = [], 0
+    for date, security, data in get_market_microstructure_data_from_disk():
         result = _est(data)
         results.append({"Date": date, "Security": security, "Bid-Ask Spread": result})
         completed_jobs += 1
-        progress(completed_jobs // total_jobs)  # noqa: F821
-    return pd.DataFrame(results)
+        progress(int(completed_jobs / total_jobs * 100))  # noqa: F821
+        if completed_jobs > 200:
+            break
+    df = pd.DataFrame(results)
+    print(df)
+    _save(df)
 
 
 def _est(data: pd.DataFrame) -> float:
@@ -53,6 +59,16 @@ def _est(data: pd.DataFrame) -> float:
     ask = data["Ask Price"].to_numpy()
     bid = data["Bid Price"].to_numpy()
     midpt = (ask + bid) / 2
-    spread = np.divide(ask - bid, midpt)
+    spread = np.divide(ask - bid, midpt, where=(midpt != 0))
     del ask, bid, midpt
-    return np.mean(spread)
+    return np.nanmean(spread)
+
+
+def _save(data: pd.DataFrame) -> None:
+    import pathlib
+    from frds.utils.settings import read_general_settings
+
+    settings = read_general_settings()
+    result_dir = pathlib.Path(settings.get("result_dir")).expanduser()
+    result_filename = f"{name}.csv"
+    data.to_csv(result_dir.joinpath(result_filename).as_posix(), index=False)

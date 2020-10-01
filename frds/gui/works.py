@@ -29,7 +29,7 @@ def make_worker_download_wrds_table(library, table) -> ThreadWorker:
 
     def download(library, table):
         conn = get_wrds_connection()
-        return conn.get_table(library, table, obs=100)
+        return conn.get_table(library, table, obs=-1)  # extract all
 
     return ThreadWorker(f"Download {library}.{table}", download, library, table)
 

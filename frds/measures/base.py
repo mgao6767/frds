@@ -24,7 +24,7 @@ def update_progress():
             saved_values = func_globals.copy()  # Shallow copy of dict.
             job_id = kwargs.get("job_id")
             _progress = kwargs.get("progress", print)
-            progress = lambda pct: _progress((job_id, pct))
+            progress = lambda pct: _progress({job_id: pct})
             func_globals.update(dict(progress=progress, job_id=job_id))
             try:
                 result = func(*args, **kwargs)
