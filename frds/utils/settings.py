@@ -1,4 +1,5 @@
 from typing import Dict
+import functools
 import os
 import pathlib
 import configparser
@@ -13,6 +14,7 @@ def _get_config_file_path(path=CONFIG_FILE_PATH) -> pathlib.Path:
     return path.joinpath(CONFIG_FILE_NAME)
 
 
+@functools.lru_cache()
 def _read_config_file() -> Dict:
     path = _get_config_file_path()
     config = configparser.ConfigParser(
