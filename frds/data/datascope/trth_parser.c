@@ -132,14 +132,11 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
 {
     if (file == NULL)
         exit(EXIT_FAILURE);
-    // Init a buffer, context and field pointers.
     static char buffer[BUFSIZE];
-    // Keep track of last RIC and local date.
-    char *lastRIC = NULL, *lastLocalDate = NULL;
-    // Keep track of current RIC and local date.
-    char *thisRIC = NULL, *thisDateTime = NULL;
-    char *thisGMTOffset = NULL;
-    char thisLocalDate[11];
+    char *thisDateTime = NULL, *thisGMTOffset = NULL;
+    char thisLocalDate[11], lastLocalDate[11], thisRIC[100], lastRIC[100];
+    thisRIC[0] = 0;
+    lastRIC[0] = 0;
     // Pointers to use in parsing each line.
     char *context = NULL, *field = NULL;
     // Array of pointers to transactions of a security in a day (a chunk).
@@ -162,7 +159,7 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
         {
             if (loc == meta->locFieldRIC)
             {
-                thisRIC = strdup(field);
+                strcpy(thisRIC, field);
                 identifiers_found++;
             }
             else if (loc == meta->locFieldDateTime)
@@ -189,11 +186,10 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
             chunk = realloc(chunk, sizeof(char *) * numTransactions * 1.2);
         // We have current RIC and local date now.
         // This is the first data row.
-        if (lastRIC == NULL)
+        if (strlen(lastRIC) == 0)
         {
-            lastRIC = thisRIC;
-            lastLocalDate = thisLocalDate;
-            // Add this data row to chunk.
+            strcpy(lastRIC, thisRIC);
+            strcpy(lastLocalDate, thisLocalDate);
             chunk[numTransactions++] = current_data;
         }
         else
@@ -208,9 +204,6 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
                     // Same RIC and local date as previous rows.
                     // Add this data row to chunk.
                     chunk[numTransactions++] = current_data;
-                    // free(thisLocalDate);
-                    // Need to free thisRIC as well. Since next iteration will make a new thisRIC.
-                    free(thisRIC);
                 }
                 else
                 // Current local date is different from last local date but same RIC.
@@ -222,8 +215,7 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
                     numTransactions = 0;
                     // Add this data row to chunk.
                     chunk[numTransactions++] = current_data;
-                    // free(lastLocalDate);
-                    lastLocalDate = thisLocalDate;
+                    strcpy(lastLocalDate, thisLocalDate);
                 }
             }
             else
@@ -236,10 +228,8 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
                 // Add this data row to chunk.
                 chunk[numTransactions++] = current_data;
                 // New RIC also means new local date.
-                free(lastRIC);
-                lastRIC = thisRIC;
-                // free(lastLocalDate);
-                lastLocalDate = thisLocalDate;
+                strcpy(lastRIC, thisRIC);
+                strcpy(lastLocalDate, thisLocalDate);
             }
         }
     }
@@ -248,7 +238,8 @@ void process(gzFile file, struct Fields *meta, const char *output_dir, int repla
     // Case 2: the last valid chunk.
     if (numTransactions > 0)
         // thisRIC and thisLocalDate are freed
-        save_chunk(lastRIC, lastLocalDate, meta->fields, chunk, numTransactions,
+        // lastRIC becomes a dangling pointer!
+        save_chunk(thisRIC, thisLocalDate, meta->fields, chunk, numTransactions,
                    output_dir, replace);
 
     // Free chunk.
