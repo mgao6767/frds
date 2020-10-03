@@ -1,5 +1,6 @@
 import os
 import json
+import pathlib
 from typing import List, Dict
 from numba import jit
 import pandas as pd
@@ -54,12 +55,12 @@ def make_request_tick_history(rics: List[str], date_start, date_end):
 
 def get_data_path(ric, date):
     settings = read_general_settings()
-    data_dir = settings.get("data_dir")
+    data_dir = pathlib.Path(settings.get("data_dir")).expanduser().as_posix()
     return os.path.join(data_dir, "TRTH", "sorted_data", ric, f"{date}.csv.gz")
 
 
-def lee_and_ready(ric, date) -> pd.DataFrame:
-    data_path = get_data_path(ric, date)
+def lee_and_ready(data_path) -> pd.DataFrame:
+    # data_path = get_data_path(ric, date)
     # Read in sorted data
     if not os.path.isfile(data_path):
         return None

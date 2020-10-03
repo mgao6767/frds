@@ -27,7 +27,9 @@ def get_total_files_of_market_microstructure_data_on_disk():
     """Return the number of parsed data files on disk"""
     settings = read_general_settings()
     data_dir = (
-        pathlib.Path(settings.get("data_dir")).joinpath("TRTH").joinpath("parsed_data")
+        pathlib.Path(settings.get("data_dir"))
+        .joinpath("TRTH")
+        .joinpath("sorted_data_lee_ready")
     ).expanduser()
     files = []
     for _, _, filenames in os.walk(data_dir.as_posix()):
@@ -41,7 +43,9 @@ def get_market_microstructure_data_from_disk(
 ):
     settings = read_general_settings()
     data_dir = (
-        pathlib.Path(settings.get("data_dir")).joinpath("TRTH").joinpath("parsed_data")
+        pathlib.Path(settings.get("data_dir"))
+        .joinpath("TRTH")
+        .joinpath("sorted_data_lee_ready")
     ).expanduser()
     # TODO: walk based on start/end dates
     for dirpath, _, filenames in os.walk(data_dir.as_posix()):

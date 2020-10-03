@@ -2,6 +2,8 @@
 
 import inspect
 import importlib
+import pathlib
+from frds.utils.settings import read_general_settings
 
 
 def get_all_measures(category=None):
@@ -40,12 +42,7 @@ def get_doc_url_of_measure(measure):
     return getattr(measure, "DOC_URL", "https://frds.io")
 
 
-if __name__ == "__main__":
-    for name, module in get_all_measures():
-        print(name, module)
-        fn = get_estimation_function_of_measure(module)
-        doc = inspect.getdoc(module)
-        print(inspect.cleandoc(doc))
-        res = fn()
-        print(res)
-        print(module.MEASURE_TYPE)
+def save_results(df, filename) -> None:
+    settings = read_general_settings()
+    result_dir = pathlib.Path(settings.get("result_dir")).expanduser()
+    df.to_csv(result_dir.joinpath(filename).as_posix(), index=False)
