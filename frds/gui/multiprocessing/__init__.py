@@ -35,6 +35,7 @@ class WorkerSignals(QtCore.QObject):
     finished = QtCore.pyqtSignal(str)
     progress = QtCore.pyqtSignal(str, int)
     status = QtCore.pyqtSignal(str, str)
+    log = QtCore.pyqtSignal(str, str)
 
 
 class Worker:
@@ -46,7 +47,9 @@ class Worker:
 
 
 class ThreadWorker(QtCore.QRunnable):
-    def __init__(self, job_id: str, fn: Callable, *args, **kwargs):
+    def __init__(
+        self, job_id: str, fn: Callable, *args, enable_progress_callback=False, **kwargs
+    ):
         super().__init__()
         self.job_id = job_id
         self.fn = fn
@@ -54,6 +57,8 @@ class ThreadWorker(QtCore.QRunnable):
         self.kwargs = kwargs
         self.signals = WorkerSignals()
         self.signals.status.emit(self.job_id, STATUS_WAITING)
+        if enable_progress_callback:
+            self.kwargs["progress_callback"] = self.signals.log
 
     @QtCore.pyqtSlot()
     def run(self):

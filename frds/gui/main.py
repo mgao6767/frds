@@ -8,6 +8,7 @@ from frds.gui.ui_components import (
     DialogAbout,
     DialogMeasuresSelection,
     DataDownloadWindow,
+    DialogTRTHDataLoading,
 )
 from frds.gui.ui_components.generated_py_files import resources_rc
 from frds.settings import FRDS_HOME_PAGE
@@ -32,7 +33,10 @@ class FRDSApplication:
         )
         self.settings_dialog = DialogSettings()
         self.about_dialog = DialogAbout()
-        self.data_download_window = DataDownloadWindow(
+        self.wrds_data_download_window = DataDownloadWindow(
+            parent=self.main_window, thread_manager=self.thread_manager
+        )
+        self.trth_data_download_window = DialogTRTHDataLoading(
             parent=self.main_window, thread_manager=self.thread_manager
         )
         self.measures_selection_dialog_corp_finc = DialogMeasuresSelection(
@@ -76,18 +80,28 @@ class FRDSApplication:
         self.main_window.actionMarket_micro_structure_measures.triggered.connect(
             self.measures_selection_dialog_mkt_structure.show
         )
-        self.main_window.actionLoad_data.triggered.connect(self.initDataDownloadWindow)
+        self.main_window.actionWRDSData.triggered.connect(
+            self.initWRDSDataDownloadWindow
+        )
+        self.main_window.actionTRTHData.triggered.connect(
+            self.initTRTHDataDownloadWindow
+        )
 
     def _start_background_workers(self):
         worker = make_worker_list_wrds_libraries()
         worker.signals.result.connect(
             # discard the first parameter job_id from the worker.signals
-            lambda job_id, result: self.data_download_window.display_libraries(result),
+            lambda job_id, result: self.wrds_data_download_window.display_libraries(
+                result
+            ),
         )
         self.thread_manager.enqueue(worker)
 
-    def initDataDownloadWindow(self):
-        self.data_download_window.show()
+    def initWRDSDataDownloadWindow(self):
+        self.wrds_data_download_window.show()
+
+    def initTRTHDataDownloadWindow(self):
+        self.trth_data_download_window.show()
 
     def add_worker_job(self, job):
         self.process_manager.add_estimation_job(job)

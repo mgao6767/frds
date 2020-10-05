@@ -156,8 +156,8 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Easily compute a collection of academic measures in corporate finance, banking, and market microstructure studies.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;To start, please go to &lt;/span&gt;&lt;span style=&quot; font-size:14pt; text-decoration: underline;&quot;&gt;Settings-&amp;gt;General&lt;/span&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt; and save your preferences and data source credentials.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Then, use &lt;/span&gt;&lt;span style=&quot; font-size:14pt; text-decoration: underline;&quot;&gt;Files-&amp;gt;Load data&lt;/span&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt; to download the necessary data from public and commercial sources.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Next, use &lt;/span&gt;&lt;span style=&quot; font-size:14pt; text-decoration: underline;&quot;&gt;Files-&amp;gt;New estimation&lt;/span&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt; to start estimating the measures.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Then, use &lt;/span&gt;&lt;span style=&quot; font-size:14pt; text-decoration: underline;&quot;&gt;File-&amp;gt;Load data&lt;/span&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt; to download the necessary data from public and commercial sources.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Next, use &lt;/span&gt;&lt;span style=&quot; font-size:14pt; text-decoration: underline;&quot;&gt;File-&amp;gt;New estimation&lt;/span&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt; to start estimating the measures.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="openExternalLinks">
@@ -197,7 +197,14 @@ p, li { white-space: pre-wrap; }
      <addaction name="actionBanking_measures"/>
      <addaction name="actionMarket_micro_structure_measures"/>
     </widget>
-    <addaction name="actionLoad_data"/>
+    <widget class="QMenu" name="menuLoad_data">
+     <property name="title">
+      <string>Load data</string>
+     </property>
+     <addaction name="actionWRDSData"/>
+     <addaction name="actionTRTHData"/>
+    </widget>
+    <addaction name="menuLoad_data"/>
     <addaction name="menuNew_estimation"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -278,17 +285,6 @@ p, li { white-space: pre-wrap; }
     <string>Open the progress monitor</string>
    </property>
   </action>
-  <action name="actionLoad_data">
-   <property name="text">
-    <string>Load data</string>
-   </property>
-   <property name="toolTip">
-    <string>Load data from source</string>
-   </property>
-   <property name="statusTip">
-    <string>Download data from source</string>
-   </property>
-  </action>
   <action name="actionCorporate_finance_measures">
    <property name="text">
     <string>Corporate finance measures</string>
@@ -302,6 +298,16 @@ p, li { white-space: pre-wrap; }
   <action name="actionMarket_micro_structure_measures">
    <property name="text">
     <string>Market micro-structure measures</string>
+   </property>
+  </action>
+  <action name="actionWRDSData">
+   <property name="text">
+    <string>WRDS</string>
+   </property>
+  </action>
+  <action name="actionTRTHData">
+   <property name="text">
+    <string>TRTH</string>
    </property>
   </action>
  </widget>

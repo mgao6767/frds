@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/mgao/Code/frds/frds/gui/ui_components/ui_files/MainWindow.ui'
+# Form implementation generated from reading ui file '/Users/adriangao/Code/frds/frds/gui/ui_components/ui_files/MainWindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -73,6 +73,8 @@ class Ui_MainWindow(object):
         self.menuFile.setObjectName("menuFile")
         self.menuNew_estimation = QtWidgets.QMenu(self.menuFile)
         self.menuNew_estimation.setObjectName("menuNew_estimation")
+        self.menuLoad_data = QtWidgets.QMenu(self.menuFile)
+        self.menuLoad_data.setObjectName("menuLoad_data")
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
         self.menuSettings = QtWidgets.QMenu(self.menubar)
@@ -97,18 +99,22 @@ class Ui_MainWindow(object):
         self.actionDocumentation.setObjectName("actionDocumentation")
         self.actionProgressMonitor = QtWidgets.QAction(MainWindow)
         self.actionProgressMonitor.setObjectName("actionProgressMonitor")
-        self.actionLoad_data = QtWidgets.QAction(MainWindow)
-        self.actionLoad_data.setObjectName("actionLoad_data")
         self.actionCorporate_finance_measures = QtWidgets.QAction(MainWindow)
         self.actionCorporate_finance_measures.setObjectName("actionCorporate_finance_measures")
         self.actionBanking_measures = QtWidgets.QAction(MainWindow)
         self.actionBanking_measures.setObjectName("actionBanking_measures")
         self.actionMarket_micro_structure_measures = QtWidgets.QAction(MainWindow)
         self.actionMarket_micro_structure_measures.setObjectName("actionMarket_micro_structure_measures")
+        self.actionWRDSData = QtWidgets.QAction(MainWindow)
+        self.actionWRDSData.setObjectName("actionWRDSData")
+        self.actionTRTHData = QtWidgets.QAction(MainWindow)
+        self.actionTRTHData.setObjectName("actionTRTHData")
         self.menuNew_estimation.addAction(self.actionCorporate_finance_measures)
         self.menuNew_estimation.addAction(self.actionBanking_measures)
         self.menuNew_estimation.addAction(self.actionMarket_micro_structure_measures)
-        self.menuFile.addAction(self.actionLoad_data)
+        self.menuLoad_data.addAction(self.actionWRDSData)
+        self.menuLoad_data.addAction(self.actionTRTHData)
+        self.menuFile.addAction(self.menuLoad_data.menuAction())
         self.menuFile.addAction(self.menuNew_estimation.menuAction())
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
@@ -136,12 +142,13 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Easily compute a collection of academic measures in corporate finance, banking, and market microstructure studies.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt;\"><br /></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">To start, please go to </span><span style=\" font-size:14pt; text-decoration: underline;\">Settings-&gt;General</span><span style=\" font-size:14pt;\"> and save your preferences and data source credentials.</span></p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Then, use </span><span style=\" font-size:14pt; text-decoration: underline;\">Files-&gt;Load data</span><span style=\" font-size:14pt;\"> to download the necessary data from public and commercial sources.</span></p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Next, use </span><span style=\" font-size:14pt; text-decoration: underline;\">Files-&gt;New estimation</span><span style=\" font-size:14pt;\"> to start estimating the measures.</span></p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Then, use </span><span style=\" font-size:14pt; text-decoration: underline;\">File-&gt;Load data</span><span style=\" font-size:14pt;\"> to download the necessary data from public and commercial sources.</span></p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Next, use </span><span style=\" font-size:14pt; text-decoration: underline;\">File-&gt;New estimation</span><span style=\" font-size:14pt;\"> to start estimating the measures.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.welcomePage), _translate("MainWindow", "Welcome"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuNew_estimation.setTitle(_translate("MainWindow", "New estimation"))
+        self.menuLoad_data.setTitle(_translate("MainWindow", "Load data"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.menuSettings.setTitle(_translate("MainWindow", "Settings"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
@@ -157,10 +164,9 @@ class Ui_MainWindow(object):
         self.actionDocumentation.setText(_translate("MainWindow", "Documentation"))
         self.actionProgressMonitor.setText(_translate("MainWindow", "Progress Monitor"))
         self.actionProgressMonitor.setStatusTip(_translate("MainWindow", "Open the progress monitor"))
-        self.actionLoad_data.setText(_translate("MainWindow", "Load data"))
-        self.actionLoad_data.setToolTip(_translate("MainWindow", "Load data from source"))
-        self.actionLoad_data.setStatusTip(_translate("MainWindow", "Download data from source"))
         self.actionCorporate_finance_measures.setText(_translate("MainWindow", "Corporate finance measures"))
         self.actionBanking_measures.setText(_translate("MainWindow", "Banking measures"))
         self.actionMarket_micro_structure_measures.setText(_translate("MainWindow", "Market micro-structure measures"))
+        self.actionWRDSData.setText(_translate("MainWindow", "WRDS"))
+        self.actionTRTHData.setText(_translate("MainWindow", "TRTH"))
 from . import resources_rc
