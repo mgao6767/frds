@@ -3,6 +3,7 @@ from setuptools.command.install import install
 import pathlib
 import shutil
 import os
+import frds
 
 requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5", "PyQtWebEngine"]
 
@@ -24,17 +25,20 @@ class PostInstallCommand(install):
 
 setup(
     name="frds",
-    version="0.4.3",
-    description="Financial Research Data Services",
+    version=frds.__version__,
+    description=frds.__description__,
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    author="Mingze Gao",
-    author_email="adrian.gao@outlook.com",
-    url="https://github.com/mgao6767/frds/",
+    author=frds.__author__,
+    author_email=frds.__author_email__,
+    url=frds.__github_url__,
     packages=find_namespace_packages(),
-    package_data={"": ["LICENSE", "README.md", "*.ico"], "frds": ["config.ini"],},
+    package_data={
+        "": ["LICENSE", "README.md"],
+        "frds.gui.ui_components.resources_files": ["*"],
+    },
     install_requires=requires,
-    cmdclass={"install": PostInstallCommand},
+    # cmdclass={"install": PostInstallCommand},
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",

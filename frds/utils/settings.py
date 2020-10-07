@@ -1,3 +1,5 @@
+"""Utility functions related to reading/saving overal program settings"""
+
 from typing import Dict
 import functools
 import os
