@@ -22,13 +22,8 @@ class FRDSApplication:
         """Display main window and start running
         """
         self.main_window.show()
-        self.connect_signals()
         self.app.exec()
         # Code below executed when the main window is closed
-
-    def connect_signals(self):
-        """Connect all signals
-        """
 
 
 def run():

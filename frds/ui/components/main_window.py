@@ -31,6 +31,9 @@ class MainWindow(*uic.loadUiType(ui)):
         self.treeViewFilesystem.setRootIndex(
             self.filesystermModel.index(get_root_dir())
         )
+        # Tabify dock widgets
+        self.tabifyDockWidget(self.dockWidgetFilesystem, self.dockWidgetHistory)
+        self.dockWidgetFilesystem.raise_()
         # Connect signals
         self.actionAbout_Qt.triggered.connect(lambda: QMessageBox.aboutQt(self))
         self.actionRestoreViews.triggered.connect(self.restoreAllViews)
