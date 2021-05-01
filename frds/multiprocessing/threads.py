@@ -1,11 +1,43 @@
+from typing import Callable
 from PyQt5 import QtCore
-
 from frds.settings import MAX_WORKERS, PROGRESS_UPDATE_INTERVAL_SECONDS
-from frds.gui.multiprocessing import (
-    STATUS_ERROR,
-    STATUS_COMPLETE,
-    DEFAULT_STATE,
-)
+from frds.multiprocessing import WorkerSignals, Status
+
+
+class ThreadWorker(QtCore.QRunnable):
+    def __init__(
+        self,
+        job_id: str,
+        fn: Callable,
+        *args,
+        enable_progress_callback=False,
+        **kwargs
+    ):
+        super().__init__()
+        self.job_id = job_id
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = WorkerSignals()
+        self.signals.status.emit(self.job_id, Status.Waiting)
+        if enable_progress_callback:
+            self.kwargs["progress_callback"] = self.signals.log
+
+    @QtCore.pyqtSlot()
+    def run(self):
+        """
+        Initialize the runner function with passed args, kwargs.
+        """
+        self.signals.status.emit(self.job_id, Status.Running)
+        try:
+            result = self.fn(*self.args, **self.kwargs)
+        except Exception as e:
+            self.signals.error.emit(self.job_id, str(e))
+            self.signals.status.emit(self.job_id, Status.Error)
+        else:
+            self.signals.result.emit(self.job_id, result)
+            self.signals.status.emit(self.job_id, Status.Complete)
+        self.signals.finished.emit(self.job_id)
 
 
 class ThreadsManager(QtCore.QAbstractListModel):
@@ -21,11 +53,11 @@ class ThreadsManager(QtCore.QAbstractListModel):
 
     status = QtCore.pyqtSignal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         # Create a threadpool for our workers.
-        self.threadpool = QtCore.QThreadPool()
+        self.threadpool = QtCore.QThreadPool(*args, **kwargs)
         self.threadpool.setMaxThreadCount(MAX_WORKERS)
         self.max_threads = self.threadpool.maxThreadCount()
         print("Multithreading with maximum %d threads" % self.max_threads)
@@ -58,7 +90,7 @@ class ThreadsManager(QtCore.QAbstractListModel):
         self._workers[worker.job_id] = worker
 
         # Set default status to waiting, 0 progress.
-        self._state[worker.job_id] = DEFAULT_STATE.copy()
+        self._state[worker.job_id] = Status.Default.copy()
 
         self.layoutChanged.emit()
 
@@ -87,7 +119,7 @@ class ThreadsManager(QtCore.QAbstractListModel):
         Remove any complete/failed workers from worker_state.
         """
         for job_id, state in list(self._state.items()):
-            if state["status"] in (STATUS_COMPLETE, STATUS_ERROR):
+            if state["status"] in (Status.Complete, Status.Error):
                 del self._state[job_id]
         self.layoutChanged.emit()
 

@@ -7,10 +7,6 @@ import frds
 
 requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5", "PyQtWebEngine"]
 
-trth_parser = Extension(
-    "frds.data.datascope.trth_parser", sources=["frds/data/datascope/trth_parser.c"],
-)
-
 
 class PostInstallCommand(install):
     def run(self):
@@ -36,6 +32,7 @@ setup(
     package_data={
         "": ["LICENSE", "README.md"],
         "frds.gui.ui_components.resources_files": ["*"],
+        "frds.ui.designs": ["*"],
     },
     install_requires=requires,
     # cmdclass={"install": PostInstallCommand},
@@ -50,6 +47,6 @@ setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
     ],
     license="MIT",
-    ext_modules=[trth_parser],
-    entry_points={"console_scripts": ["frds=frds.run:main"]},
+    # ext_modules=[trth_parser],
+    entry_points={"console_scripts": ["frds=frds.main:run"]},
 )
