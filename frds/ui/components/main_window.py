@@ -4,11 +4,11 @@ from importlib.resources import open_text
 from PyQt5.QtCore import QUrl
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMessageBox, QFileSystemModel, QStatusBar
+from PyQt5.QtGui import QDesktopServices, QStandardItemModel
+from PyQt5.QtWidgets import QMessageBox, QFileSystemModel
 from frds.settings import FRDS_HOME_PAGE
 import frds.ui.designs
-from frds.ui.components import Preferences
+from frds.ui.components import Preferences, TreeViewMeasures
 from frds.utils.settings import get_root_dir
 from frds.multiprocessing.threads import ThreadsManager, ThreadWorker
 
@@ -31,20 +31,22 @@ class MainWindow(*uic.loadUiType(ui)):
         self.treeViewFilesystem.setRootIndex(
             self.filesystermModel.index(get_root_dir())
         )
+        # Setup treeView of measures
+        self.tabCorpFinc.layout().addWidget(TreeViewMeasures(self))
         # Tabify dock widgets
-        self.tabifyDockWidget(self.dockWidgetFilesystem, self.dockWidgetHistory)
+        self.tabifyDockWidget(self.dockWidgetFilesystem,
+                              self.dockWidgetHistory)
         self.dockWidgetFilesystem.raise_()
         # Connect signals
-        self.actionAbout_Qt.triggered.connect(lambda: QMessageBox.aboutQt(self))
+        self.actionAbout_Qt.triggered.connect(
+            lambda: QMessageBox.aboutQt(self))
         self.actionRestoreViews.triggered.connect(self.restoreAllViews)
         self.actionFile_Explorer.triggered.connect(self.toggleFileExplorer)
         self.actionPreferences.triggered.connect(self.pref_window.show)
         self.actionDocumentation.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl(FRDS_HOME_PAGE))
         )
-        self.threadpool.status.connect(
-            lambda msg: self.statusbar.showMessage(msg)
-        )
+        self.threadpool.status.connect(self.statusbar.showMessage)
 
     def restoreAllViews(self):
         self.dockWidgetFilesystem.show()
@@ -56,4 +58,3 @@ class MainWindow(*uic.loadUiType(ui)):
             self.dockWidgetFilesystem.show()
         else:
             self.dockWidgetFilesystem.hide()
-
