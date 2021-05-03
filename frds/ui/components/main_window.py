@@ -4,13 +4,14 @@ from importlib.resources import open_text
 from PyQt5.QtCore import QUrl
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QDesktopServices, QStandardItemModel
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QFileSystemModel
 from frds.settings import FRDS_HOME_PAGE
 import frds.ui.designs
 from frds.ui.components import Preferences, TreeViewMeasures
 from frds.utils.settings import get_root_dir
 from frds.multiprocessing.threads import ThreadsManager, ThreadWorker
+import frds.measures
 
 ui = open_text(frds.ui.designs, "MainWindow.ui")
 
@@ -32,7 +33,12 @@ class MainWindow(*uic.loadUiType(ui)):
             self.filesystermModel.index(get_root_dir())
         )
         # Setup treeView of measures
-        self.tabCorpFinc.layout().addWidget(TreeViewMeasures(self))
+        self.treeViewCorpFinc = TreeViewMeasures(self)
+        self.tabCorpFinc.layout().addWidget(self.treeViewCorpFinc)
+        self.treeViewCorpFinc.addMeasures(
+            frds.measures.corporate_finance, self.treeViewCorpFinc.model.invisibleRootItem())
+        self.treeViewCorpFinc.expandAll()
+
         # Tabify dock widgets
         self.tabifyDockWidget(self.dockWidgetFilesystem,
                               self.dockWidgetHistory)

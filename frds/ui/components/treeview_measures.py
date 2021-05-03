@@ -1,39 +1,41 @@
+from os import name
+import os.path
+import pkgutil
+import importlib
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItemModel
+from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QHeaderView, QTreeView
 
-N_COLUMNS = 4
-Name, Description, Reference, Contributor = range(N_COLUMNS)
+N_COLUMNS = 3
+Name, Description, Reference = range(N_COLUMNS)
 
 
 class TreeViewMeasures(QTreeView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model = QStandardItemModel(0, N_COLUMNS, *args, **kwargs)
-        self.model.setHeaderData(Name, Qt.Horizontal, "Name")
-        self.model.setHeaderData(
-            Description, Qt.Horizontal, "Short Description")
-        self.model.setHeaderData(Reference, Qt.Horizontal, "Reference")
-        self.model.setHeaderData(Contributor, Qt.Horizontal, "Contributor")
+        self.model.setHorizontalHeaderLabels(
+            ['Name', 'Description', 'Reference'])
         self.setModel(self.model)
-        self.setRootIsDecorated(False)
         self.setAlternatingRowColors(True)
         self.setSortingEnabled(True)
         self.header().setStretchLastSection(False)
-        # self.header().setSectionResizeMode(Name, QHeaderView.ResizeToContents)
         self.header().setSectionResizeMode(Description, QHeaderView.Stretch)
-        # self.header().setSectionResizeMode(Reference, QHeaderView.ResizeToContents)
 
-        self.addMeasure("ROA", "Return on Assets", "")
-        self.addMeasure("ROE", "Return on Equity", "")
-        self.addMeasure("Firm Size", "Logarithm of total assets", "")
-        self.addMeasure("Z-score", "Z-score", "")
-        self.addMeasure("Asset Tangibility", "Logarithm of PPENT", "")
-
-    def addMeasure(self, name, description, reference, contributor="Mingze Gao"):
-        self.model.insertRow(0)
-        self.model.setData(self.model.index(0, Name), name)
-        self.model.setData(self.model.index(0, Description), description)
-        self.model.setData(self.model.index(0, Reference), reference)
-        self.model.setData(self.model.index(0, Contributor), contributor)
-        self.sortByColumn(0, Qt.AscendingOrder)
+    def addMeasures(self, module, parent):
+        pkgpath = os.path.dirname(module.__file__)
+        for _, name, _ in pkgutil.walk_packages([pkgpath]):
+            mod = importlib.import_module(f'.{name}', module.__name__)
+            modpath = os.path.dirname(mod.__file__)
+            name = mod.name if hasattr(mod, 'name') else name.upper()
+            it = QStandardItem(name)
+            parent.appendRow(it)
+            for _, version, _ in pkgutil.walk_packages([modpath]):
+                ver = importlib.import_module(f'.{version}', mod.__name__)
+                vername = ver.name if hasattr(ver, 'name') else name
+                verdesc = ver.description if hasattr(
+                    ver, 'description') else ''
+                verref = ver.reference if hasattr(ver, 'reference') else ''
+                it.appendRow([QStandardItem(vername), QStandardItem(
+                    verdesc), QStandardItem(verref)])
+        self.resizeColumnToContents(Name)
