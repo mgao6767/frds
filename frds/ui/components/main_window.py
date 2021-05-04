@@ -32,20 +32,36 @@ class MainWindow(*uic.loadUiType(ui)):
         self.treeViewFilesystem.setRootIndex(
             self.filesystermModel.index(get_root_dir())
         )
-        # Setup treeView of measures
+        # Setup treeView of corporate finance measures
         self.treeViewCorpFinc = TreeViewMeasures(self)
         self.tabCorpFinc.layout().addWidget(self.treeViewCorpFinc)
         self.treeViewCorpFinc.addMeasures(
-            frds.measures.corporate_finance, self.treeViewCorpFinc.model.invisibleRootItem())
+            frds.measures.corporate_finance,
+            self.treeViewCorpFinc.model.invisibleRootItem(),
+        )
         self.treeViewCorpFinc.expandAll()
+        # Setup treeView of banking measures
+        self.treeViewBanking = TreeViewMeasures(self)
+        self.tabBanking.layout().addWidget(self.treeViewBanking)
+        self.treeViewCorpFinc.addMeasures(
+            frds.measures.banking,
+            self.treeViewBanking.model.invisibleRootItem(),
+        )
+        self.treeViewBanking.expandAll()
+        # Setup treeView of market microstructure measures
+        self.treeViewMktStructure = TreeViewMeasures(self)
+        self.tabMktStructure.layout().addWidget(self.treeViewMktStructure)
+        self.treeViewMktStructure.addMeasures(
+            frds.measures.market_microstructure,
+            self.treeViewMktStructure.model.invisibleRootItem(),
+        )
+        self.treeViewMktStructure.expandAll()
 
         # Tabify dock widgets
-        self.tabifyDockWidget(self.dockWidgetFilesystem,
-                              self.dockWidgetHistory)
+        self.tabifyDockWidget(self.dockWidgetFilesystem, self.dockWidgetHistory)
         self.dockWidgetFilesystem.raise_()
         # Connect signals
-        self.actionAbout_Qt.triggered.connect(
-            lambda: QMessageBox.aboutQt(self))
+        self.actionAbout_Qt.triggered.connect(lambda: QMessageBox.aboutQt(self))
         self.actionRestoreViews.triggered.connect(self.restoreAllViews)
         self.actionFile_Explorer.triggered.connect(self.toggleFileExplorer)
         self.actionPreferences.triggered.connect(self.pref_window.show)
