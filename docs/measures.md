@@ -23,6 +23,9 @@
 * [Executive Ownership](https://frds.io/measures/executive_ownership)
     * Various measures of executive stock ownership.
     * Source: `wrds.comp.funda`, `wrds.execcomp.anncomp`.
+* [Executive Tenure](https://frds.io/measures/executive_tenure)
+    * The tenure of executives in the firm.
+    * Source: `wrds.execcomp.anncomp`.
 * [Firm Size](https://frds.io/measures/firm_size)
     * Natural logarithm of total assets.
     * Source: `wrds.comp.funda`.
