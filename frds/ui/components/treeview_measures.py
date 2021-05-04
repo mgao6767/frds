@@ -33,6 +33,7 @@ class TreeViewMeasures(QTreeView):
         self.setAlternatingRowColors(True)
         self.setSortingEnabled(True)
         self.header().setStretchLastSection(False)
+        # self.header().setSectionResizeMode(QHeaderView.ResizeToContents)
         self.header().setSectionResizeMode(Description, QHeaderView.Stretch)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.setItemDelegate(BoldDelegate(self))
@@ -50,7 +51,6 @@ class TreeViewMeasures(QTreeView):
                 vername = ver.name if hasattr(ver, "name") else name
                 verfreq = ver.frequency if hasattr(ver, "frequency") else ""
                 verdesc = ver.description if hasattr(ver, "description") else ""
-                verref = ver.reference if hasattr(ver, "reference") else ""
                 if hasattr(ver, "source"):
                     if isinstance(ver.source, str):
                         versrc = ver.source
@@ -58,6 +58,13 @@ class TreeViewMeasures(QTreeView):
                         versrc = "/".join(sorted(ver.source))
                 else:
                     versrc = ""
+                if hasattr(ver, "reference"):
+                    if isinstance(ver.reference, str):
+                        verref = ver.reference
+                    elif isinstance(ver.reference, list):
+                        verref = "; ".join(sorted(ver.reference))
+                else:
+                    verref = ""
                 it.appendRow(
                     [
                         QStandardItem(vername),

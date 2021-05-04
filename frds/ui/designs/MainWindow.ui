@@ -57,7 +57,7 @@
      <x>0</x>
      <y>0</y>
      <width>1471</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuView">
@@ -117,7 +117,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>400</width>
+     <width>300</width>
      <height>188</height>
     </size>
    </property>
@@ -161,6 +161,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidgetHistory">
+   <property name="minimumSize">
+    <size>
+     <width>300</width>
+     <height>111</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>History</string>
    </property>
