@@ -10,7 +10,7 @@ from frds.settings import FRDS_HOME_PAGE
 import frds.ui.designs
 from frds.ui.components import Preferences, TreeViewMeasures
 from frds.utils.settings import get_root_dir
-from frds.multiprocessing.threads import ThreadsManager, ThreadWorker
+from frds.multiprocessing.threads import ThreadsManager
 import frds.measures
 
 ui = open_text(frds.ui.designs, "MainWindow.ui")
@@ -35,33 +35,27 @@ class MainWindow(*uic.loadUiType(ui)):
         # Setup treeView of corporate finance measures
         self.treeViewCorpFinc = TreeViewMeasures(self)
         self.tabCorpFinc.layout().addWidget(self.treeViewCorpFinc)
-        self.treeViewCorpFinc.addMeasures(
-            frds.measures.corporate_finance,
-            self.treeViewCorpFinc.model.invisibleRootItem(),
-        )
+        self.treeViewCorpFinc.addMeasures(frds.measures.corporate_finance)
         self.treeViewCorpFinc.expandAll()
         # Setup treeView of banking measures
         self.treeViewBanking = TreeViewMeasures(self)
         self.tabBanking.layout().addWidget(self.treeViewBanking)
-        self.treeViewCorpFinc.addMeasures(
-            frds.measures.banking,
-            self.treeViewBanking.model.invisibleRootItem(),
-        )
+        self.treeViewCorpFinc.addMeasures(frds.measures.banking)
         self.treeViewBanking.expandAll()
         # Setup treeView of market microstructure measures
         self.treeViewMktStructure = TreeViewMeasures(self)
         self.tabMktStructure.layout().addWidget(self.treeViewMktStructure)
         self.treeViewMktStructure.addMeasures(
-            frds.measures.market_microstructure,
-            self.treeViewMktStructure.model.invisibleRootItem(),
-        )
+            frds.measures.market_microstructure)
         self.treeViewMktStructure.expandAll()
 
         # Tabify dock widgets
-        self.tabifyDockWidget(self.dockWidgetFilesystem, self.dockWidgetHistory)
+        self.tabifyDockWidget(self.dockWidgetFilesystem,
+                              self.dockWidgetHistory)
         self.dockWidgetFilesystem.raise_()
         # Connect signals
-        self.actionAbout_Qt.triggered.connect(lambda: QMessageBox.aboutQt(self))
+        self.actionAbout_Qt.triggered.connect(
+            lambda: QMessageBox.aboutQt(self))
         self.actionRestoreViews.triggered.connect(self.restoreAllViews)
         self.actionFile_Explorer.triggered.connect(self.toggleFileExplorer)
         self.actionPreferences.triggered.connect(self.pref_window.show)
