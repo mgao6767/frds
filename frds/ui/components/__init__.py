@@ -1,2 +1,2 @@
 from .preferences import Preferences
-from .treeview_measures import TreeViewMeasures
+from .treewidget_measures import TreeViewMeasures
