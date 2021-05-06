@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
     QAbstractItemView,
-    QStyledItemDelegate,
 )
 from PyQt5.Qt import Qt
 

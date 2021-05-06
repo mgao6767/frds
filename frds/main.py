@@ -21,7 +21,7 @@ class FRDSApplication:
     def run(self):
         """Display main window and start running
         """
-        self.main_window.show()
+        self.main_window.showMaximized()
         self.app.exec()
         # Code below executed when the main window is closed
 

@@ -3,6 +3,7 @@
 import os
 
 FRDS_HOME_PAGE = "https://frds.io"
+FRDS_MEASURES_PAGE = "https://frds.io/measures"
 
 ROOT_PATH = "~/frds"
 CONFIG_FILE_PATH = "~/frds"
