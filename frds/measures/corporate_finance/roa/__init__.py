@@ -1,4 +1,4 @@
 """ROA"""
 
 name = "ROA"
-url_doc = "https://frds.io/measures/roa"
+doc_url = "https://frds.io/measures/roa"

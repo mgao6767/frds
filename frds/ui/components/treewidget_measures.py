@@ -9,24 +9,28 @@ from PyQt5.QtWidgets import (
     QAbstractItemView,
 )
 from PyQt5.Qt import Qt
+from frds.settings import FRDS_MEASURES_PAGE
 
-N_COLUMNS = 5
-Name, Frequency, Description, Source, Reference = range(N_COLUMNS)
-
+N_COLUMNS = 6
 
 class TreeViewMeasures(QTreeWidget):
+
+    Name, Frequency, Description, Source, Reference, DocUrl = range(N_COLUMNS)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setColumnCount(N_COLUMNS)
         self.setHeaderLabels(
-            ["Name", "Frequency", "Description", "Source", "Reference"]
+            ["Name", "Frequency", "Description", "Source", "Reference", "Documation"]
         )
         self.setAlternatingRowColors(True)
         self.setSortingEnabled(True)
         self.header().setStretchLastSection(False)
-        self.header().setSectionResizeMode(Description, QHeaderView.Stretch)
+        self.header().setSectionResizeMode(
+            TreeViewMeasures.Description, QHeaderView.Stretch)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # self.setItemDelegate(BoldDelegate(self))
+        self.setColumnHidden(TreeViewMeasures.DocUrl, True)
+        self.setExpandsOnDoubleClick(False)
 
     def addMeasures(self, module):
         pkgpath = os.path.dirname(module.__file__)
@@ -34,14 +38,15 @@ class TreeViewMeasures(QTreeWidget):
             mod = importlib.import_module(f".{name}", module.__name__)
             modpath = os.path.dirname(mod.__file__)
             name = mod.name if hasattr(mod, "name") else name.upper()
+            doc_url = mod.doc_url if hasattr(mod, "doc_url") else FRDS_MEASURES_PAGE
             it = QTreeWidgetItem(self)
-            it.setText(Name, name)
+            it.setText(TreeViewMeasures.Name, name)
             it.setFlags(it.flags() | Qt.ItemIsTristate |
                         Qt.ItemIsUserCheckable)
-            it.setCheckState(Name, Qt.Unchecked)
+            it.setCheckState(TreeViewMeasures.Name, Qt.Unchecked)
             f = QFont()
             f.setWeight(QFont.DemiBold)  # less than Bold
-            it.setFont(Name, f)
+            it.setFont(TreeViewMeasures.Name, f)
             self.addTopLevelItem(it)
             for _, version, _ in pkgutil.walk_packages([modpath]):
                 ver = importlib.import_module(f".{version}", mod.__name__)
@@ -64,13 +69,15 @@ class TreeViewMeasures(QTreeWidget):
                 else:
                     verref = ""
                 child = QTreeWidgetItem(it)
-                child.setText(Name, vername)
-                child.setText(Frequency, verfreq)
-                child.setText(Description, verdesc)
-                child.setText(Source, versrc)
-                child.setText(Reference, verref)
+                child.setText(TreeViewMeasures.Name, vername)
+                child.setText(TreeViewMeasures.Frequency, verfreq)
+                child.setText(TreeViewMeasures.Description, verdesc)
+                child.setText(TreeViewMeasures.Source, versrc)
+                child.setText(TreeViewMeasures.Reference, verref)
+                child.setText(TreeViewMeasures.DocUrl, doc_url)
                 child.setFlags(child.flags() | Qt.ItemIsUserCheckable)
-                child.setCheckState(Name, Qt.Unchecked)
+                child.setCheckState(TreeViewMeasures.Name, Qt.Unchecked)
                 it.addChild(child)
-        self.resizeColumnToContents(Name)
-        self.resizeColumnToContents(Frequency)
+        self.resizeColumnToContents(TreeViewMeasures.Name)
+        self.resizeColumnToContents(TreeViewMeasures.Frequency)
+        self.sortByColumn(TreeViewMeasures.Name, Qt.AscendingOrder)

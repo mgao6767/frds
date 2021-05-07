@@ -3,7 +3,7 @@ from importlib.resources import read_binary
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon, QPixmap
 from frds.ui.components.main_window import MainWindow
-import frds.ui.designs
+import frds.ui.resources
 
 
 class FRDSApplication:
@@ -15,7 +15,7 @@ class FRDSApplication:
 
         # Set window's icon
         logo = QPixmap()
-        logo.loadFromData(read_binary(frds.ui.designs, "frds_icon.png"))
+        logo.loadFromData(read_binary(frds.ui.resources, "frds_icon.png"))
         self.app.setWindowIcon(QIcon(logo))
 
     def run(self):

@@ -1,12 +1,13 @@
 """MainWindow class"""
 
-from importlib.resources import open_text
+from importlib.resources import open_text, read_binary
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMessageBox, QFileSystemModel
+from PyQt5.QtGui import QDesktopServices, QPixmap, QIcon
+from PyQt5.QtWidgets import QMessageBox, QFileSystemModel, QTreeWidgetItem
 from frds.settings import FRDS_HOME_PAGE
 import frds.ui.designs
+import frds.ui.resources
 from frds.ui.components import Preferences, TreeViewMeasures, Documentation
 from frds.utils.settings import get_root_dir
 from frds.multiprocessing.threads import ThreadWorker, ThreadsManager
@@ -39,7 +40,7 @@ class MainWindow(*uic.loadUiType(ui)):
         # Setup treeView of banking measures
         self.treeViewBanking = TreeViewMeasures(self)
         self.tabBanking.layout().addWidget(self.treeViewBanking)
-        self.treeViewCorpFinc.addMeasures(frds.measures.banking)
+        self.treeViewBanking.addMeasures(frds.measures.banking)
         self.treeViewBanking.expandAll()
         # Setup treeView of market microstructure measures
         self.treeViewMktStructure = TreeViewMeasures(self)
@@ -52,7 +53,16 @@ class MainWindow(*uic.loadUiType(ui)):
         self.dockWidgetDocumentationContents.layout().addWidget(self.documentation_webview)
         self.restoreAllViews()
 
+        # ToolBar
+        self.__setup_toolBar()
         # Connect signals
+        self.__connect_signals()
+        # Start background tasks
+        self.__start_background_tasks()
+
+    def __connect_signals(self):
+        # Connect signals
+        self.actionSettings.triggered.connect(self.pref_window.show)
         self.actionAbout_Qt.triggered.connect(
             lambda: QMessageBox.aboutQt(self))
         self.actionRestoreViews.triggered.connect(self.restoreAllViews)
@@ -64,8 +74,11 @@ class MainWindow(*uic.loadUiType(ui)):
         self.actionAbout.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl(FRDS_HOME_PAGE)))
         self.threadpool.status.connect(self.statusbar.showMessage)
-        # Start background tasks
-        self.__start_background_tasks()
+        self.treeViewCorpFinc.itemClicked.connect(self.__measure_selected)
+        self.treeViewBanking.itemClicked.connect(self.__measure_selected)
+        self.treeViewMktStructure.itemClicked.connect(self.__measure_selected)
+        self.treeViewCorpFinc.itemDoubleClicked.connect(
+            self.__measure_double_clicked)
 
     def restoreAllViews(self):
         self.dockWidgetFilesystem.show()
@@ -85,10 +98,53 @@ class MainWindow(*uic.loadUiType(ui)):
         widget.raise_()
 
     def __start_background_tasks(self):
-        worker = ThreadWorker("Generate local docs",
-                              self.__generate_local_docs)
-        worker.signals.finished.connect(self.documentation_webview.displayDoc)
-        self.threadpool.enqueue(worker)
+        # worker = ThreadWorker("Generate local docs",
+        #                       self.__generate_local_docs)
+        # worker.signals.finished.connect(self.documentation_webview.displayDoc)
+        # self.threadpool.enqueue(worker)
+        pass
 
     def __generate_local_docs(self):
         pass
+
+    def __setup_toolBar(self):
+        icn = QPixmap()
+        icn.loadFromData(read_binary(frds.ui.resources,
+                                     'playback_play_icon&24.png'))
+        self.actionRun.setIcon(QIcon(icn))
+        icn.loadFromData(read_binary(
+            frds.ui.resources, 'round_delete_icon&24.png'))
+        self.actionStop.setIcon(QIcon(icn))
+        icn.loadFromData(read_binary(frds.ui.resources,
+                                     'playback_pause_icon&24.png'))
+        self.actionPause.setIcon(QIcon(icn))
+        icn.loadFromData(read_binary(frds.ui.resources, 'cogs_icon&24.png'))
+        self.actionSettings.setIcon(QIcon(icn))
+        icn.loadFromData(read_binary(
+            frds.ui.resources, 'dashboard_icon&24.png'))
+        self.actionDashboard.setIcon(QIcon(icn))
+        icn.loadFromData(read_binary(frds.ui.resources,
+                                     'star_fav_empty_icon&24.png'))
+        self.actionFavourite.setIcon(QIcon(icn))
+        # Add actions to the toolbar
+        self.toolBar.addAction(self.actionRun)
+        self.toolBar.addAction(self.actionPause)
+        self.toolBar.addAction(self.actionStop)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.actionFavourite)
+        self.toolBar.addAction(self.actionDashboard)
+        self.toolBar.addAction(self.actionSettings)
+
+    def __measure_selected(self, item: QTreeWidgetItem, column: int):
+        if item.columnCount() == 1:
+            return
+        doc_url = QUrl(item.data(TreeViewMeasures.DocUrl, Qt.DisplayRole))
+        current_url = self.documentation_webview.url().url(QUrl.StripTrailingSlash)
+        if doc_url.url(QUrl.StripTrailingSlash) != current_url:
+            self.documentation_webview.load(QUrl(doc_url))
+
+    def __measure_double_clicked(self, item: QTreeWidgetItem, column: int):
+        if item.checkState(TreeViewMeasures.Name) == Qt.Checked:
+            item.setCheckState(TreeViewMeasures.Name, Qt.Unchecked)
+        elif item.checkState(TreeViewMeasures.Name) == Qt.Unchecked:
+            item.setCheckState(TreeViewMeasures.Name, Qt.Checked)
