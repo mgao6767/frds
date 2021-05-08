@@ -4,7 +4,7 @@ from importlib.resources import open_text, read_binary
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QPixmap, QIcon
-from PyQt5.QtWidgets import QMessageBox, QFileSystemModel, QTreeWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QFileSystemModel, QTreeWidgetItem, QCompleter
 from frds.settings import FRDS_HOME_PAGE
 import frds.ui.designs
 import frds.ui.resources
@@ -55,6 +55,8 @@ class MainWindow(*uic.loadUiType(ui)):
 
         # ToolBar
         self.__setup_toolBar()
+        # Search box
+        self.__setup_searchBox()
         # Connect signals
         self.__connect_signals()
         # Start background tasks
@@ -148,3 +150,13 @@ class MainWindow(*uic.loadUiType(ui)):
             item.setCheckState(TreeViewMeasures.Name, Qt.Unchecked)
         elif item.checkState(TreeViewMeasures.Name) == Qt.Unchecked:
             item.setCheckState(TreeViewMeasures.Name, Qt.Checked)
+
+    def __setup_searchBox(self):
+        measures = []
+        for view in (self.treeViewCorpFinc, self.treeViewBanking, self.treeViewMktStructure):
+            for i in range(view.topLevelItemCount()):
+                it = view.topLevelItem(i)
+                measures.append(it.data(TreeViewMeasures.Name, Qt.DisplayRole))
+        comp = QCompleter(measures)
+        comp.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.lineEditSearchBox.setCompleter(comp)
