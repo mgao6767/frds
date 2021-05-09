@@ -4,11 +4,11 @@ from importlib.resources import open_text, read_binary
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QPixmap, QIcon
-from PyQt5.QtWidgets import QMessageBox, QFileSystemModel, QTreeWidgetItem, QCompleter
+from PyQt5.QtWidgets import QMessageBox, QFileSystemModel, QTreeWidgetItem, QCompleter, QHeaderView
 from frds.settings import FRDS_HOME_PAGE
 import frds.ui.designs
 import frds.ui.resources
-from frds.ui.components import Preferences, TreeViewMeasures, Documentation
+from frds.ui.components import Preferences, TreeViewMeasures, Documentation, Estimation
 from frds.utils.settings import get_root_dir
 from frds.multiprocessing.threads import ThreadWorker, ThreadsManager
 import frds.measures
@@ -51,6 +51,20 @@ class MainWindow(*uic.loadUiType(ui)):
         # Setup webview of documentation
         self.documentation_webview = Documentation(self)
         self.dockWidgetDocumentationContents.layout().addWidget(self.documentation_webview)
+        # Setup estimation dialog
+        self.dialog_estimation = Estimation(self)
+        self.dialog_estimation.treeWidget.setColumnHidden(
+            TreeViewMeasures.Frequency, True)
+        self.dialog_estimation.treeWidget.setColumnHidden(
+            TreeViewMeasures.Description, True)
+        self.dialog_estimation.treeWidget.setColumnHidden(
+            TreeViewMeasures.Reference, True)
+        self.dialog_estimation.treeWidget.sortByColumn(
+            TreeViewMeasures.Name, Qt.AscendingOrder)
+        self.dialog_estimation.treeWidget.header().setStretchLastSection(False)
+        self.dialog_estimation.treeWidget.header().setSectionResizeMode(
+            TreeViewMeasures.Name, QHeaderView.Stretch)
+        # Other
         self.restoreAllViews()
 
         # ToolBar
@@ -81,6 +95,21 @@ class MainWindow(*uic.loadUiType(ui)):
         self.treeViewMktStructure.itemClicked.connect(self.__measure_selected)
         self.treeViewCorpFinc.itemDoubleClicked.connect(
             self.__measure_double_clicked)
+        self.actionRun.triggered.connect(self.__run_estimation)
+
+    def __run_estimation(self):
+        self.dialog_estimation.show()
+        self.dialog_estimation.treeWidget.clear()
+        for view in (self.treeViewCorpFinc, self.treeViewBanking, self.treeViewMktStructure):
+            for i in range(view.topLevelItemCount()):
+                it=view.topLevelItem(i).clone()
+                if it.checkState(TreeViewMeasures.Name) == Qt.Unchecked:
+                    continue
+                ms=[c.clone() for c in it.takeChildren() if c.checkState(
+                    TreeViewMeasures.Name) == Qt.Checked]
+                it.addChildren(ms)
+                self.dialog_estimation.treeWidget.addTopLevelItem(it)
+        self.dialog_estimation.treeWidget.expandAll()
 
     def restoreAllViews(self):
         self.dockWidgetFilesystem.show()
@@ -110,7 +139,7 @@ class MainWindow(*uic.loadUiType(ui)):
         pass
 
     def __setup_toolBar(self):
-        icn = QPixmap()
+        icn=QPixmap()
         icn.loadFromData(read_binary(frds.ui.resources,
                                      'playback_play_icon&24.png'))
         self.actionRun.setIcon(QIcon(icn))
@@ -140,8 +169,8 @@ class MainWindow(*uic.loadUiType(ui)):
     def __measure_selected(self, item: QTreeWidgetItem, column: int):
         if item.columnCount() == 1:
             return
-        doc_url = QUrl(item.data(TreeViewMeasures.DocUrl, Qt.DisplayRole))
-        current_url = self.documentation_webview.url().url(QUrl.StripTrailingSlash)
+        doc_url=QUrl(item.data(TreeViewMeasures.DocUrl, Qt.DisplayRole))
+        current_url=self.documentation_webview.url().url(QUrl.StripTrailingSlash)
         if doc_url.url(QUrl.StripTrailingSlash) != current_url:
             self.documentation_webview.load(QUrl(doc_url))
 
@@ -152,11 +181,11 @@ class MainWindow(*uic.loadUiType(ui)):
             item.setCheckState(TreeViewMeasures.Name, Qt.Checked)
 
     def __setup_searchBox(self):
-        measures = []
+        measures=[]
         for view in (self.treeViewCorpFinc, self.treeViewBanking, self.treeViewMktStructure):
             for i in range(view.topLevelItemCount()):
-                it = view.topLevelItem(i)
+                it=view.topLevelItem(i)
                 measures.append(it.data(TreeViewMeasures.Name, Qt.DisplayRole))
-        comp = QCompleter(measures)
-        comp.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        comp=QCompleter(measures)
+        comp.setCaseSensitivity(Qt.CaseInsensitive)
         self.lineEditSearchBox.setCompleter(comp)

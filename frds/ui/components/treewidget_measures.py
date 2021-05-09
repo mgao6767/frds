@@ -21,7 +21,7 @@ class TreeViewMeasures(QTreeWidget):
         super().__init__(*args, **kwargs)
         self.setColumnCount(N_COLUMNS)
         self.setHeaderLabels(
-            ["Name", "Frequency", "Description", "Source", "Reference", "Documation"]
+            ["Name", "Frequency", "Description", "Source", "Reference", "DocUrl"]
         )
         self.setAlternatingRowColors(True)
         self.setSortingEnabled(True)
