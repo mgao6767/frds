@@ -72,12 +72,21 @@
             <property name="text">
              <string>Show All</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="checkBoxWarningsOnly">
             <property name="text">
              <string>Warnings Only</string>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
             </property>
            </widget>
           </item>

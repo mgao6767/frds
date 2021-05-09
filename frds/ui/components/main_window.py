@@ -52,7 +52,7 @@ class MainWindow(*uic.loadUiType(ui)):
         self.documentation_webview = Documentation(self)
         self.dockWidgetDocumentationContents.layout().addWidget(self.documentation_webview)
         # Setup estimation dialog
-        self.dialog_estimation = Estimation(self)
+        self.dialog_estimation = Estimation(self, self.threadpool)
         self.dialog_estimation.treeWidget.setColumnHidden(
             TreeViewMeasures.Frequency, True)
         self.dialog_estimation.treeWidget.setColumnHidden(
@@ -102,12 +102,19 @@ class MainWindow(*uic.loadUiType(ui)):
         self.dialog_estimation.treeWidget.clear()
         for view in (self.treeViewCorpFinc, self.treeViewBanking, self.treeViewMktStructure):
             for i in range(view.topLevelItemCount()):
-                it=view.topLevelItem(i).clone()
+                it = view.topLevelItem(i).clone()
                 if it.checkState(TreeViewMeasures.Name) == Qt.Unchecked:
                     continue
-                ms=[c.clone() for c in it.takeChildren() if c.checkState(
-                    TreeViewMeasures.Name) == Qt.Checked]
-                it.addChildren(ms)
+                # ms = [c.clone() for c in it.takeChildren() if c.checkState(
+                #     TreeViewMeasures.Name) == Qt.Checked]
+                for c in it.takeChildren():
+                    if not c.checkState(TreeViewMeasures.Name) == Qt.Checked:
+                        continue
+                    c.setFlags(Qt.ItemIsEnabled)
+                    c.setCheckState(TreeViewMeasures.Name, Qt.Unchecked)
+                    it.addChild(c)
+                it.setData(TreeViewMeasures.Name, Qt.CheckStateRole, None)
+                it.setFlags(Qt.ItemIsEnabled)
                 self.dialog_estimation.treeWidget.addTopLevelItem(it)
         self.dialog_estimation.treeWidget.expandAll()
 
@@ -139,7 +146,7 @@ class MainWindow(*uic.loadUiType(ui)):
         pass
 
     def __setup_toolBar(self):
-        icn=QPixmap()
+        icn = QPixmap()
         icn.loadFromData(read_binary(frds.ui.resources,
                                      'playback_play_icon&24.png'))
         self.actionRun.setIcon(QIcon(icn))
@@ -169,8 +176,8 @@ class MainWindow(*uic.loadUiType(ui)):
     def __measure_selected(self, item: QTreeWidgetItem, column: int):
         if item.columnCount() == 1:
             return
-        doc_url=QUrl(item.data(TreeViewMeasures.DocUrl, Qt.DisplayRole))
-        current_url=self.documentation_webview.url().url(QUrl.StripTrailingSlash)
+        doc_url = QUrl(item.data(TreeViewMeasures.DocUrl, Qt.DisplayRole))
+        current_url = self.documentation_webview.url().url(QUrl.StripTrailingSlash)
         if doc_url.url(QUrl.StripTrailingSlash) != current_url:
             self.documentation_webview.load(QUrl(doc_url))
 
@@ -181,11 +188,11 @@ class MainWindow(*uic.loadUiType(ui)):
             item.setCheckState(TreeViewMeasures.Name, Qt.Checked)
 
     def __setup_searchBox(self):
-        measures=[]
+        measures = []
         for view in (self.treeViewCorpFinc, self.treeViewBanking, self.treeViewMktStructure):
             for i in range(view.topLevelItemCount()):
-                it=view.topLevelItem(i)
+                it = view.topLevelItem(i)
                 measures.append(it.data(TreeViewMeasures.Name, Qt.DisplayRole))
-        comp=QCompleter(measures)
+        comp = QCompleter(measures)
         comp.setCaseSensitivity(Qt.CaseInsensitive)
         self.lineEditSearchBox.setCompleter(comp)
