@@ -4,7 +4,13 @@ from importlib.resources import open_text, read_binary
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QPixmap, QIcon
-from PyQt5.QtWidgets import QMessageBox, QFileSystemModel, QTreeWidgetItem, QCompleter, QHeaderView
+from PyQt5.QtWidgets import (
+    QMessageBox,
+    QFileSystemModel,
+    QTreeWidgetItem,
+    QCompleter,
+    QHeaderView,
+)
 from frds.settings import FRDS_HOME_PAGE
 import frds.ui.designs
 import frds.ui.resources
@@ -45,25 +51,31 @@ class MainWindow(*uic.loadUiType(ui)):
         # Setup treeView of market microstructure measures
         self.treeViewMktStructure = TreeViewMeasures(self)
         self.tabMktStructure.layout().addWidget(self.treeViewMktStructure)
-        self.treeViewMktStructure.addMeasures(
-            frds.measures.market_microstructure)
+        self.treeViewMktStructure.addMeasures(frds.measures.market_microstructure)
         self.treeViewMktStructure.expandAll()
         # Setup webview of documentation
         self.documentation_webview = Documentation(self)
-        self.dockWidgetDocumentationContents.layout().addWidget(self.documentation_webview)
+        self.dockWidgetDocumentationContents.layout().addWidget(
+            self.documentation_webview
+        )
         # Setup estimation dialog
         self.dialog_estimation = Estimation(self, self.threadpool)
         self.dialog_estimation.treeWidget.setColumnHidden(
-            TreeViewMeasures.Frequency, True)
+            TreeViewMeasures.Frequency, True
+        )
         self.dialog_estimation.treeWidget.setColumnHidden(
-            TreeViewMeasures.Description, True)
+            TreeViewMeasures.Description, True
+        )
         self.dialog_estimation.treeWidget.setColumnHidden(
-            TreeViewMeasures.Reference, True)
+            TreeViewMeasures.Reference, True
+        )
         self.dialog_estimation.treeWidget.sortByColumn(
-            TreeViewMeasures.Name, Qt.AscendingOrder)
+            TreeViewMeasures.Name, Qt.AscendingOrder
+        )
         self.dialog_estimation.treeWidget.header().setStretchLastSection(False)
         self.dialog_estimation.treeWidget.header().setSectionResizeMode(
-            TreeViewMeasures.Name, QHeaderView.Stretch)
+            TreeViewMeasures.Name, QHeaderView.Stretch
+        )
         # Other
         self.restoreAllViews()
 
@@ -79,28 +91,33 @@ class MainWindow(*uic.loadUiType(ui)):
     def __connect_signals(self):
         # Connect signals
         self.actionSettings.triggered.connect(self.pref_window.show)
-        self.actionAbout_Qt.triggered.connect(
-            lambda: QMessageBox.aboutQt(self))
+        self.actionAbout_Qt.triggered.connect(lambda: QMessageBox.aboutQt(self))
         self.actionRestoreViews.triggered.connect(self.restoreAllViews)
         self.actionFile_Explorer.triggered.connect(
-            lambda: self.__show(self.dockWidgetFilesystem))
+            lambda: self.__show(self.dockWidgetFilesystem)
+        )
         self.actionDocumentation.triggered.connect(
-            lambda: self.__show(self.dockWidgetDocumentation))
+            lambda: self.__show(self.dockWidgetDocumentation)
+        )
         self.actionPreferences.triggered.connect(self.pref_window.show)
         self.actionAbout.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl(FRDS_HOME_PAGE)))
+            lambda: QDesktopServices.openUrl(QUrl(FRDS_HOME_PAGE))
+        )
         self.threadpool.status.connect(self.statusbar.showMessage)
         self.treeViewCorpFinc.itemClicked.connect(self.__measure_selected)
         self.treeViewBanking.itemClicked.connect(self.__measure_selected)
         self.treeViewMktStructure.itemClicked.connect(self.__measure_selected)
-        self.treeViewCorpFinc.itemDoubleClicked.connect(
-            self.__measure_double_clicked)
+        self.treeViewCorpFinc.itemDoubleClicked.connect(self.__measure_double_clicked)
         self.actionRun.triggered.connect(self.__run_estimation)
 
     def __run_estimation(self):
         self.dialog_estimation.show()
         self.dialog_estimation.treeWidget.clear()
-        for view in (self.treeViewCorpFinc, self.treeViewBanking, self.treeViewMktStructure):
+        for view in (
+            self.treeViewCorpFinc,
+            self.treeViewBanking,
+            self.treeViewMktStructure,
+        ):
             for i in range(view.topLevelItemCount()):
                 it = view.topLevelItem(i).clone()
                 if it.checkState(TreeViewMeasures.Name) == Qt.Unchecked:
@@ -124,11 +141,9 @@ class MainWindow(*uic.loadUiType(ui)):
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetFilesystem)
         self.dockWidgetDocumentation.show()
         self.dockWidgetDocumentation.setFloating(False)
-        self.addDockWidget(Qt.RightDockWidgetArea,
-                           self.dockWidgetDocumentation)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetDocumentation)
         # Tabify dock widgets
-        self.tabifyDockWidget(
-            self.dockWidgetDocumentation, self.dockWidgetFilesystem)
+        self.tabifyDockWidget(self.dockWidgetDocumentation, self.dockWidgetFilesystem)
         self.dockWidgetDocumentation.raise_()
 
     def __show(self, widget):
@@ -147,22 +162,17 @@ class MainWindow(*uic.loadUiType(ui)):
 
     def __setup_toolBar(self):
         icn = QPixmap()
-        icn.loadFromData(read_binary(frds.ui.resources,
-                                     'playback_play_icon&24.png'))
+        icn.loadFromData(read_binary(frds.ui.resources, "playback_play_icon&24.png"))
         self.actionRun.setIcon(QIcon(icn))
-        icn.loadFromData(read_binary(
-            frds.ui.resources, 'round_delete_icon&24.png'))
+        icn.loadFromData(read_binary(frds.ui.resources, "round_delete_icon&24.png"))
         self.actionStop.setIcon(QIcon(icn))
-        icn.loadFromData(read_binary(frds.ui.resources,
-                                     'playback_pause_icon&24.png'))
+        icn.loadFromData(read_binary(frds.ui.resources, "playback_pause_icon&24.png"))
         self.actionPause.setIcon(QIcon(icn))
-        icn.loadFromData(read_binary(frds.ui.resources, 'cogs_icon&24.png'))
+        icn.loadFromData(read_binary(frds.ui.resources, "cogs_icon&24.png"))
         self.actionSettings.setIcon(QIcon(icn))
-        icn.loadFromData(read_binary(
-            frds.ui.resources, 'dashboard_icon&24.png'))
+        icn.loadFromData(read_binary(frds.ui.resources, "dashboard_icon&24.png"))
         self.actionDashboard.setIcon(QIcon(icn))
-        icn.loadFromData(read_binary(frds.ui.resources,
-                                     'star_fav_empty_icon&24.png'))
+        icn.loadFromData(read_binary(frds.ui.resources, "star_fav_empty_icon&24.png"))
         self.actionFavourite.setIcon(QIcon(icn))
         # Add actions to the toolbar
         self.toolBar.addAction(self.actionRun)
@@ -189,7 +199,11 @@ class MainWindow(*uic.loadUiType(ui)):
 
     def __setup_searchBox(self):
         measures = []
-        for view in (self.treeViewCorpFinc, self.treeViewBanking, self.treeViewMktStructure):
+        for view in (
+            self.treeViewCorpFinc,
+            self.treeViewBanking,
+            self.treeViewMktStructure,
+        ):
             for i in range(view.topLevelItemCount()):
                 it = view.topLevelItem(i)
                 measures.append(it.data(TreeViewMeasures.Name, Qt.DisplayRole))

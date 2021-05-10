@@ -19,16 +19,14 @@ class FRDSApplication:
         self.app.setWindowIcon(QIcon(logo))
 
     def run(self):
-        """Display main window and start running
-        """
+        """Display main window and start running"""
         self.main_window.showMaximized()
         self.app.exec()
         # Code below executed when the main window is closed
 
 
 def run():
-    """Entry point for starting the application
-    """
+    """Entry point for starting the application"""
     FRDSApplication(sys.argv).run()
 
 

@@ -5,8 +5,7 @@ from frds.settings import FRDS_HOME_PAGE, FRDS_MEASURES_PAGE
 
 
 class WebEnginePage(QWebEnginePage):
-
-    def acceptNavigationRequest(self, url,  _type, isMainFrame):
+    def acceptNavigationRequest(self, url, _type, isMainFrame):
         current_url = self.url().url(QUrl.StripTrailingSlash)
         new_url = url.url(QUrl.StripTrailingSlash)
         if current_url == new_url:
@@ -19,7 +18,6 @@ class WebEnginePage(QWebEnginePage):
 
 
 class Documentation(QWebEngineView):
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.home = WebEnginePage()

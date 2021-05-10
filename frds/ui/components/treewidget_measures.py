@@ -13,6 +13,7 @@ from frds.settings import FRDS_MEASURES_PAGE
 
 N_COLUMNS = 6
 
+
 class TreeViewMeasures(QTreeWidget):
 
     Name, Frequency, Description, Source, Reference, DocUrl = range(N_COLUMNS)
@@ -27,7 +28,8 @@ class TreeViewMeasures(QTreeWidget):
         self.setSortingEnabled(True)
         self.header().setStretchLastSection(False)
         self.header().setSectionResizeMode(
-            TreeViewMeasures.Description, QHeaderView.Stretch)
+            TreeViewMeasures.Description, QHeaderView.Stretch
+        )
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.setColumnHidden(TreeViewMeasures.DocUrl, True)
         self.setExpandsOnDoubleClick(False)
@@ -41,8 +43,7 @@ class TreeViewMeasures(QTreeWidget):
             doc_url = mod.doc_url if hasattr(mod, "doc_url") else FRDS_MEASURES_PAGE
             it = QTreeWidgetItem(self)
             it.setText(TreeViewMeasures.Name, name)
-            it.setFlags(it.flags() | Qt.ItemIsTristate |
-                        Qt.ItemIsUserCheckable)
+            it.setFlags(it.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             it.setCheckState(TreeViewMeasures.Name, Qt.Unchecked)
             f = QFont()
             f.setWeight(QFont.DemiBold)  # less than Bold
@@ -52,8 +53,7 @@ class TreeViewMeasures(QTreeWidget):
                 ver = importlib.import_module(f".{version}", mod.__name__)
                 vername = ver.name if hasattr(ver, "name") else name
                 verfreq = ver.frequency if hasattr(ver, "frequency") else ""
-                verdesc = ver.description if hasattr(
-                    ver, "description") else ""
+                verdesc = ver.description if hasattr(ver, "description") else ""
                 if hasattr(ver, "source"):
                     if isinstance(ver.source, str):
                         versrc = ver.source

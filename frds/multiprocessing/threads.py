@@ -6,12 +6,7 @@ from frds.multiprocessing import WorkerSignals, Status
 
 class ThreadWorker(QtCore.QRunnable):
     def __init__(
-        self,
-        job_id: str,
-        fn: Callable,
-        *args,
-        enable_progress_callback=False,
-        **kwargs
+        self, job_id: str, fn: Callable, *args, enable_progress_callback=False, **kwargs
     ):
         super().__init__()
         self.job_id = job_id

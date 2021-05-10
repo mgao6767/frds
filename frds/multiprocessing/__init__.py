@@ -18,7 +18,7 @@ class Status:
 class WorkerSignals(QtCore.QObject):
     """
     Supported signals are:
-    
+
     finished
         No data
     error
@@ -39,4 +39,3 @@ class WorkerSignals(QtCore.QObject):
     progress = QtCore.pyqtSignal(str, int)
     status = QtCore.pyqtSignal(str, str)
     log = QtCore.pyqtSignal(str, str)
-

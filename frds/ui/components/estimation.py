@@ -19,8 +19,7 @@ class Estimation(*uic.loadUiType(ui)):
         self.treeWidget = TreeViewMeasures(self)
         self.groupBoxMeasures.layout().addWidget(self.treeWidget)
         self.buttonBox.removeButton(self.buttonBox.button(QDialogButtonBox.Ok))
-        self.start_btn = self.buttonBox.addButton(
-            "Start", QDialogButtonBox.ActionRole)
+        self.start_btn = self.buttonBox.addButton("Start", QDialogButtonBox.ActionRole)
         self.start_btn.clicked.connect(self.start)
 
     def start(self):
@@ -33,7 +32,9 @@ class Estimation(*uic.loadUiType(ui)):
                 measure = m.child(idx)
                 name = measure.data(TreeViewMeasures.Name, Qt.DisplayRole)
                 w = ThreadWorker(name, print, name)
-                w.signals.finished.connect(lambda name=name: self.textEditLog.insertPlainText(f'{name}\n'))
+                w.signals.finished.connect(
+                    lambda name=name: self.textEditLog.insertPlainText(f"{name}\n")
+                )
                 self.threadpool.enqueue(w)
         # print("Finish estimation")
         # self.start_btn.setEnabled(True)
