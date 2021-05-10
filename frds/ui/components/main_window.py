@@ -109,6 +109,7 @@ class MainWindow(*uic.loadUiType(ui)):
         self.treeViewMktStructure.itemClicked.connect(self.__measure_selected)
         self.treeViewCorpFinc.itemDoubleClicked.connect(self.__measure_double_clicked)
         self.actionRun.triggered.connect(self.__run_estimation)
+        self.actionStop.triggered.connect(self.__stop_estimation)
 
     def __run_estimation(self):
         self.dialog_estimation.show()
@@ -122,8 +123,6 @@ class MainWindow(*uic.loadUiType(ui)):
                 it = view.topLevelItem(i).clone()
                 if it.checkState(TreeViewMeasures.Name) == Qt.Unchecked:
                     continue
-                # ms = [c.clone() for c in it.takeChildren() if c.checkState(
-                #     TreeViewMeasures.Name) == Qt.Checked]
                 for c in it.takeChildren():
                     if not c.checkState(TreeViewMeasures.Name) == Qt.Checked:
                         continue
@@ -134,6 +133,23 @@ class MainWindow(*uic.loadUiType(ui)):
                 it.setFlags(Qt.ItemIsEnabled)
                 self.dialog_estimation.treeWidget.addTopLevelItem(it)
         self.dialog_estimation.treeWidget.expandAll()
+
+    def __stop_estimation(self):
+        if not self.dialog_estimation.running:
+            # De-select all
+            for view in (
+                self.treeViewCorpFinc,
+                self.treeViewBanking,
+                self.treeViewMktStructure,
+            ):
+                for i in range(view.topLevelItemCount()):
+                    it = view.topLevelItem(i)
+                    it.setCheckState(TreeViewMeasures.Name, Qt.Unchecked)
+        else:
+            # Bring to front the estimation window
+            self.dialog_estimation.show()
+            # Ask if user really wants to stop all estimations
+            # If yes, stop them
 
     def restoreAllViews(self):
         self.dockWidgetFilesystem.show()

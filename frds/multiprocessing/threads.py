@@ -24,6 +24,7 @@ class ThreadWorker(QtCore.QRunnable):
         Initialize the runner function with passed args, kwargs.
         """
         self.signals.status.emit(self.job_id, Status.Running)
+        self.signals.log.emit(self.job_id, "Start")
         try:
             result = self.fn(*self.args, **self.kwargs)
         except Exception as e:
@@ -32,6 +33,7 @@ class ThreadWorker(QtCore.QRunnable):
         else:
             self.signals.result.emit(self.job_id, result)
             self.signals.status.emit(self.job_id, Status.Complete)
+        self.signals.log.emit(self.job_id, "Finished")
         self.signals.finished.emit(self.job_id)
 
 
