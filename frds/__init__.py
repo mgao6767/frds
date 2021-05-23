@@ -1,6 +1,6 @@
 import sys
 
-__version__ = "0.5.0rc1"
+__version__ = "0.6.0rc1"
 __description__ = "Financial Research Data Services"
 __author__ = "Mingze Gao"
 __author_email__ = "adrian.gao@outlook.com"

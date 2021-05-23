@@ -35,6 +35,7 @@ theme:
 plugins:
   - search # necessary for search to work
   - git-revision-date-localized
+  - mkdocs-jupyter
   # - minify:
   #     minify_html: true
   # - mkapi
@@ -69,36 +70,36 @@ markdown_extensions:
   - pymdownx.tilde
 
 extra_javascript:
-- javascripts/extra.js
-- https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
+  - javascripts/extra.js
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
 
 nav:
-- Home: index.md
-- Getting Started: 
-  - Installation: getting-started.md
-  - Setup: setup.md
-  - Usage: usage.md
-- Measures Supported: measures.md
-- Measures Documentation:
-  - Accounting Restatement: measures/accounting_restatement.md
-  - Asset Tangibility: measures/asset_tangibility.md
-  - Book Leverage: measures/book_leverage.md
-  - Capital Expenditure: measures/capital_expenditure.md
-  - Credit Rating: measures/credit_rating.md
-  - Executive Ownership: measures/executive_ownership.md
-  - Firm Size: measures/firm_size.md
-  - Market to Book: measures/market_to_book.md
-  - ROA: measures/roa.md
-  - ROE: measures/roe.md
-  - Stock Delisting: measures/stock_delisting.md
-  - Tobin's Q: measures/tobin_q.md
-  - BHC Size: measures/bhc_size.md
-  - BHC Loan Growth: measures/bhc_loan_growth.md
-  - BHC FX Exposure: measures/bhc_fx_exposure.md
-  - BHC NetIncome/Assets: measures/bhc_netincome_to_assets.md
-  - BHC Dividend/Assets: measures/bhc_dividend_to_assets.md
-  - BHC RegulatoryCapital/Assets: measures/bhc_regcap_to_assets.md
-  - BHC Tier1Capital/Assets: measures/bhc_tier1cap_to_assets.md
-  - BHC Gross IR Hedging: measures/bhc_gross_ir_hedging.md
-  - BHC Gross FX Hedging: measures/bhc_gross_fx_hedging.md
-  - BHC Maturity Gap: measures/bhc_maturity_gap.md
+  - Home: index.ipynb
+  - Getting Started:
+      - Installation: getting-started.md
+      - Setup: setup.md
+      - Usage: usage.md
+  - Measures Supported: measures.md
+  - Measures Documentation:
+      - Accounting Restatement: measures/accounting_restatement.md
+      - Asset Tangibility: measures/asset_tangibility.md
+      - Book Leverage: measures/book_leverage.md
+      - Capital Expenditure: measures/capital_expenditure.md
+      - Credit Rating: measures/credit_rating.md
+      - Executive Ownership: measures/executive_ownership.md
+      - Firm Size: measures/firm_size.md
+      - Market to Book: measures/market_to_book.md
+      - ROA: measures/roa.md
+      - ROE: measures/roe.md
+      - Stock Delisting: measures/stock_delisting.md
+      - Tobin's Q: measures/tobin_q.md
+      - BHC Size: measures/bhc_size.md
+      - BHC Loan Growth: measures/bhc_loan_growth.md
+      - BHC FX Exposure: measures/bhc_fx_exposure.md
+      - BHC NetIncome/Assets: measures/bhc_netincome_to_assets.md
+      - BHC Dividend/Assets: measures/bhc_dividend_to_assets.md
+      - BHC RegulatoryCapital/Assets: measures/bhc_regcap_to_assets.md
+      - BHC Tier1Capital/Assets: measures/bhc_tier1cap_to_assets.md
+      - BHC Gross IR Hedging: measures/bhc_gross_ir_hedging.md
+      - BHC Gross FX Hedging: measures/bhc_gross_fx_hedging.md
+      - BHC Maturity Gap: measures/bhc_maturity_gap.md

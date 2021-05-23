@@ -1,32 +1,9 @@
-# from .data_manager import DataManager
+import os
 
-# from .dataset import Dataset
-# from .datascope.trth import Connection as TRTHConnection
-"""Define the base structure of a dataset"""
-from dataclasses import dataclass
-from typing import List
+USER_DIRECTORY = os.path.expanduser("~")
+DATA_DIRECTORY = os.path.join(USER_DIRECTORY, "frds")
 
+if not os.path.exists(DATA_DIRECTORY):
+    os.makedirs(DATA_DIRECTORY)
 
-@dataclass
-class Dataset:
-    """The base class of a dataset"""
-
-    source: str
-    library: str
-    table: str
-    vars: List[str]
-    date_vars: List[str]
-
-    def __hash__(self):
-        return id(self)
-
-    @property
-    def table_id(self):
-        """Return the tuple of (source, library, table)
-
-        Returns
-        -------
-        TableID
-            (source, library, table)
-        """
-        return (self.source, self.library, self.table)
+CREDENTIALS_FILE_PATH = os.path.join(DATA_DIRECTORY, "credentials.json")

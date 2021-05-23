@@ -1,22 +1,11 @@
-from setuptools import setup, find_namespace_packages, Extension
-from setuptools.command.install import install
-import pathlib
-import shutil
-import os
+from setuptools import setup, find_namespace_packages
 import frds
 
-requires = ["pandas", "sqlalchemy", "psycopg2-binary", "PyQt5", "PyQtWebEngine"]
-
-
-class PostInstallCommand(install):
-    def run(self):
-        install.run(self)
-        base_dir = str(pathlib.Path("~/frds").expanduser())
-        os.makedirs(base_dir, exist_ok=True)
-        os.makedirs(os.path.join(base_dir, "data"), exist_ok=True)
-        os.makedirs(os.path.join(base_dir, "result"), exist_ok=True)
-        if not os.path.exists(os.path.join(base_dir, "config.ini")):
-            shutil.copy("frds/config.ini", base_dir)
+requires = [
+    "pandas",
+    "sqlalchemy",
+    "psycopg2-binary",
+]
 
 
 setup(
@@ -31,11 +20,8 @@ setup(
     packages=find_namespace_packages(),
     package_data={
         "": ["LICENSE", "README.md"],
-        "frds.gui.ui_components.resources_files": ["*"],
-        "frds.ui.designs": ["*"],
     },
     install_requires=requires,
-    # cmdclass={"install": PostInstallCommand},
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
@@ -47,6 +33,5 @@ setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
     ],
     license="MIT",
-    # ext_modules=[trth_parser],
-    entry_points={"console_scripts": ["frds=frds.main:run"]},
+    # entry_points={"console_scripts": ["frds=frds.main:run"]},
 )
