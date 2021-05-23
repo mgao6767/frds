@@ -35,7 +35,7 @@ theme:
 plugins:
   - search # necessary for search to work
   - git-revision-date-localized
-  - mkdocs-jupyter
+  - mkdocs-jupyter:
       include_source: True
   # - minify:
   #     minify_html: true
