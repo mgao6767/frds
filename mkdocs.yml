@@ -37,6 +37,7 @@ plugins:
   - git-revision-date-localized
   - mkdocs-jupyter:
       include_source: True
+      ignore_h1_titles: True
   # - minify:
   #     minify_html: true
   # - mkapi
