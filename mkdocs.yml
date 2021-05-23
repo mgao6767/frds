@@ -9,7 +9,7 @@ repo_name: mgao6767/frds
 repo_url: https://github.com/mgao6767/frds/
 
 # Copyright
-copyright: Copyright &copy; 2020 frds.io
+copyright: Copyright &copy; 2020-2021 frds.io
 
 google_analytics:
   - UA-114057186-3
@@ -36,6 +36,7 @@ plugins:
   - search # necessary for search to work
   - git-revision-date-localized
   - mkdocs-jupyter
+      include_source: True
   # - minify:
   #     minify_html: true
   # - mkapi
@@ -74,7 +75,7 @@ extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
 
 nav:
-  - Home: index.ipynb
+  - Introduction: index.ipynb
   - Getting Started:
       - Installation: getting-started.md
       - Setup: setup.md
