@@ -3,3 +3,4 @@
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code.
 extension-pkg-whitelist=PyQt5
+init-hook='import sys; sys.path.append(".")'
