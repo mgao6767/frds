@@ -20,6 +20,18 @@ class Fundq(WRDSDataset):
         self.data.rename(columns=str.upper, inplace=True)
         self.data.set_index(idx, inplace=True)
 
+        # Some variables are not available
+        attrs = [
+            varname
+            for varname, prop in vars(Fundq).items()
+            if isinstance(prop, property) and varname.isupper()
+        ]
+        for attr in attrs:
+            try:
+                self.__getattribute__(attr)
+            except KeyError:
+                delattr(Fundq, attr)
+
     @staticmethod
     def lag(series: pd.Series, lags: int = 1, *args, **kwargs):
         return series.shift(lags, *args, **kwargs)
