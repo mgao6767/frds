@@ -15,8 +15,8 @@ class WRDSDataset(ABC):
     @classmethod
     @property
     def local_path(cls) -> str:
-        """Full path to the local Stata dataset"""
-        stata_file_name = cls.table + ".dta"
+        """Full path to the local Sqlite dataset"""
+        stata_file_name = cls.table + ".db"
         lib_dir = os.path.join(DATA_DIRECTORY, cls.source, cls.library)
         os.makedirs(lib_dir, exist_ok=True)
         return os.path.join(lib_dir, stata_file_name)

@@ -1,6 +1,7 @@
 import os
 import json
 import pandas as pd
+import sqlalchemy as sa
 from frds.data import CREDENTIALS_FILE_PATH
 from frds.data.wrds import WRDSDataset
 from frds.io.wrds.connection import Connection, CredentialsError
@@ -31,8 +32,10 @@ setup(save_credentials=False)
 
 def load(dataset: WRDSDataset, use_cache=True, save=True, obs=-1) -> WRDSDataset:
 
+    engine = sa.create_engine(f"sqlite:///{dataset.local_path}")
+
     if use_cache and os.path.exists(dataset.local_path):
-        return dataset(pd.read_stata(dataset.local_path))
+        return dataset(pd.read_sql_table(dataset.table, engine))
 
     usr = os.getenv("frds_credentials_wrds_username", "")
     pwd = os.getenv("frds_credentials_wrds_password", "")
@@ -52,12 +55,7 @@ def load(dataset: WRDSDataset, use_cache=True, save=True, obs=-1) -> WRDSDataset
     tmp = dataset(tbl)
 
     if save:
-        tmp.data.to_stata(
-            tmp.local_path,
-            version=117,
-            convert_strl=tmp.data.columns[
-                tmp.data.isnull().all() & (tmp.data.dtypes == object)
-            ].tolist(),
-        )
+        tmp.data.to_sql(dataset.table, engine, if_exists="append", chunksize=1024)
 
+    engine.dispose()
     return tmp
