@@ -88,7 +88,7 @@ nav:
       - Executive Ownership: measures/executive_ownership.md
       - Firm Size: measures/firm_size.md
       - Market to Book: measures/market_to_book.md
-      - ROA: measures/roa.md
+      - ROA: measures/roa.ipynb
       - ROE: measures/roe.md
       - Stock Delisting: measures/stock_delisting.md
       - Tobin's Q: measures/tobin_q.md
