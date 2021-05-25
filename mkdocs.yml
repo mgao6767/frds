@@ -29,7 +29,7 @@ theme:
     code: Roboto Mono
   favicon: images/frds_icon.png
   logo: images/frds_icon.png
-  # custom_dir: overrides
+  custom_dir: overrides
 
 # Plugins
 plugins:
