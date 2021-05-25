@@ -5,7 +5,7 @@
 
 [`frds`](https://github.com/mgao6767/frds/) aims to provide the simplest way to compute [a collection of major academic measures](#supported-measures) used in the finance literature.
 
-[Getting started](htthttps://frds.io/getting-started/) by checking out this notebook.
+[Getting started](https://frds.io/getting-started/) by checking out this notebook.
 
 ## Example usage
 
