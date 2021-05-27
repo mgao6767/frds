@@ -1,1 +1,1 @@
-from .internal.anncomp import Anncomp as anncomp
+from .anncomp import Anncomp

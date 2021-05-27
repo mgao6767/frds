@@ -1,5 +1,4 @@
-"""Built-in measures"""
+r"""`frds.measures` package provides built-in measures.
 
-from .roa import ROA
-from .roe import ROE
-from .tangibility import Tangibility
+* [frds.measures.corporate](/api/measures.corporate/) module contains common metrics used for corporate finance studies.
+"""

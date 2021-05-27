@@ -1,3 +1,3 @@
-from .internal.funda import Funda as funda
-from .internal.fundq import Fundq as fundq
-from ..execucomp import anncomp  # alias
+from .funda import Funda
+from .fundq import Fundq
+from ..execucomp import Anncomp  # alias
