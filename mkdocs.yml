@@ -82,8 +82,8 @@ nav:
   - Introduction: index.ipynb
   - Getting Started: getting-started.ipynb
   # - Measures Supported: measures.md
-  - Measures Documentation:
-      - ROA: measures/roa.ipynb
+  # - Measures Documentation:
+  #     - ROA: measures/roa.ipynb
   #     - Accounting Restatement: measures/accounting_restatement.md
   #     - Asset Tangibility: measures/asset_tangibility.md
   #     - Book Leverage: measures/book_leverage.md
