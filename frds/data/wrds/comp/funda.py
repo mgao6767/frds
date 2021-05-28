@@ -324,7 +324,7 @@ class Funda(WRDSDataset):
     @property
     def FYEAR(self) -> pd.Series:
         """FYEAR -- Data Year - Fiscal (FYEAR): int"""
-        return self.data["FYEAR"].astype(int)
+        return self.data["FYEAR"].astype("Int32")
 
     @property
     def ISMOD(self) -> pd.Series:
