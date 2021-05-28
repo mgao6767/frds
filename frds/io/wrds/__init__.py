@@ -30,12 +30,14 @@ def setup(username="", password="", save_credentials=False):
 setup(save_credentials=False)
 
 
-def load(dataset: WRDSDataset, use_cache=True, save=True, obs=-1) -> WRDSDataset:
+def load(
+    dataset: WRDSDataset, columns=None, use_cache=True, save=True, obs=-1
+) -> WRDSDataset:
 
     engine = sa.create_engine(f"sqlite:///{dataset.local_path}")
 
     if use_cache and os.path.exists(dataset.local_path):
-        return dataset(pd.read_sql_table(dataset.table, engine))
+        return dataset(pd.read_sql_table(dataset.table, engine, columns=columns))
 
     usr = os.getenv("frds_credentials_wrds_username", "")
     pwd = os.getenv("frds_credentials_wrds_password", "")
