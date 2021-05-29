@@ -15,7 +15,7 @@ We start by importing relevant modules.
 Specifically, we import the `funda` class from the `frds.data.wrds.comp` library since the demo uses only the Fundamentals Annual dataset from Compustat via WRDS. We next import the `setup` and `load` functions from `frds.io.wrds`, which are used to configure WRDS credentials and data management for WRDS datasets.
 
 ```Python
-from frds.data.wrds.comp import funda
+from frds.data.wrds.comp import Funda
 from frds.io.wrds import setup, load
 ```
 
@@ -31,7 +31,7 @@ setup(username='username', password='password', save_credentials=True)
 We now download the `funda` (Fundamentals Annual) dataset and assign it to the variable `FUNDA`.
 
 ```Python
-FUNDA : funda = load(funda, use_cache=True, obs=100)
+FUNDA = load(Funda, use_cache=True, obs=100)
 ```
 
 ### Compute
@@ -41,7 +41,7 @@ Let's now compute a few metrics to showcase how easy it is.
 ```Python
 import numpy as np
 import pandas as pd
-from frds.measures import ROA
+from frds.measures.corporate import roa
 
 pd.DataFrame(
     {
@@ -51,10 +51,8 @@ pd.DataFrame(
         "Firm_Size": np.log(FUNDA.AT),
         "MTB": FUNDA.PRCC_F * FUNDA.CSHO / FUNDA.CEQ,
         # Or we can use the ones available in FRDS:
-        # e.g., ROA by default scales income by contemporneous total assets
-        # ROA.v2 alternatively scales income by lagged total assets
-        "ROA_v1": ROA(FUNDA),
-        "ROA_v2": ROA.v2(FUNDA)
+        "ROA_v1": roa(FUNDA),
+        "ROA_v2": roa(FUNDA, use_lagged_total_assets=True)
     }
 ).dropna().head(10)
 ```
@@ -181,3 +179,11 @@ The result would be a nice `pd.DataFrame`:
     </tr>
   </tbody>
 </table>
+
+## Built-in Measures
+
+Check the [built-in measures and documentation](https://frds.io/api/measures/).
+
+## Note
+
+This library is still under development and breaking changes may be expected.
