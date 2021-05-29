@@ -37,7 +37,14 @@ def load(
     engine = sa.create_engine(f"sqlite:///{dataset.local_path}")
 
     if use_cache and os.path.exists(dataset.local_path):
-        return dataset(pd.read_sql_table(dataset.table, engine, columns=columns))
+        if obs == -1:
+            return dataset(pd.read_sql_table(dataset.table, engine, columns=columns))
+        else:
+            return dataset(
+                pd.read_sql_query(
+                    f"SELECT * FROM {dataset.table} LIMIT {int(obs)};", engine
+                )
+            )
 
     usr = os.getenv("frds_credentials_wrds_username", "")
     pwd = os.getenv("frds_credentials_wrds_password", "")

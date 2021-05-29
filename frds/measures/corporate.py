@@ -3,10 +3,46 @@ import pandas as pd
 from frds.data.wrds.comp import Funda, Fundq
 
 
+def book_leverage(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
+    r"""Book leverage
+
+    The book leverage is defined as the amount of debts scaled by the firm's total debts plus common equity.
+
+    $$
+    \text{Book Leverage}_{i,t} = \frac{DLTT_{i,t}+DLC_{i,t}}{DLTT_{i,t}+DLC_{i,t}+CEQ_{i,t}}
+    $$
+
+    where $DLTT$ is the long-term debt, $DLC$ is the debt in current liabilities, and $CEQ$ is the common equity, all from Compustat Fundamentals Annual `WRDS.COMP.FUNDA`.
+
+    Note:
+        If $CEQ$ is missing, the book leverage is treated as missing.
+
+    If `data` is a Fundamentals Quarterly dataset:
+
+    $$
+    \text{Book Leverage}_{i,t} = \frac{DLTTQ_{i,t}+DLCQ_{i,t}}{DLTTQ_{i,t}+DLCQ_{i,t}+CEQQ_{i,t}}
+    $$
+
+    Args:
+        data (Union[Funda, Fundq]): Input dataset
+
+    Returns:
+        Union[pd.Series, None]: Book leverage
+    """
+    leverage = None
+    if isinstance(data, Funda):
+        leverage = (data.DLTT + data.DLC) / (data.DLTT + data.DLC + data.CEQ)
+    if isinstance(data, Fundq):
+        leverage = (data.DLTTQ + data.DLCQ) / (data.DLTTQ + data.DLCQ + data.CEQQ)
+    return leverage.rename("Leverage") if leverage is not None else None
+
+
 def roa(
     data: Union[Funda, Fundq], use_lagged_total_asset=False
 ) -> Union[pd.Series, None]:
-    r"""Income before extraordinary items scaled by total assets
+    r"""ROA
+
+    Income before extraordinary items scaled by total assets
 
     $$
     ROA_{i,t} = \frac{IB_{i,t}}{AT_{i,t}}
@@ -65,7 +101,9 @@ def roa(
 
 
 def roe(data: Union[Funda, Fundq], use_lagged_ceq=False) -> Union[pd.Series, None]:
-    r"""Income before extraordinary items scaled by common equity
+    r"""ROE
+
+    Income before extraordinary items scaled by common equity
 
     $$
     ROE_{i,t} = \frac{IB_{i,t}}{CEQ_{i,t}}
@@ -124,7 +162,9 @@ def roe(data: Union[Funda, Fundq], use_lagged_ceq=False) -> Union[pd.Series, Non
 
 
 def tangibility(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
-    r"""Property, plant and equipment (net) scaled by total assets
+    r"""Asset tangibility
+
+    Property, plant and equipment (net) scaled by total assets
 
     $$
     \text{Tangibility}_{i,t} = \frac{PPENT_{i,t}}{AT_{i,t}}
