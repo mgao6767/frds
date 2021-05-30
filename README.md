@@ -12,7 +12,7 @@
 ### Import
 We start by importing relevant modules.
 
-Specifically, we import the `funda` class from the `frds.data.wrds.comp` library since the demo uses only the Fundamentals Annual dataset from Compustat via WRDS. We next import the `setup` and `load` functions from `frds.io.wrds`, which are used to configure WRDS credentials and data management for WRDS datasets.
+Specifically, we import the `Funda` class from the `frds.data.wrds.comp` library since the demo uses only the Fundamentals Annual dataset from Compustat via WRDS. We next import the `setup` and `load` functions from `frds.io.wrds`, which are used to configure WRDS credentials and data management for WRDS datasets.
 
 ```Python
 from frds.data.wrds.comp import Funda
@@ -28,7 +28,7 @@ setup(username='username', password='password', save_credentials=True)
 ```
 
 ### Load data
-We now download the `funda` (Fundamentals Annual) dataset and assign it to the variable `FUNDA`.
+We now download the `Funda` (Fundamentals Annual) dataset and assign it to the variable `FUNDA`.
 
 ```Python
 FUNDA = load(Funda, use_cache=True, obs=100)
@@ -50,7 +50,7 @@ pd.DataFrame(
         "Tangibility": FUNDA.PPENT / FUNDA.AT,
         "Firm_Size": np.log(FUNDA.AT),
         "MTB": FUNDA.PRCC_F * FUNDA.CSHO / FUNDA.CEQ,
-        # Or we can use the ones available in FRDS:
+        # Or we can use the built-in measures available in FRDS:
         "ROA_v1": roa(FUNDA),
         "ROA_v2": roa(FUNDA, use_lagged_total_assets=True)
     }
