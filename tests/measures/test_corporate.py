@@ -25,6 +25,9 @@ class FundaTestCase(unittest.TestCase):
     def test_book_leverage(self):
         book_leverage(self.data)
 
+    def test_market_to_book(self):
+        market_to_book(self.data)
+
 
 class FundqTestCase(unittest.TestCase):
     def setUp(self) -> None:
@@ -46,3 +49,6 @@ class FundqTestCase(unittest.TestCase):
 
     def test_book_leverage(self):
         book_leverage(self.data)
+
+    def test_market_to_book(self):
+        market_to_book(self.data)

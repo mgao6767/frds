@@ -37,6 +37,37 @@ def book_leverage(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
     return leverage.rename("Leverage") if leverage is not None else None
 
 
+def market_to_book(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
+    r"""Market-to-Book ratio
+
+    Market value of common equity scaled by the book value common equity.
+
+    $$
+    \text{MTB}_{i,t} = \frac{PRCC\_F_{i,t}\times CSHO_{i,t}}{CEQ_{i,t}}
+    $$
+
+    where $PRCC\_F$ is the share price at fiscal year end, $CSHO$ is the common shares outstanding, and $CEQ$ is common equity, all from Compustat Fundamentals Annual `WRDS.COMP.FUNDA`.
+
+    If `data` is a Fundamentals Quarterly dataset:
+
+    $$
+    \text{MTB}_{i,t} = \frac{PRCCQ_{i,t}\times CSHOQ_{i,t}}{CEQQ_{i,t}}
+    $$
+
+    Args:
+        data (Union[Funda, Fundq]): Input dataset
+
+    Returns:
+        Union[pd.Series, None]: Market-to-Book ratio
+    """
+    mtb = None
+    if isinstance(data, Funda):
+        mtb = data.PRCC_F * data.CSHO / data.CEQ
+    if isinstance(data, Fundq):
+        mtb = data.PRCCQ * data.CSHOQ / data.CEQQ
+    return mtb.rename("MTB") if mtb is not None else None
+
+
 def roa(
     data: Union[Funda, Fundq], use_lagged_total_asset=False
 ) -> Union[pd.Series, None]:
