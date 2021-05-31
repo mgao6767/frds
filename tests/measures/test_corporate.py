@@ -7,9 +7,10 @@ from frds.measures.corporate import *
 class FundaTestCase(unittest.TestCase):
     def setUp(self) -> None:
         obs = 30_000
-        self.data = load(Funda, use_cache=True, save=False, obs=obs)
+        self.data: Funda = load(Funda, use_cache=True, save=False, obs=obs)
         self.assertIsInstance(self.data, Funda)
-        self.assertEqual(len(self.data.data), obs)
+        # Filters may reduce the sample size
+        self.assertLessEqual(len(self.data.data), obs)
 
     def test_roa(self):
         roa(self.data)
@@ -27,6 +28,13 @@ class FundaTestCase(unittest.TestCase):
 
     def test_market_to_book(self):
         market_to_book(self.data)
+
+    def test_firm_size(self):
+        size = firm_size(self.data)
+        query = (self.data.AT <= 0) | (np.isnan(self.data.AT) == True)
+        idx = self.data.data[query].index
+        # Firm size should be NaN if total assets is negative
+        self.assertTrue(all(np.isnan(size[idx])))
 
 
 class FundqTestCase(unittest.TestCase):
@@ -34,7 +42,8 @@ class FundqTestCase(unittest.TestCase):
         obs = 10_000
         self.data = load(Fundq, use_cache=True, save=False, obs=obs)
         self.assertIsInstance(self.data, Fundq)
-        self.assertEqual(len(self.data.data), obs)
+        # Filters may reduce the sample size
+        self.assertLessEqual(len(self.data.data), obs)
 
     def test_roa(self):
         roa(self.data)
@@ -52,3 +61,11 @@ class FundqTestCase(unittest.TestCase):
 
     def test_market_to_book(self):
         market_to_book(self.data)
+
+    def test_firm_size(self):
+        self.data.data["Test_FirmSize"] = firm_size(self.data)
+        query = (self.data.ATQ <= 0) | (np.isnan(self.data.ATQ) == True)
+        # Firm size should be NaN if total assets is negative
+        # TODO: This test is written this way as the default filter (for now) on FUNDQ seems not to
+        # guarantee unique gvkey-datadate, hence index-based test doesn't work as expected.
+        self.assertTrue(all(np.isnan(self.data.data[query]["Test_FirmSize"])))

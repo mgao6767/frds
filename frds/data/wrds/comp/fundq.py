@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import numpy as np
 import pandas as pd
 from frds.data.wrds import WRDSDataset
 
@@ -31,6 +32,19 @@ class Fundq(WRDSDataset):
                 self.__getattribute__(attr)
             except KeyError:
                 delattr(Fundq, attr)
+
+        # Automatically apply the default filtering rules
+        self.filter()
+
+    def filter(self):
+        """Default filter applied on the FUNDA dataset"""
+        # TODO: This filter doesn't guarantee unique gvkey-datadate
+        self.data = self.data[
+            np.in1d(self.data.DATAFMT, ("STD"))
+            & np.in1d(self.data.INDFMT, ("INDL"))
+            & np.in1d(self.data.POPSRC, ("D"))
+            & np.in1d(self.data.CONSOL, ("C"))
+        ]
 
     @staticmethod
     def lag(series: pd.Series, lags: int = 1, *args, **kwargs):

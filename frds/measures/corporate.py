@@ -1,4 +1,5 @@
 from typing import Union
+import numpy as np
 import pandas as pd
 from frds.data.wrds.comp import Funda, Fundq
 
@@ -190,6 +191,45 @@ def roe(data: Union[Funda, Fundq], use_lagged_ceq=False) -> Union[pd.Series, Non
             roe = data.IBQ / data.CEQQ
 
     return roe.rename("ROE") if roe is not None else None
+
+
+def firm_size(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
+    r"""Firm size
+
+    The natural logarithm of total assets.
+
+    $$
+    \text{Size}_{i,t} = \ln \left( AT_{i,t} \right)
+    $$
+
+    where $AT$ is from Compustat Fundamentals Annual `WRDS.COMP.FUNDA`.
+
+    If `data` is a Fundamentals Quarterly dataset:
+
+    $$
+    \text{Size}_{i,t} = \ln \left( ATQ_{i,t} \right)
+    $$
+
+    Note:
+        If $AT$ or $ATQ$ is missing or negative, $\text{Size}$ is set to missing (`np.nan`).
+
+    Args:
+        data (Union[Funda, Fundq]): Input dataset
+
+    Returns:
+        Union[pd.Series, None]: Firm size
+    """
+    size = None
+
+    if isinstance(data, Funda):
+        size = np.log(data.AT, where=(data.AT > 0))
+        size[np.isnan(data.AT) | (data.AT <= 0)] = np.nan
+
+    if isinstance(data, Fundq):
+        size = np.log(data.ATQ, where=(data.ATQ > 0))
+        size[np.isnan(data.ATQ) | (data.ATQ <= 0)] = np.nan
+
+    return size.rename("Firm_Size") if size is not None else None
 
 
 def tangibility(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
