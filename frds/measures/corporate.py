@@ -38,6 +38,29 @@ def book_leverage(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
     return leverage.rename("Leverage") if leverage is not None else None
 
 
+def capital_expenditure(data: Union[Funda]) -> Union[pd.Series, None]:
+    r"""Capital expenditure
+
+    The capital expenditures scaled by total assets.
+
+    $$
+    \text{Capital Expenditure}_{i,t} = \frac{CAPX_{i,t}}{AT_{i,t}}
+    $$
+
+    where $CAPX$ and $AT$ are from Compustat Fundamentals Annual `WRDS.COMP.FUNDA`.
+
+    Args:
+        data (Union[Funda]): Input dataset
+
+    Returns:
+        Union[pd.Series, None]: Capital expenditure
+    """
+    capx = None
+    if isinstance(data, Funda):
+        capx = data.CAPX / data.AT
+    return capx.rename("Capital_Expenditure") if capx is not None else None
+
+
 def market_to_book(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
     r"""Market-to-Book ratio
 

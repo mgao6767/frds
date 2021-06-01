@@ -36,6 +36,9 @@ class FundaTestCase(unittest.TestCase):
         # Firm size should be NaN if total assets is negative
         self.assertTrue(all(np.isnan(size[idx])))
 
+    def test_capital_expenditure(self):
+        capital_expenditure(self.data)
+
 
 class FundqTestCase(unittest.TestCase):
     def setUp(self) -> None:
