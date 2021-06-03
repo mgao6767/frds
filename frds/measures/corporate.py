@@ -38,7 +38,7 @@ def book_leverage(data: Union[Funda, Fundq]) -> Union[pd.Series, None]:
     return leverage.rename("Leverage") if leverage is not None else None
 
 
-def capital_expenditure(data: Union[Funda]) -> Union[pd.Series, None]:
+def capital_expenditure(data: Funda) -> Union[pd.Series, None]:
     r"""Capital expenditure
 
     The capital expenditures scaled by total assets.
@@ -50,7 +50,7 @@ def capital_expenditure(data: Union[Funda]) -> Union[pd.Series, None]:
     where $CAPX$ and $AT$ are from Compustat Fundamentals Annual `WRDS.COMP.FUNDA`.
 
     Args:
-        data (Union[Funda]): Input dataset
+        data (Funda): Input dataset
 
     Returns:
         Union[pd.Series, None]: Capital expenditure
@@ -137,6 +137,9 @@ def roa(
                 1985-05-31    0.058370
                 1986-05-31    0.058027
         Name: ROA, Length: 100, dtype: float64
+
+    See Also:
+        * [ROE](/measures/roe) - Return on equity
     """
     roa = None
 
@@ -198,6 +201,9 @@ def roe(data: Union[Funda, Fundq], use_lagged_ceq=False) -> Union[pd.Series, Non
                 1985-05-31    0.103805
                 1986-05-31    0.120632
         Name: ROE, Length: 100, dtype: float64
+
+    See Also:
+        * [ROA](/measures/roa) - Return on assets
     """
     roe = None
 

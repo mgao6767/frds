@@ -1,5 +1,7 @@
-# Supported Measures
+# Built-in Measures
 
+![mkapi](frds.measures.corporate)
+<!-- 
 ## Firm Characteristics
 
 * [Accounting Restatements](https://frds.io/measures/accounting_restatement)
@@ -87,4 +89,4 @@
     * Maturity gap is defined as the earning assets that are repriceable or mature within one year (BHCK3197) minus interest-bearing deposits that mature or reprice within one year (BHCK3296) minus long-term debt that reprices or matures within one year (BHCK3298 + BHCK3409) minus variable rate preferred stock (BHCK3408) minus other borrowed money with a maturity of one year or less (BHCK2332) minus commercial paper (BHCK2309) minus federal funds and repo liabilities (BHDMB993 + BHCKB995), normalized by total assets.
     * Narrow maturity gap does not subtract interest-bearing deposits that mature or reprice within one year (BHCK3296).
     * Source: `frb_chicago.bhc.bhcf`.
-    * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868).
+    * Reference: [Rampini, Viswanathan and Vuillemey (2020 JF)](https://doi.org/10.1111/jofi.12868). -->
