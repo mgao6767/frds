@@ -20,6 +20,7 @@ theme:
   name: material
   features:
     - tabs
+    - navigation.tabs
   language: en
   palette:
     primary: white
