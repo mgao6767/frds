@@ -1,7 +1,7 @@
 from math import ceil, log, log2, pow
 from dataclasses import dataclass
 from typing import List
-import random
+from random import Random
 import pandas as pd
 import numpy as np
 
@@ -36,7 +36,8 @@ class IsolationForest:
             random_seed (int, optional): random seed for reproducibility. Defaults to 1.
         """
         # set random seed for reproducibility
-        random.seed(random_seed)
+        # use own instances of `Random` to get a generator that doesn't share global state
+        self._random = Random(random_seed)
 
         # convert input dataset from an indexed `pd.DataFrame` to a `np.ndarray`
         exclude_cols = [] if exclude_cols is None else exclude_cols
@@ -123,7 +124,7 @@ class IsolationForest:
             # last observation's index is len(self.obs)-1
             # so `range(len(self.obs))` does include the last observation
             # `range()` here is used for sampling speed
-            sample = random.sample(range(len(self.obs)), k=self.tree_size)
+            sample = self._random.sample(range(len(self.obs)), k=self.tree_size)
             self.trees.append(self.grow_tree(sample))
 
     def grow_tree(self, obs: list, current_height=0) -> IsolationTree:
@@ -144,7 +145,7 @@ class IsolationForest:
         # randomly choose an attribute `p` on which to split the sample
         # `p` is an integer from [0, len(self.attributes)) instead of the column name
         # because we are working with 2d array here
-        p: int = random.choice(range(len(self.attributes)))
+        p: int = self._random.choice(range(len(self.attributes)))
         # most basic way of finding min and max values by scanning only the necessary obs
         # TODO: have to deal with missing values
         max_val, min_val = -np.inf, np.inf
@@ -155,7 +156,7 @@ class IsolationForest:
         # TODO: open question, from the uniform distribution or from the sample?
         # randomly choose a split value `q` from the uniform distribution [min_val, max_val]
         # q = random.uniform(min_val, max_val)
-        q = random.choice([self.data[p][i] for i in obs])
+        q = self._random.choice([self.data[p][i] for i in obs])
 
         tree.split_attr, tree.split_val = p, q
         # recursively grow the left and right trees
