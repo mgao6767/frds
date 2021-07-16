@@ -1,5 +1,7 @@
-from setuptools import setup, find_namespace_packages
+from setuptools import setup, find_namespace_packages, Extension
+import numpy
 import frds
+import sys
 
 requires = [
     "pandas",
@@ -7,6 +9,15 @@ requires = [
     "psycopg2-binary",
 ]
 
+mod_isolation_forest = Extension(
+    "frds.algorithms.isolation_forest.iforest_ext",
+    include_dirs=[*sys.path, numpy.get_include()],
+    sources=[
+        "frds/algorithms/isolation_forest/src/iforest_module.cpp",
+    ],
+    extra_compile_args=["/O2", "/std:c++17"],
+    language="c++",
+)
 
 setup(
     name="frds",
@@ -33,5 +44,5 @@ setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
     ],
     license="MIT",
-    # entry_points={"console_scripts": ["frds=frds.main:run"]},
+    ext_modules=[mod_isolation_forest],
 )
