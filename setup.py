@@ -3,6 +3,16 @@ import numpy
 import frds
 import sys
 
+if sys.platform == "linux" or sys.platform == "linux2":
+    # linux
+    extra_compile_args = ["-O3", "-std=c++17"]
+elif sys.platform == "darwin":
+    # OS X
+    extra_compile_args = ["-O3", "-std=c++17"]
+elif sys.platform == "win32":
+    # Windows
+    extra_compile_args = ["/O2", "/std:c++17"]
+
 requires = [
     "pandas",
     "sqlalchemy",
@@ -15,7 +25,7 @@ mod_isolation_forest = Extension(
     sources=[
         "frds/algorithms/isolation_forest/src/iforest_module.cpp",
     ],
-    extra_compile_args=["/O2", "/std:c++17"],
+    extra_compile_args=extra_compile_args,
     language="c++",
 )
 
