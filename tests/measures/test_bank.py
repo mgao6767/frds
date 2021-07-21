@@ -100,3 +100,24 @@ class MarginalExpectedShortfallCase(unittest.TestCase):
             self.sim_firm_returns, self.sim_market_returns, q=0.05
         )
         self.assertAlmostEqual(mes, 0.0016, 4)
+
+
+class SystemicExpectedShortfallCase(unittest.TestCase):
+    def test_ses(self) -> None:
+        # Data from and results computed using the Matlab code by Dimitrios Bisias, Andrew W. Lo, and Stavros Valavanis
+
+        mes_training_sample = np.array([-0.023, -0.07, 0.01])
+        lvg_training_sample = np.array([1.8, 1.5, 2.2])
+        ses_training_sample = np.array([0.3, 0.4, -0.2])
+        mes_firm = 0.04
+        lvg_firm = 1.7
+
+        ses = bank.systemic_expected_shortfall(
+            mes_training_sample,
+            lvg_training_sample,
+            ses_training_sample,
+            mes_firm,
+            lvg_firm,
+        )
+
+        self.assertAlmostEqual(ses, -0.333407572383073, 6)
