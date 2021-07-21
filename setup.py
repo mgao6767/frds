@@ -48,7 +48,7 @@ setup(
     url=frds.__github_url__,
     packages=find_namespace_packages(),
     package_data={
-        "": ["LICENSE", "README.md"],
+        "": ["LICENSE", "README.md", "*.cpp", "*.hpp"],
     },
     install_requires=requires,
     classifiers=[
