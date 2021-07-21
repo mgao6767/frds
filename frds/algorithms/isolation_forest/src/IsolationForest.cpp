@@ -4,7 +4,6 @@
 #include <cmath>
 #include <iterator>
 #include <numeric>
-#include <random>
 
 #ifndef EULER_GAMMA
 #define EULER_GAMMA 0.57721566490153286
