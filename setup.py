@@ -1,7 +1,15 @@
 from setuptools import setup, find_namespace_packages, Extension
-import numpy
-import frds
+from setuptools.command.build_ext import build_ext
+from distutils.sysconfig import get_python_inc
 import sys
+
+try:
+    import numpy
+except ImportError:
+    print("Numpy needs to be installed.")
+    sys.exit(1)
+
+import frds
 
 if sys.platform == "linux" or sys.platform == "linux2":
     # linux
@@ -21,7 +29,7 @@ requires = [
 
 mod_isolation_forest = Extension(
     "frds.algorithms.isolation_forest.iforest_ext",
-    include_dirs=[*sys.path, numpy.get_include()],
+    include_dirs=[get_python_inc(True), numpy.get_include()],
     sources=[
         "frds/algorithms/isolation_forest/src/iforest_module.cpp",
     ],
@@ -55,4 +63,5 @@ setup(
     ],
     license="MIT",
     ext_modules=[mod_isolation_forest],
+    cmdclass={"build_ext": build_ext},
 )
