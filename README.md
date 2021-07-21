@@ -182,7 +182,7 @@ The result would be a nice `pd.DataFrame`:
 
 ## Built-in Measures
 
-Check the [built-in measures and documentation](https://frds.io/api/measures/).
+Check the [built-in measures and documentation](https://frds.io/measures/).
 
 ## Note
 

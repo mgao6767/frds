@@ -5,7 +5,9 @@ import numpy as np
 def absorption_ratio(
     asset_returns: np.ndarray, fraction_eigenvectors: float = 0.2
 ) -> float:
-    """Kritzman, Li, Page, and Rigobon (2010) propose to measure systemic risk via the Absorption Ratio (AR),\
+    """Absorption Ratio
+    
+    Kritzman, Li, Page, and Rigobon (2010) propose to measure systemic risk via the Absorption Ratio (AR),\
     which they define as the fraction of the total variance of a set of asset returns explained or absorbed by \
     a fixed number of eigenvectors. The absorption ratio captures the extent to which markets are unified or tightly coupled. \
     When markets are tightly coupled, they become more fragile in the sense that negative shocks propagate more quickly \

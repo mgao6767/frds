@@ -97,6 +97,11 @@ nav:
           #     - Executive Ownership: measures/executive_ownership.md
           - ROE: measures/roe.md
           - Tangibility: measures/tangibility.md
+      - Banking:
+          - Absoprtion ratio: measures/absorption_ratio.md
+          - Marginal expected shortfall: measures/marginal_expected_shortfall.md
+          - Systemic expected shortfall: measures/systemic_expected_shortfall.md
+      
   #     - Stock Delisting: measures/stock_delisting.md
   #     - Tobin's Q: measures/tobin_q.md
   #     - BHC Size: measures/bhc_size.md
