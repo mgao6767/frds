@@ -5,10 +5,10 @@ import sys
 
 if sys.platform == "linux" or sys.platform == "linux2":
     # linux
-    extra_compile_args = ["-O3", "-std=c++17"]
+    extra_compile_args = ["-std=c++17", "-lstdc++"]
 elif sys.platform == "darwin":
     # OS X
-    extra_compile_args = ["-O3", "-std=c++17"]
+    extra_compile_args = ["-std=c++17", "-lstdc++"]
 elif sys.platform == "win32":
     # Windows
     extra_compile_args = ["/O2", "/std:c++17"]

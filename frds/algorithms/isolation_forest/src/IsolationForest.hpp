@@ -2,11 +2,7 @@
 #define FRDS_ALGO_ISOLATION_FOREST_H
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <cmath>
-#include <iterator>
 #include <memory>
-#include <numeric>
-#include <random>
 #include <vector>
 
 #include "numpy/arrayobject.h"
