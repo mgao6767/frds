@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from frds.algorithms.isolation_forest.iforest_ext import iforest  # C++ extension
+from ..algorithms.isolation_forest import anomaly_scores
 
 
 def anomaly_score(
@@ -66,15 +66,4 @@ def anomaly_score(
     obs.676      0.525509
     obs.71       0.525022
     """
-    exclude_cols = [] if exclude_cols is None else exclude_cols
-    data = data.drop(columns=exclude_cols)
-    obs = data.index
-    # convert input dataset from an indexed `pd.DataFrame` to a `np.ndarray`
-    data = data.to_numpy(dtype=np.double).T
-    _, n_obs = data.shape
-    # make an empty array to store calculated anomaly scores
-    a_scores = np.empty(n_obs, dtype=np.double)
-    # magic at work
-    iforest(data, a_scores, forest_size, tree_size, random_seed)
-    # the order is preserved
-    return pd.DataFrame(a_scores, index=obs, columns=[name])
+    return anomaly_scores(data, forest_size, tree_size, exclude_cols, random_seed, name)
