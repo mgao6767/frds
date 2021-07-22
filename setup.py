@@ -9,7 +9,7 @@ except ImportError:
     print("Numpy needs to be installed.")
     sys.exit(1)
 
-import frds
+from frds import meta
 
 if sys.platform == "linux" or sys.platform == "linux2":
     # linux
@@ -39,13 +39,13 @@ mod_isolation_forest = Extension(
 
 setup(
     name="frds",
-    version=frds.__version__,
-    description=frds.__description__,
+    version=meta.__version__,
+    description=meta.__description__,
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    author=frds.__author__,
-    author_email=frds.__author_email__,
-    url=frds.__github_url__,
+    author=meta.__author__,
+    author_email=meta.__author_email__,
+    url=meta.__github_url__,
     packages=find_namespace_packages(),
     package_data={
         "": ["LICENSE", "README.md", "*.cpp", "*.hpp"],
