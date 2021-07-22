@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from frds.algorithms.isolation_forest.iforest_ext import iforest  # C++ extension
+from ..algorithms.isolation_forest.iforest_ext import iforest  # C++ extension
 
 
 def anomaly_score(
