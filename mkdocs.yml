@@ -21,6 +21,8 @@ theme:
   features:
     - tabs
     - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.expand
   language: en
   palette:
     primary: white
@@ -80,6 +82,9 @@ extra_javascript:
 extra_css:
   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css
 
+extra:
+  generator: false
+
 nav:
   - Introduction: index.ipynb
   - Getting Started: getting-started.ipynb
@@ -99,9 +104,10 @@ nav:
           - Tangibility: measures/tangibility.md
       - Banking:
           - Absoprtion ratio: measures/absorption_ratio.md
+          - Default insurance premium: measures/default_insurance_premium.md
           - Marginal expected shortfall: measures/marginal_expected_shortfall.md
           - Systemic expected shortfall: measures/systemic_expected_shortfall.md
-      
+
   #     - Stock Delisting: measures/stock_delisting.md
   #     - Tobin's Q: measures/tobin_q.md
   #     - BHC Size: measures/bhc_size.md

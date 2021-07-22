@@ -3,13 +3,14 @@
 # FRDS - Financial Research Data Services
 ![LICENSE](https://img.shields.io/github/license/mgao6767/frds?color=blue) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-[`frds`](https://github.com/mgao6767/frds/) aims to provide the simplest way to compute [a collection of major academic measures](#supported-measures) used in the finance literature.
+[`frds`](https://github.com/mgao6767/frds/) aims to provide the simplest way to compute [a collection of major academic measures](https://frds.io/measures/) used in the finance literature.
 
 [Getting started](https://frds.io/getting-started/) by checking out this notebook.
 
 ## Example usage
 
 ### Import
+
 We start by importing relevant modules.
 
 Specifically, we import the `Funda` class from the `frds.data.wrds.comp` library since the demo uses only the Fundamentals Annual dataset from Compustat via WRDS. We next import the `setup` and `load` functions from `frds.io.wrds`, which are used to configure WRDS credentials and data management for WRDS datasets.
