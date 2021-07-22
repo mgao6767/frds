@@ -26,10 +26,21 @@ void IsolationForest::growTree(std::vector<size_t> &sample,
   std::vector<size_t> lobs, robs;
   for (auto &i : sample) {
     auto obsVal = *(DataType *)PyArray_GETPTR2(this->data, attr, i);
-    if (obsVal <= val) {
-      lobs.push_back(i);
+    // NAN is set to be "smaller" than any value
+    // If the split value is NAN, then obs with NAN are pushed left
+    if (isnan(val)) {
+      if (isnan(obsVal)) {
+        lobs.push_back(i);
+      } else {
+        robs.push_back(i);
+      }
+      // Split value is not NAN, then obs with NAN or smaller are pushed left
     } else {
-      robs.push_back(i);
+      if ((isnan(obsVal)) || (obsVal <= val)) {
+        lobs.push_back(i);
+      } else {
+        robs.push_back(i);
+      }
     }
   }
   node = std::make_unique<IsolationTree::Node>(attr, val, false, nObs);
