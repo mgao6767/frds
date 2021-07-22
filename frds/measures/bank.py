@@ -127,10 +127,10 @@ def systemic_expected_shortfall(
     return ses
 
 
-def default_insurance_premium(default_prob: np.ndarray, corr: np.ndarray) -> float:
-    """Default Insurance Preimum (DIP)
+def distress_insurance_premium(default_prob: np.ndarray, corr: np.ndarray) -> float:
+    """Distress Insurance Preimum (DIP)
 
-    The Distressed Insurance Premium (DIP) is proposed as an ex ante systemic risk metric by Huang, Zhou, and Zhu (2009b) \
+    The Distress Insurance Premium (DIP) is proposed as an ex ante systemic risk metric by Huang, Zhou, and Zhu (2009b) \
     and it represents a hypothetical insurance premium against a systemic financial distress, defined as total losses that \
     exceed a given threshold, say 15%, of total bank liabilities. The methodology is general and can apply to any pre-selected \
     group of firms with publicly tradable equity and CDS contracts. Each institutions marginalcontribution to systemic risk is \
@@ -141,7 +141,7 @@ def default_insurance_premium(default_prob: np.ndarray, corr: np.ndarray) -> flo
         corr (np.ndarray): The correlation matrix of the assets' returns of the banks.
 
     Returns:
-        float: The default insurance premium against a systemic financial distress.
+        float: The distress insurance premium against a systemic financial distress.
     """
     n_repetitions = 500_000
     n_banks = len(default_prob)
@@ -165,10 +165,6 @@ def default_insurance_premium(default_prob: np.ndarray, corr: np.ndarray) -> flo
     loss_given_default = np.empty(shape=(n_banks, n_sims))
     for i in range(n_banks):
         lgd = np.sum(np.random.triangular(0.1, 0.55, 1, size=(i + 1, n_sims)), axis=0)
-        # alternatively
-        # lgd = np.zeros(n_sims)
-        # for j in range(i + 1):
-        #     lgd = lgd + np.random.triangular(0.1, 0.55, 1, size=n_sims)
         loss_given_default[i:] = lgd
 
     intervals = 100
