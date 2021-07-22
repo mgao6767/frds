@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from .iforest_ext import iforest  # C++ extension
+import frds.algorithms.isolation_forest.iforest_ext as ext  # C++ extension
 
 
 def anomaly_scores(
@@ -36,6 +36,6 @@ def anomaly_scores(
     # make an empty array to store calculated anomaly scores
     a_scores = np.empty(n_obs, dtype=np.double)
     # magic at work
-    iforest(data, a_scores, forest_size, tree_size, random_seed)
+    ext.iforest(data, a_scores, forest_size, tree_size, random_seed)
     # the order is preserved
     return pd.DataFrame(a_scores, index=obs, columns=[name])
