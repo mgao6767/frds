@@ -1,3 +1,3 @@
 # Anomaly Score
 
-![mkapi](frds.measures.general.anomaly_score)
+![mkapi](frds.algorithms.isolation_forest.anomaly_score)
