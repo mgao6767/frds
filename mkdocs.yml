@@ -65,6 +65,8 @@ markdown_extensions:
       emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.inlinehilite
   - pymdownx.highlight
+      # use_pygments: true
+      # linenums: true
   - pymdownx.magiclink
   - pymdownx.mark
   - pymdownx.smartsymbols
@@ -107,7 +109,8 @@ nav:
           - Distress insurance premium: measures/distress_insurance_premium.md
           - Marginal expected shortfall: measures/marginal_expected_shortfall.md
           - Systemic expected shortfall: measures/systemic_expected_shortfall.md
-
+      - General:
+          - Kyle's lambda: measures/kyle_lambda.md
   #     - Stock Delisting: measures/stock_delisting.md
   #     - Tobin's Q: measures/tobin_q.md
   #     - BHC Size: measures/bhc_size.md
