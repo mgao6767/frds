@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # Built-in Measures
 
 ![mkapi](frds.measures.corporate)

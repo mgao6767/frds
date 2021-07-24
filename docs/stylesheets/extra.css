@@ -1,3 +1,8 @@
+/* This seems a much better color choice */
+:root > * {
+  --md-code-hl-number-color: #1c01ce;
+}
+
 /* These are to override the css by mkapi so it fits the style by mkdocs material */
 
 div.mkapi-section-body.example,

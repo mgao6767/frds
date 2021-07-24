@@ -20,6 +20,7 @@ theme:
     # - navigation.tabs.sticky
     - navigation.expand
     - navigation.top
+    - content.code.annotate
   language: en
   palette:
     primary: indigo
@@ -63,9 +64,11 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.highlight:
       use_pygments: true
-      noclasses: true
+      # noclasses: true
       pygments_style: xcode
+      linenums_style: pymdownx-inline
       # linenums: true
+  - pymdownx.keys
   - pymdownx.magiclink
   - pymdownx.mark
   - pymdownx.smartsymbols
@@ -94,7 +97,7 @@ nav:
     - FRDS: index.md
     - Getting Started: https://frds.io/getting-started/
     - Documentation: https://frds.io/measures/
-  - Getting Started: getting-started.ipynb
+  - Getting Started: getting-started.md
   - Measures:
       - Measures: measures.md
       - Corporate:

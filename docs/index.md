@@ -4,7 +4,7 @@
 
 [frds](https://github.com/mgao6767/frds/) is an open-sourced Python package for computing [a collection of major academic measures](/measures/) used in the finance literature in a simple and straightforward way.
 
-It is developed and maintained by [Dr. Mingze Gao](https://mingze-gao.com) from the University of Sydney, as a personal project during his postdoctoral research fellowship.
+It is developed and maintained by [Dr. Mingze Gao](https://mingze-gao.com) from the University of Sydney, as a personal project during postdoctoral research fellowship.
 
 ![frds](https://github.com/mgao6767/frds/raw/master/images/frds_logo.png)
 
@@ -51,9 +51,8 @@ For example, Kritzman, Li, Page, and Rigobon (2010) propose an [Absorption Ratio
 
 ``` python
 >>> import numpy as np
->>> from frds.measures import absorption_ratio
->>> # hypothetical 6 daily returns of 3 assets
->>> data = np.array(
+>>> from frds.measures import absorption_ratio # (1)
+>>> data = np.array( # (2)
 ...             [
 ...                 [0.015, 0.031, 0.007, 0.034, 0.014, 0.011],
 ...                 [0.012, 0.063, 0.027, 0.023, 0.073, 0.055],
@@ -63,6 +62,16 @@ For example, Kritzman, Li, Page, and Rigobon (2010) propose an [Absorption Ratio
 >>> absorption_ratio(data, fraction_eigenvectors=0.2)
 0.7746543307660252
 ```
+
+1. `#!python absorption_ratio` function can also be imported using:
+   
+    ``` python
+    from frds.measures.bank import absorption_ratio
+    ```
+    
+    :octicons-light-bulb-16: Tip: You can use ++tab++ to navigate annotations.
+
+2. Hypothetical 6 daily returns of 3 assets.
 
 Another example, [Distress Insurance Premium (DIP)](https://frds.io/measures/distress_insurance_premium/) proposed by Huang, Zhou, and Zhu (2009) as a systemic risk measure of a hypothetical insurance premium against a systemic financial distress, defined as total losses that exceed a given threshold, say 15%, of total bank liabilities.
 
@@ -94,8 +103,8 @@ As an example, let's say we want to download the Compustat Fundamentals Annual d
 
 ``` python
 >>> from frds.data.wrds.comp import Funda
->>> from frds.io.wrds import load
->>> FUNDA = load(Funda, use_cache=True, obs=100)
+>>> from frds.io.wrds import load # (1)
+>>> FUNDA = load(Funda, use_cache=True, obs=100) # (2)
 >>> FUNDA.data.head()
                                     FYEAR INDFMT CONSOL POPSRC DATAFMT   TIC      CUSIP                   CONM  ... PRCL_F   ADJEX_F RANK    AU  AUOP  AUOPIC CEOSO CFOSO
 GVKEY  DATADATE                                                                                                 ...
@@ -108,8 +117,7 @@ GVKEY  DATADATE                                                                 
 [5 rows x 946 columns]
 ```
 
-!!! note
-    The example above skips the setup of WRDS login credentials. To do so, run the following script. 
+1.  Here it skips the setup of WRDS login credentials. To do so, run the following script. 
 
     ``` python
     from frds.io.wrds import setup
@@ -120,10 +128,12 @@ GVKEY  DATADATE                                                                 
 
     The `frds` folder is created under the user's home directory to store downloaded data upon installation.
 
+2. `#!python use_cache=True` attempts to load the data from local cache instead of downloading it again.
+
 We can then compute some measures on the go:
 
 ``` python
->>> tangibility = FUNDA.PPENT / FUNDA.AT
+>>> tangibility = FUNDA.PPENT / FUNDA.AT # (1)
 >>> type(tangibility)
 <class 'pandas.core.series.Series'>
 >>> tangibility.sample(10).sort_index()
@@ -140,3 +150,13 @@ GVKEY   DATADATE
         1982-05-31 00:00:00.000000    0.286231
 dtype: float64
 ```
+
+1. The `frds.data.wrds.comp.Funda` class has all the variables in the Fundamental Annual dataset as attributes with proper docstrings. 
+
+    Hence, we can write much simpler expressions whenever possible. 
+
+## Next step
+
+- [x] Introduction of `frds`
+- [ ] Check out the [notes to get started](https://frds.io/../../getting-started/)
+- [ ] Check out the [documentation of built-in measures](https://frds.io/measures/)
