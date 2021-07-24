@@ -115,4 +115,5 @@ nav:
           - Systemic expected shortfall: measures/systemic_expected_shortfall.md
       - General:
           - Kyle's lambda: measures/kyle_lambda.md
+          - HHI index: measures/hhi_index.md
 

@@ -23,3 +23,11 @@ class KyleLambdaCase(unittest.TestCase):
         prices = price_raw[:, 1:]
         mil = np.mean(general.kyle_lambda(returns, prices, volumes))
         self.assertAlmostEqual(mil, 0.0035, 4)
+
+
+class HHIIndexCase(unittest.TestCase):
+    def test_hhi_index(self):
+        self.assertEqual(general.hhi_index(np.array([1, 1])), 0.5)
+        self.assertAlmostEqual(
+            general.hhi_index(np.array([1, 1, 100, 1, 1, 1, 1])), 0.8905, 4
+        )

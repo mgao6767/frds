@@ -138,3 +138,34 @@ def kyle_lambda(
         lambdas[i] = betas[1]
 
     return lambdas
+
+
+def hhi_index(firm_sizes: np.ndarray) -> float:
+    r"""Herfindahl–Hirschman Index
+
+    A common measure of market concentration, defined as
+
+    $$
+    H = \sum_{i=1}^{N} s_i^2
+    $$
+
+    where $s_i$ is firm $i$'s market share in the industry of $N$ firms.
+
+    Args:
+        firm_sizes (np.ndarray): an array of firm sizes suchs as sales, used to compute market shares
+
+    Returns:
+        float: HHI-index for the industry
+
+    Examples:
+    >>> import numpy as np
+    >>> from frds.measures import hhi_index
+    >>> firm_sales = np.array([1,1,1,1,1,1,1])
+    >>> hhi_index(firm_sales)
+    0.14285714285714285
+    >>> firm_sales = np.array([100,1,1,1,1,1])
+    >>> hhi_index(firm_sales)
+    0.9074829931972791
+    """
+    mkt_shares = firm_sizes / np.sum(firm_sizes)
+    return np.sum(np.square(mkt_shares))
