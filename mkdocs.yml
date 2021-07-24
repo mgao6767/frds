@@ -11,27 +11,24 @@ repo_url: https://github.com/mgao6767/frds/
 # Copyright
 copyright: Copyright &copy; 2020-2021 frds.io
 
-google_analytics:
-  - UA-114057186-3
-  - auto
-
 # Configuration
 theme:
   name: material
   features:
     - tabs
     - navigation.tabs
-    - navigation.tabs.sticky
+    # - navigation.tabs.sticky
     - navigation.expand
+    - navigation.top
   language: en
   palette:
-    primary: white
+    primary: indigo
     accent: indigo
   font:
     text: Roboto
     code: Roboto Mono
   favicon: images/frds_icon.png
-  logo: images/frds_icon.png
+  logo: images/image.png
   custom_dir: overrides
 
 # Plugins
@@ -41,8 +38,8 @@ plugins:
   - mkdocs-jupyter:
       include_source: True
       ignore_h1_titles: True
-  # - minify:
-  #     minify_html: true
+  - minify:
+      minify_html: true
   - mkapi:
       # src_dirs: [frds]
       filters: [strict]
@@ -64,8 +61,10 @@ markdown_extensions:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.inlinehilite
-  - pymdownx.highlight
-      # use_pygments: true
+  - pymdownx.highlight:
+      use_pygments: true
+      noclasses: true
+      pygments_style: xcode
       # linenums: true
   - pymdownx.magiclink
   - pymdownx.mark
@@ -78,19 +77,24 @@ markdown_extensions:
 
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
-  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js
   - javascripts/extra.js
 
 extra_css:
-  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css
+  - stylesheets/extra.css
 
 extra:
   generator: false
+  analytics:
+    provider: google
+    property: UA-114057186-1
+  generator: false
 
 nav:
-  - Introduction: index.ipynb
+  - Home:
+    - FRDS: index.md
+    - Getting Started: https://frds.io/getting-started/
+    - Documentation: https://frds.io/measures/
   - Getting Started: getting-started.ipynb
-  # - Measures Supported: measures.md
   - Measures:
       - Measures: measures.md
       - Corporate:
@@ -99,9 +103,6 @@ nav:
           - Firm size: measures/firm_size.md
           - Market-to-book ratio: measures/market_to_book.md
           - ROA: measures/roa.md
-          #     - Accounting Restatement: measures/accounting_restatement.md
-          #     - Credit Rating: measures/credit_rating.md
-          #     - Executive Ownership: measures/executive_ownership.md
           - ROE: measures/roe.md
           - Tangibility: measures/tangibility.md
       - Banking:
@@ -111,16 +112,4 @@ nav:
           - Systemic expected shortfall: measures/systemic_expected_shortfall.md
       - General:
           - Kyle's lambda: measures/kyle_lambda.md
-  #     - Stock Delisting: measures/stock_delisting.md
-  #     - Tobin's Q: measures/tobin_q.md
-  #     - BHC Size: measures/bhc_size.md
-  #     - BHC Loan Growth: measures/bhc_loan_growth.md
-  #     - BHC FX Exposure: measures/bhc_fx_exposure.md
-  #     - BHC NetIncome/Assets: measures/bhc_netincome_to_assets.md
-  #     - BHC Dividend/Assets: measures/bhc_dividend_to_assets.md
-  #     - BHC RegulatoryCapital/Assets: measures/bhc_regcap_to_assets.md
-  #     - BHC Tier1Capital/Assets: measures/bhc_tier1cap_to_assets.md
-  #     - BHC Gross IR Hedging: measures/bhc_gross_ir_hedging.md
-  #     - BHC Gross FX Hedging: measures/bhc_gross_fx_hedging.md
-  #     - BHC Maturity Gap: measures/bhc_maturity_gap.md
-  # - API: mkapi/api/frds/measures
+
