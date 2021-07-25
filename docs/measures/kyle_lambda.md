@@ -4,8 +4,6 @@
 
 ![mkapi](frds.measures.kyle_lambda|short)
 
-[:octicons-file-code-24: Source code](https://github.com/mgao6767/frds/blob/master/frds/measures/func_kyle_lambda.py) | [:octicons-bug-24: Bug report](https://github.com/mgao6767/frds/issues/new?assignees=mgao6767&labels=&template=bug_report.md&title=%5BBUG%5D)
-
 ## Additional Note
 
 Alternatively, following Hasbrouck (2009) and Goyenko, Holden, Trzcinka (2009), 
@@ -13,15 +11,15 @@ Kyle's Lambda for a given stock $i$ and day $t$, is calculated as the slope coef
 $\lambda_{i,t}$ in the regression:
 
 $$
-ret_{i,t,n}= \delta_{i,t} + \lambda_{i,t} S_{i,t,n}+\epsilon_{i,t,n}
+R_{i,t,n}= \delta_{i,t} + \lambda_{i,t} S_{i,t,n}+\varepsilon_{i,t,n}
 $$
 
-where for the $n$th five-minute period on date $t$ and stock $i$, $ret_{i,t,n}$
+where for the $n$th five-minute period on date $t$ and stock $i$, $R_{i,t,n}$
 is the stock return and $S_{i,t,n}$ is the sum of the signed square-root dollar
-volume, that is,
+volume ($V$), that is,
 
 $$
-S_{i,t,n}=\sum_k{\text{Sgn}}(dvol_{i,t,n,k}) \sqrt{dvol_{i,t,n,k}}
+S_{i,t,n}=\sum_k{\text{Sgn}}(V_{i,t,n,k}) \sqrt{V_{i,t,n,k}}
 $$
 
 Example code below:
@@ -73,3 +71,7 @@ def estimate(data):
     else:
         return None if np.isnan(coef[1]) else coef[1]*1E6
 ```
+
+---
+
+[:octicons-file-code-24: Source code](https://github.com/mgao6767/frds/blob/master/frds/measures/func_kyle_lambda.py) | [:octicons-bug-24: Bug report](https://github.com/mgao6767/frds/issues/new?assignees=mgao6767&labels=&template=bug_report.md&title=%5BBUG%5D)
