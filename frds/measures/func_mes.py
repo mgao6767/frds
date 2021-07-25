@@ -32,6 +32,9 @@ def marginal_expected_shortfall(
         float: MES
 
     See Also:
+        Systemic risk measures:
+
+        * [Absorption Ratio](/measures/absorption_ratio/)
         * [Systemic Expected Shortfall (SES)](/measures/systemic_expected_shortfall/)
     """
     assert firm_returns.shape == market_returns.shape

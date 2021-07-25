@@ -4,8 +4,8 @@ import numpy as np
 def kyle_lambda(prices: np.ndarray, volumes: np.ndarray) -> np.ndarray:
     r"""Kyle's Lambda
 
-    A measure of market impact cost from Kyle (1985), which can be interpreted as
-    the cost of demanding a certain amount of liquidity over a given time period.
+    A measure of market impact cost from [Kyle (1985)](https://doi.org/10.2307/1913210),
+    which can be interpreted as the cost of demanding a certain amount of liquidity over a given time period.
 
     It is also used as a measure of market liquidity and can be estimated by the
     volume required to move the price of a security by one dollar. Sometimes referred
@@ -65,10 +65,10 @@ def kyle_lambda(prices: np.ndarray, volumes: np.ndarray) -> np.ndarray:
         array([-0.02198189, -0.1951004 ,  0.22752204])
 
     References:
-        * [Bisias, Flood, Lo, and Valavanis (2012)](https://doi.org/10.1146/annurev-financial-110311-101754),
-            A survey of systemic risk analytics, *Annual Review of Financial Economics*, 4, 255-296.
         * [Kyle (1985)](https://doi.org/10.2307/1913210),
             Continuous auctions and insider trading, *Econometrica*, 53, 1315-1355.
+        * [Bisias, Flood, Lo, and Valavanis (2012)](https://doi.org/10.1146/annurev-financial-110311-101754),
+            A survey of systemic risk analytics, *Annual Review of Financial Economics*, 4, 255-296.
     """
 
     assert volumes.shape == prices.shape
