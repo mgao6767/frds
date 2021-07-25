@@ -30,6 +30,9 @@ def marginal_expected_shortfall(
 
     Returns:
         float: MES
+
+    See Also:
+        * [Systemic Expected Shortfall (SES)](/measures/systemic_expected_shortfall/)
     """
     assert firm_returns.shape == market_returns.shape
     low_threshold = np.percentile(market_returns, q * 100)

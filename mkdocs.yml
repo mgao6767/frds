@@ -100,6 +100,14 @@ nav:
   - Getting Started: getting-started.md
   - Measures:
       - Measures: measures.md
+      - General:
+          - HHI index: measures/hhi_index.md
+          - Kyle's lambda: measures/kyle_lambda.md
+      - Banking:
+          - Absoprtion ratio: measures/absorption_ratio.md
+          - Distress insurance premium: measures/distress_insurance_premium.md
+          - Marginal expected shortfall: measures/marginal_expected_shortfall.md
+          - Systemic expected shortfall: measures/systemic_expected_shortfall.md
       - Corporate:
           - Book leverage: measures/book_leverage.md
           - Capital expenditure: measures/capital_expenditure.md
@@ -108,12 +116,5 @@ nav:
           - ROA: measures/roa.md
           - ROE: measures/roe.md
           - Tangibility: measures/tangibility.md
-      - Banking:
-          - Absoprtion ratio: measures/absorption_ratio.md
-          - Distress insurance premium: measures/distress_insurance_premium.md
-          - Marginal expected shortfall: measures/marginal_expected_shortfall.md
-          - Systemic expected shortfall: measures/systemic_expected_shortfall.md
-      - General:
-          - HHI index: measures/hhi_index.md
-          - Kyle's lambda: measures/kyle_lambda.md
+     
 

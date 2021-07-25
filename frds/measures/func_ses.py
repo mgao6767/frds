@@ -36,6 +36,9 @@ def systemic_expected_shortfall(
 
     Returns:
         float: The systemic risk that firm i poses to the system at a future time t.
+
+    See Also:
+        * [Marginal Expected Shortfall (MES)](/measures/marginal_expected_shortfall/)
     """
     assert mes_training_sample.shape == lvg_training_sample.shape
     assert mes_training_sample.shape == ses_training_sample.shape
