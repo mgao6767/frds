@@ -18,7 +18,7 @@ theme:
     - tabs
     - navigation.tabs
     # - navigation.tabs.sticky
-    - navigation.expand
+    # - navigation.expand
     - navigation.top
     - content.code.annotate
   language: en
@@ -114,6 +114,6 @@ nav:
           - Marginal expected shortfall: measures/marginal_expected_shortfall.md
           - Systemic expected shortfall: measures/systemic_expected_shortfall.md
       - General:
-          - Kyle's lambda: measures/kyle_lambda.md
           - HHI index: measures/hhi_index.md
+          - Kyle's lambda: measures/kyle_lambda.md
 

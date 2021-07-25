@@ -2,9 +2,11 @@
 
 ## API
 
-![mkapi](frds.measures.kyle_lambda)
+![mkapi](frds.measures.kyle_lambda|short)
 
-## Note
+[:octicons-file-code-24: Source code](https://github.com/mgao6767/frds/blob/master/frds/measures/func_kyle_lambda.py) | [:octicons-issue-opened-24: Bug report](https://github.com/mgao6767/frds/issues/new?assignees=mgao6767&labels=&template=bug_report.md&title=%5BBUG%5D)
+
+## Additional Note
 
 Alternatively, following Hasbrouck (2009) and Goyenko, Holden, Trzcinka (2009), 
 Kyle's Lambda for a given stock $i$ and day $t$, is calculated as the slope coefficient
