@@ -29,12 +29,17 @@ def marginal_expected_shortfall(
         q (float, optional): The percentile. Range is [0, 1]. Deaults to 0.05.
 
     Returns:
-        float: MES
+        float: The marginal expected shortfall of firm $i$ at time $t$.
+
+    References:
+        * [Bisias, Flood, Lo, and Valavanis (2012)](https://doi.org/10.1146/annurev-financial-110311-101754),
+            A survey of systemic risk analytics, *Annual Review of Financial Economics*, 4, 255-296.
 
     See Also:
         Systemic risk measures:
 
         * [Absorption Ratio](/measures/absorption_ratio/)
+        * [Distress Insurance Premium](/measures/distress_insurance_premium/)
         * [Systemic Expected Shortfall (SES)](/measures/systemic_expected_shortfall/)
     """
     assert firm_returns.shape == market_returns.shape

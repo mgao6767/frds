@@ -90,7 +90,7 @@ Another example, [Distress Insurance Premium (DIP)](https://frds.io/measures/dis
 ...     ]
 ... )
 >>> distress_insurance_premium(default_probabilities, correlations)       
-0.29787743892
+0.28661995758
 ```
 
 For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/).

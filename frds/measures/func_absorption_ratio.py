@@ -54,6 +54,7 @@ def absorption_ratio(
     See Also:
         Systemic risk measures:
 
+        * [Distress Insurance Premium](/measures/distress_insurance_premium/)
         * [Marginal Expected Shortfall (MES)](/measures/marginal_expected_shortfall/)
         * [Systemic Expected Shortfall (SES)](/measures/systemic_expected_shortfall/)
     """

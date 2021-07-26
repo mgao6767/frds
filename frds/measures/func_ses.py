@@ -37,10 +37,15 @@ def systemic_expected_shortfall(
     Returns:
         float: The systemic risk that firm i poses to the system at a future time t.
 
+    References:
+        * [Bisias, Flood, Lo, and Valavanis (2012)](https://doi.org/10.1146/annurev-financial-110311-101754),
+            A survey of systemic risk analytics, *Annual Review of Financial Economics*, 4, 255-296.
+
     See Also:
         Systemic risk measures:
 
         * [Absorption Ratio](/measures/absorption_ratio/)
+        * [Distress Insurance Premium](/measures/distress_insurance_premium/)
         * [Marginal Expected Shortfall (MES)](/measures/marginal_expected_shortfall/)
     """
     assert mes_training_sample.shape == lvg_training_sample.shape
