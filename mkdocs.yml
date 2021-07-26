@@ -34,6 +34,8 @@ theme:
 
 # Plugins
 plugins:
+  - tags:
+      tags_file: measures.md
   - search # necessary for search to work
   - git-revision-date-localized
   - mkdocs-jupyter:

@@ -1,3 +1,9 @@
+---
+tags:
+  - Banking
+  - Systemic Risk
+---
+
 # Systemic Expected Shortfall (SES)
 
 ## API

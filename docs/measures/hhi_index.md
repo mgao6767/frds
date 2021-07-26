@@ -1,3 +1,8 @@
+---
+tags:
+  - Market Competition
+---
+
 # Herfindahl–Hirschman Index
 
 ## API

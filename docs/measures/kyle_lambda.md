@@ -1,3 +1,8 @@
+---
+tags:
+  - Liquidity
+---
+
 # Kyle's Lambda
 
 ## API

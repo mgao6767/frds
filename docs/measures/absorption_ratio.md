@@ -1,3 +1,9 @@
+---
+tags:
+  - Banking
+  - Systemic Risk
+---
+
 # Absorption Ratio
 
 ## API

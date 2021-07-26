@@ -1,3 +1,9 @@
+---
+tags:
+  - Banking
+  - Systemic Risk
+---
+
 # Distress Insurance Premium (DIP)
 
 ## API

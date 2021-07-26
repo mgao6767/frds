@@ -1,3 +1,9 @@
+---
+tags:
+  - Banking
+  - Systemic Risk
+---
+
 # Marginal Expected Shortfall (MES)
 
 ## API

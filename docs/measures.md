@@ -1,11 +1,8 @@
----
-hide:
-  - toc
----
-
 # Built-in Measures
 
-![mkapi](frds.measures)
+[TAGS]
+
+<!-- ![mkapi](frds.measures) -->
 <!-- ![mkapi](frds.measures.corporate) -->
 <!-- ![mkapi](frds.measures.bank) -->
 <!-- 
