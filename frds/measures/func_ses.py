@@ -8,36 +8,82 @@ def systemic_expected_shortfall(
     mes_firm: float,
     lvg_firm: float,
 ) -> float:
-    """Systemic Expected Shortfall (SES)
+    r"""Systemic Expected Shortfall (SES)
 
-    Acharya, Pedersen, Philippon, and Richardson (2010) argue that each financial institutions contribution to \
-    systemic risk can be measured as its systemic expected shortfall (SES), i.e., its propensity to be undercapitalized \
-    when the system as a whole is undercapitalized. SES is a theoretical construct and the authors use the following 3 measures to proxy it:
+    A measure of a financial institution's contribution to a systemic crisis by
+    [Acharya, Pedersen, Philippon, and Richardson (2017)](https://doi.org/10.1093/rfs/hhw088), which equals to
+    the expected amount a bank is undercapitalized in a future systemic event in which the overall financial system is undercapitalized.
 
-    1. The outcome of stress tests performed by regulators. The SES metric of a firm here is defined as the recommended capital that \
+    SES increases in the bank’s expected losses during a crisis, and is related to the bank's
+    [marginal expected shortfall (MES)](/measures/marginal_expected_shortfall/),
+    i.e., its losses in the tail of the aggregate sector’s loss distribution, and leverage.
+
+    SES is a theoretical construct and the authors use the following 3 measures to proxy it:
+
+    1. The outcome of stress tests performed by regulators. The SES metric of a firm here is defined as the recommended capital that
         it was required to raise as a result of the stress test in February 2009.
-    2. The decline in equity valuations of large financial firms during the crisis, as measured by their cumulative equity return \
+    2. The decline in equity valuations of large financial firms during the crisis, as measured by their cumulative equity return
         from July 2007 to December 2008.
-    3. The widening of the credit default swap spreads of large financial firms as measured by their cumulative CDS spread increases \
+    3. The widening of the credit default swap spreads of large financial firms as measured by their cumulative CDS spread increases
         from July 2007 to December 2008.
 
-    Given these proxies, the authors seek to develop leading indicators which predict an institutions SES; \
-    these leading indicators are marginal expected shortfall (MES) and leverage (LVG).
+    Given these proxies, the authors seek to develop leading indicators which “predict” an institution’s SES, including
+    marginal expected shortfall (MES) and leverage (LVG).
+
+    !!! note
+        Since SES is a theoretical construct, this function estimates the **fitted SES** following Bisias, Flood, Lo, and Valavanis (2012).
+
+        Specifically, the following model is estimated:
+
+        $$
+        \textit{realized SES}_{i,\textit{crisis}} = a + b MES_{i,\textit{pre-crisis}} + c LVG_{i,\textit{pre-crisis}} + \varepsilon_{i}
+        $$
+
+        where $\textit{realized SES}_{i,\textit{crisis}}$ is the stock return during the crisis, and $LVG_{i,\textit{pre-crisis}}$ is
+        defined as $(\text{book assets - book equity + market equity}) / \text{market equity}$.
+
+        The fitted SES is computed as
+
+        $$
+        \textit{fitted SES} = \frac{b}{b+c} MES + \frac{c}{b+c} LVG
+        $$
+
+    ??? note "Model in Acharya, Pedersen, Philippon, and Richardson (2017)"
+        In Acharya, Pedersen, Philippon, and Richardson (2017), fitted SES is abtained via estimating the model:
+
+        $$
+        \textit{realized SES}_{i,\textit{crisis}} = a + b MES_{i,\textit{pre-crisis}} + c LVG_{i,\textit{pre-crisis}} + \text{industriy dummies} + \varepsilon_{i}
+        $$
+
+        and calculating the fitted value of $\textit{realized SES}_{i}$ directly, where
+        the industry dummies inlcude indicators for whether the bank is a broker-dealer, an insurance company and other.
+
+        See Model 6 in Table 4 (p.23) and Appendix C.
 
     Args:
-        mes_training_sample (np.ndarray): MES or value per firm defined as avg equity return during 5% worst days for overall market during training period.
-        lvg_training_sample (np.ndarray): Leverage per firm defined on the last day of the period of training data. \
-            LVG defined as (book_assets - book_equity + market_equity)/market_equity.
-        ses_training_sample (np.ndarray): Cumulative return per firm for date range after mes/lvg_training_sample.
-        mes_firm (float): The current firm MES used to calculate the firm SES value.
-        lvg_firm (float): The current firm leverage used to calculate the firm SES value.
-
-    The description above is from Bisias, Lo, and Valavanis.
+        mes_training_sample (np.ndarray): (n_firms,) array of firm ex ante MES.
+        lvg_training_sample (np.ndarray): (n_firms,) array of firm ex ante LVG (say, on the last day of the period of training data)
+        ses_training_sample (np.ndarray): (n_firms,) array of firm ex post cumulative return for date range after `lvg_training_sample`.
+        mes_firm (float): The current firm MES used to calculate the firm (fitted) SES value.
+        lvg_firm (float): The current firm leverage used to calculate the firm (fitted) SES value.
 
     Returns:
-        float: The systemic risk that firm i poses to the system at a future time t.
+        float: The systemic risk that firm $i$ poses to the system at a future time.
+
+    Examples:
+        >>> from frds.measures import systemic_expected_shortfall
+        >>> import numpy as np
+        >>> mes_training_sample = np.array([-0.023, -0.07, 0.01])
+        >>> lvg_training_sample = np.array([1.8, 1.5, 2.2])
+        >>> ses_training_sample = np.array([0.3, 0.4, -0.2])
+        >>> mes_firm = 0.04
+        >>> lvg_firm = 1.7
+        >>> systemic_expected_shortfall(mes_training_sample, lvg_training_sample, ses_training_sample, mes_firm, lvg_firm)
+        -0.33340757238306845
 
     References:
+        * [Acharya, Pedersen, Philippon, and Richardson (2017)](https://doi.org/10.1093/rfs/hhw088),
+            Measuring systemic risk, *The Review of Financial Studies*, 30, (1), 2-47.
         * [Bisias, Flood, Lo, and Valavanis (2012)](https://doi.org/10.1146/annurev-financial-110311-101754),
             A survey of systemic risk analytics, *Annual Review of Financial Economics*, 4, 255-296.
 
