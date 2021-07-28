@@ -22,6 +22,7 @@ elif sys.platform == "win32":
     extra_compile_args = ["/O2", "/std:c++17"]
 
 requires = [
+    "scipy",
     "pandas",
     "sqlalchemy",
     "psycopg2-binary",

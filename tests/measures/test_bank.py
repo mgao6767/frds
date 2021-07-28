@@ -140,3 +140,25 @@ class DistressInsurancePremiumCase(unittest.TestCase):
         )
         dip = bank.distress_insurance_premium(default_probabilities, correlations)
         self.assertAlmostEqual(dip, 0.29, 2)
+
+
+class CCACase(unittest.TestCase):
+    def test_cca(self):
+        equity = 5
+        volatility = 1.2
+        risk_free_rate = 0.02
+        default_barrier = 10
+        time_to_maturity = 20
+        cds_spread = 1.5
+
+        put_price, srisk_contribution = bank.cca(
+            equity,
+            volatility,
+            risk_free_rate,
+            default_barrier,
+            time_to_maturity,
+            cds_spread,
+        )
+
+        self.assertAlmostEqual(put_price, 6.6594, 2)
+        self.assertAlmostEqual(srisk_contribution, 3.3468, 3)

@@ -91,6 +91,7 @@ def systemic_expected_shortfall(
         Systemic risk measures:
 
         * [Absorption Ratio](/measures/absorption_ratio/)
+        * [Contingent Claim Analysis](/measures/cca/)
         * [Distress Insurance Premium](/measures/distress_insurance_premium/)
         * [Marginal Expected Shortfall (MES)](/measures/marginal_expected_shortfall/)
     """

@@ -75,6 +75,7 @@ def distress_insurance_premium(
         Systemic risk measures:
 
         * [Absorption Ratio](/measures/absorption_ratio/)
+        * [Contingent Claim Analysis](/measures/cca/)
         * [Marginal Expected Shortfall (MES)](/measures/marginal_expected_shortfall/)
         * [Systemic Expected Shortfall (SES)](/measures/systemic_expected_shortfall/)
     """
