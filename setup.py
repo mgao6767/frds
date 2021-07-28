@@ -26,6 +26,7 @@ requires = [
     "pandas",
     "sqlalchemy",
     "psycopg2-binary",
+    "fredapi",
 ]
 
 mod_isolation_forest = Extension(

@@ -3,3 +3,4 @@ scipy
 pandas
 sqlalchemy
 psycopg2-binary
+fredapi
