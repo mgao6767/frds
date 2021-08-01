@@ -29,3 +29,8 @@ class HHIIndexCase(unittest.TestCase):
         self.assertAlmostEqual(
             general.hhi_index(np.array([1, 1, 100, 1, 1, 1, 1])), 0.8905, 4
         )
+
+    def test_weighted_hhi_index(self):
+        self.assertEqual(
+            general.hhi_index(np.array([1, 1]), weights=np.array([1, 0])), 0.25
+        )
