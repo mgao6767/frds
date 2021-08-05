@@ -3,7 +3,7 @@
 # FRDS - Financial Research Data Services
 ![LICENSE](https://img.shields.io/github/license/mgao6767/frds?color=blue) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) ![DOWNLOADS](https://img.shields.io/pypi/dm/frds?label=PyPI%20downloads)
 
-[frds](https://github.com/mgao6767/frds/) is an open-sourced Python package for computing [a collection of major academic measures](https:/frds.io/measures/) used in the finance literature in a simple and straightforward way.
+[frds](https://github.com/mgao6767/frds/) is an open-sourced Python package for computing [a collection of major academic measures](https://frds.io/measures/) used in the finance literature in a simple and straightforward way.
 
 ## Installation
 
