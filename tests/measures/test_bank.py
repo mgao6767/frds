@@ -162,3 +162,9 @@ class CCACase(unittest.TestCase):
 
         self.assertAlmostEqual(put_price, 6.6594, 2)
         self.assertAlmostEqual(srisk_contribution, 3.3468, 3)
+
+
+class bank_z_score(unittest.TestCase):
+    def test_z_score(self):
+        z = bank.z_score(0.1, 0.3, np.array([0.14, 0.15, 0.12, 0.13]))
+        self.assertAlmostEqual(z, 35.777088, 4)
