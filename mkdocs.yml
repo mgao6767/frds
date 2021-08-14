@@ -102,6 +102,8 @@ nav:
   - Getting Started: getting-started.md
   - Measures:
       - Measures: measures.md
+      - Algorithms:
+          - Bunching: algorithms/bunching.md
       - General:
           - HHI index: measures/hhi_index.md
           - Kyle's lambda: measures/kyle_lambda.md
