@@ -1,3 +1,4 @@
+from typing import Union, Tuple
 import numpy as np
 from numpy.core.fromnumeric import cumsum
 from numpy.lib import interp, polyval
@@ -32,7 +33,73 @@ def histcounts(x: np.ndarray, edge: np.ndarray):
     return probs[:-1]
 
 
-def fuzzy_bunching(X, X0, x_l, x_min, x_max, degree, friction, noise, fig=False):
+def fuzzy_bunching(
+    X: np.ndarray,
+    X0: Union[np.ndarray, None],
+    x_l: float,
+    x_min: float,
+    x_max: float,
+    degree: int,
+    friction=True,
+    noise=True,
+    fig=False,
+) -> Tuple[float, float]:
+    r"""Fuzzy bunching
+
+    See e.g., [Kleven and Waseem (2013)](https://doi.org/10.1093/qje/qjt004) for bunching estimation,
+    and [Alvero and Xiao (2020)](https://dx.doi.org/10.2139/ssrn.3611447) for fuzzy bunching.
+
+    Note:
+        This code is adapted from Xiao's Matlab code, available at [his website](https://sites.google.com/site/kairongxiao/).
+
+    Args:
+        X (np.ndarray): bunching sample
+        X0 (Union[np.ndarray, None]): non-bunching sample if exists, skip otherwise by setting it to `None`.
+        x_l (float): threshold
+        x_min (float): excluded range lower bound
+        x_max (float): excluded range upper bound
+        degree (int): degree of polynomial for conterfactual density
+        friction (bool, optional): whether to allow optimization friction. Defaults to True.
+        noise (bool, optional): whether to allow noise in the data. Defaults to True.
+        fig (bool, optional): whether to create a figure of CDF. Defaults to False.
+
+    Returns:
+        Tuple[float, float]: (dx_hat, alpha_hat), where `dx_hat` is bunching range, $\Delta q$, and `alpha_hat` is non-optimizing share, $\alpha$.
+
+    Examples:
+        >>> from frds.algorithms.bunching import fuzzy_bunching
+        >>> import numpy as np
+
+        Generate a sample.
+        >>> N = 1000
+        >>> x_l = 0.5
+        >>> dx = 0.1
+        >>> alpha = 0
+        >>> rng = np.random.RandomState(0)
+        >>> Z0 = rng.rand(N)
+        >>> Z = Z0.copy()
+        >>> Z[(Z0 > x_l) & (Z0 <= x_l + dx)] = x_l
+        >>> Z[: round(alpha * N)] = Z0[: round(alpha * N)]
+        >>> u = 0.0
+        >>> U = u * np.random.randn(N)
+        >>> X = np.add(Z, U)
+        >>> X0 = np.add(Z0, U)
+        >>> x_max = x_l + 1.1 * dx
+        >>> x_min = x_l * 0.99
+
+        Fuzzy bunching estimation
+        >>> fuzzy_bunching(X, X0, x_l, x_min, x_max, degree=5, friction=True, noise=True, fig=False)
+        (0.032179950901143374, 0.0)
+
+    References:
+        * [Alvero and Xiao (2020)](https://dx.doi.org/10.2139/ssrn.3611447), Fuzzy bunching, *SSRN*.
+        * [Kleven and Waseem (2013)](https://doi.org/10.1093/qje/qjt004),
+            Using notches to uncover optimization frictions and structural elasticities: Theory and evidence from pakistan, *The Quarterly Journal of Ecnomics*, 128(2), 669-723.
+
+    Todo:
+        - [ ] Option to specify output plot path.
+        - [ ] Plot styling.
+    """
     G = 10 ** 4
     edge = np.linspace(x_min, x_max, G + 1)
     grid = edge[:-1]
@@ -81,11 +148,11 @@ def fuzzy_bunching(X, X0, x_l, x_min, x_max, degree, friction, noise, fig=False)
 
     # Warning: `2*A/f0_x_l` may be negative, yielding imaginary roots.
     # Have to use `numpy.lib.scimath.sqrt` to handle it.
-    if friction == 0:
+    if not friction:
         dx_hat = sqrt(2 * A / f0_x_l)
         alpha_hat = 0
 
-    if friction == 1 and noise == 0:
+    if friction and noise:
         dx_hat = sqrt(2 * A / f0_x_l)
         dF_alpha = interp(x_l + dx_hat, grid, cumsum(f)) - interp(x_l, grid, cumsum(f))
         dF0_alpha = interp(x_l + dx_hat, grid, cumsum(f0)) - interp(
@@ -94,7 +161,7 @@ def fuzzy_bunching(X, X0, x_l, x_min, x_max, degree, friction, noise, fig=False)
         alpha_hat = dF_alpha / dF0_alpha
         dx_hat = sqrt(2 * A / ((1 - alpha_hat) * f0_x_l))
 
-    if friction == 1 and noise == 1:
+    if friction and noise:
         F_x_l = interp(x_l, grid, cumsum(f))
         alpha_vec = np.linspace(0, 0.99, 100)
         dx_vec = sqrt((2 * A) / ((1 - alpha_vec) * f0_x_l))
@@ -119,7 +186,73 @@ def fuzzy_bunching(X, X0, x_l, x_min, x_max, degree, friction, noise, fig=False)
     return dx_hat, alpha_hat
 
 
-def sharp_bunching(X, X0, x_l, x_min, x_max, degree, friction, noise, fig=False):
+def sharp_bunching(
+    X: np.ndarray,
+    X0: Union[np.ndarray, None],
+    x_l: float,
+    x_min: float,
+    x_max: float,
+    degree: int,
+    friction=True,
+    noise=True,
+    fig=False,
+) -> Tuple[float, float]:
+    r"""Sharp bunching
+
+    See e.g., [Kleven and Waseem (2013)](https://doi.org/10.1093/qje/qjt004) for bunching estimation,
+    and [Alvero and Xiao (2020)](https://dx.doi.org/10.2139/ssrn.3611447) for fuzzy bunching.
+
+    Note:
+        This code is adapted from Xiao's Matlab code, available at [his website](https://sites.google.com/site/kairongxiao/).
+
+    Args:
+        X (np.ndarray): bunching sample
+        X0 (Union[np.ndarray, None]): non-bunching sample if exists, skip otherwise by setting it to `None`.
+        x_l (float): threshold
+        x_min (float): excluded range lower bound
+        x_max (float): excluded range upper bound
+        degree (int): degree of polynomial for conterfactual density
+        friction (bool, optional): whether to allow optimization friction. Defaults to True.
+        noise (bool, optional): whether to allow noise in the data. Defaults to True.
+        fig (bool, optional): whether to create a figure of CDF. Defaults to False.
+
+    Returns:
+        Tuple[float, float]: (dx_hat, alpha_hat), where `dx_hat` is bunching range, $\Delta q$, and `alpha_hat` is non-optimizing share, $\alpha$.
+
+    Examples:
+        >>> from frds.algorithms.bunching import sharp_bunching
+        >>> import numpy as np
+
+        Generate a sample.
+        >>> N = 1000
+        >>> x_l = 0.5
+        >>> dx = 0.1
+        >>> alpha = 0
+        >>> rng = np.random.RandomState(0)
+        >>> Z0 = rng.rand(N)
+        >>> Z = Z0.copy()
+        >>> Z[(Z0 > x_l) & (Z0 <= x_l + dx)] = x_l
+        >>> Z[: round(alpha * N)] = Z0[: round(alpha * N)]
+        >>> u = 0.0
+        >>> U = u * np.random.randn(N)
+        >>> X = np.add(Z, U)
+        >>> X0 = np.add(Z0, U)
+        >>> x_max = x_l + 1.1 * dx
+        >>> x_min = x_l * 0.99
+
+        Sharpe bunching estimation
+        >>> sharp_bunching(X, X0, x_l, x_min, x_max, degree=5, friction=True, noise=True, fig=False)
+        (0.00984977111886289, -1.0)
+
+    References:
+        * [Alvero and Xiao (2020)](https://dx.doi.org/10.2139/ssrn.3611447), Fuzzy bunching, *SSRN*.
+        * [Kleven and Waseem (2013)](https://doi.org/10.1093/qje/qjt004),
+            Using notches to uncover optimization frictions and structural elasticities: Theory and evidence from pakistan, *The Quarterly Journal of Ecnomics*, 128(2), 669-723.
+
+    Todo:
+        - [ ] Option to specify output plot path.
+        - [ ] Plot styling.
+    """
     G = 10 ** 4
     edge = np.linspace(x_min, x_max, G + 1)
     grid = edge[:-1]
@@ -154,11 +287,11 @@ def sharp_bunching(X, X0, x_l, x_min, x_max, degree, friction, noise, fig=False)
     B = dF - dF0
     f0_x_l = polyval(p, x_l) / np.sum(polyval(p, grid)) / (grid[1] - grid[0])
 
-    if friction == 0:
+    if not friction:
         dx_hat = B / f0_x_l
         alpha_hat = 0
 
-    if friction == 1 and noise == 0:
+    if friction and noise:
         dx_hat = B / f0_x_l
 
         dF_alpha = interp(x_l + dx_hat, grid, cumsum(f)) - interp(
@@ -170,7 +303,7 @@ def sharp_bunching(X, X0, x_l, x_min, x_max, degree, friction, noise, fig=False)
         alpha_hat = dF_alpha / dF0_alpha
         dx_hat = B / ((1 - alpha_hat) * f0_x_l)
 
-    if friction == 1 and noise == 1:
+    if friction and noise:
         F_x_l = interp(x_l, grid, cumsum(f))
         alpha_vec = np.linspace(0, 0.99, 100)
         dx_vec = B / ((1 - alpha_vec) * f0_x_l)

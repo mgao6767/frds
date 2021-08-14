@@ -13,7 +13,7 @@ tags:
 
 ### Sharp Bunching
 
-![mkapi](frds.algorithms.bunching.fuzzy_bunching)
+![mkapi](frds.algorithms.bunching.sharp_bunching)
 
 ---
 
