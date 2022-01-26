@@ -9,6 +9,7 @@
 #include "numpy/arrayobject.h"
 
 typedef double DataType;
+typedef char *CharDataType;
 
 class IsolationTree {
  private:
@@ -16,12 +17,15 @@ class IsolationTree {
     std::unique_ptr<Node> lnode, rnode;
     const size_t splitAttribute;
     const DataType splitValue;
+    const CharDataType splitChar;
     const bool isExNode;
     const int nObs;
 
-    Node(size_t splitAttribute, DataType splitValue, bool isExNode, int nObs)
+    Node(size_t splitAttribute, DataType splitValue, CharDataType splitChar,
+         bool isExNode, int nObs)
         : splitAttribute(splitAttribute),
           splitValue(splitValue),
+          splitChar(splitChar != nullptr ? splitChar : ""),
           isExNode(isExNode),
           nObs(nObs),
           lnode(nullptr),
@@ -41,15 +45,15 @@ class IsolationTree {
 class IsolationForest {
  private:
   /* data */
-  PyArrayObject *data;
+  PyArrayObject *num_data, *char_data;
   const size_t treeSize, forestSize, randomSeed, maxTreeHeight;
-  const size_t nAttrs, nObs;
+  const size_t n_num_attrs, n_char_attrs, nObs;
   std::vector<std::unique_ptr<IsolationTree>> trees;
   std::mt19937_64 randomGen;
   std::uniform_int_distribution<size_t> uniformDist;
 
   /* methods */
-  double averagePathLength(size_t const &nObs);
+  inline double averagePathLength(size_t const &nObs);
   double pathLength(size_t const &ob,
                     std::unique_ptr<IsolationTree::Node> &node, int length = 0);
   void growTree(std::vector<size_t> &sample,
@@ -57,7 +61,8 @@ class IsolationForest {
                 int const height = 0);
 
  public:
-  IsolationForest(PyArrayObject *data, size_t const &treeSize = 256,
+  IsolationForest(PyArrayObject *num_data, PyArrayObject *char_data,
+                  size_t const &treeSize = 256,
                   size_t const &forestSize = 1'000,
                   size_t const &randomSeed = 1);
   ~IsolationForest() = default;

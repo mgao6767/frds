@@ -12,15 +12,19 @@
 #include "numpy/arrayobject.h"
 
 static PyObject *iforest_wrapper(PyObject *self, PyObject *args) {
-  PyObject *in = NULL, *out = NULL;
-  PyArrayObject *arr = NULL, *outArr = NULL;
+  PyObject *num_data = NULL, *char_data = NULL, *out = NULL;
+  PyArrayObject *num_arr = NULL, *char_arr = NULL, *outArr = NULL;
   int forestSize, treeSize, randomSeed;
-  if (!PyArg_ParseTuple(args, "OOiii", &in, &out, &forestSize, &treeSize,
-                        &randomSeed))
+  if (!PyArg_ParseTuple(args, "OOOiii", &num_data, &char_data, &out,
+                        &forestSize, &treeSize, &randomSeed))
     return NULL;
 
-  arr = (PyArrayObject *)PyArray_FROM_OTF(in, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
-  if (arr == NULL) return NULL;
+  num_arr = (PyArrayObject *)PyArray_FROM_OTF(num_data, NPY_DOUBLE,
+                                              NPY_ARRAY_IN_ARRAY);
+  if (num_arr == NULL) return NULL;
+  char_arr = (PyArrayObject *)PyArray_FROM_OTF(char_data, NPY_STRING,
+                                               NPY_ARRAY_IN_ARRAY);
+  if (char_arr == NULL) return NULL;
 
 #if NPY_API_VERSION >= 0x0000000c
   outArr = (PyArrayObject *)PyArray_FROM_OTF(out, NPY_DOUBLE,
@@ -30,26 +34,26 @@ static PyObject *iforest_wrapper(PyObject *self, PyObject *args) {
       (PyArrayObject *)PyArray_FROM_OTF(out, NPY_DOUBLE, NPY_ARRAY_INOUT_ARRAY);
 #endif
   if (outArr == NULL) {
-    Py_XDECREF(arr);
+    Py_XDECREF(num_arr);
+    Py_XDECREF(char_arr);
     Py_XDECREF(outArr);
     return NULL;
   }
 
-  // number of attributes
-  auto nAttrs = PyArray_DIM(arr, 0);
   // number of obervations
-  auto nObs = PyArray_DIM(arr, 1);
+  auto nObs = PyArray_DIM(num_arr, 1);
 
-  auto iforest = IsolationForest(arr, treeSize, forestSize, randomSeed);
+  auto iforest =
+      IsolationForest(num_arr, char_arr, treeSize, forestSize, randomSeed);
   iforest.growForest();
-
   // write the ascores to the output array
   for (npy_intp i = 0; i < nObs; i++) {
     PyArray_SETITEM(outArr, (char *)PyArray_GETPTR1(outArr, i),
                     PyFloat_FromDouble(iforest.anomalyScore(i)));
   }
 
-  Py_DECREF(arr);
+  Py_DECREF(num_arr);
+  Py_DECREF(char_arr);
   Py_DECREF(outArr);
 
   Py_INCREF(Py_None);
