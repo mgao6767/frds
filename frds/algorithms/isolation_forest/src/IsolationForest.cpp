@@ -42,7 +42,7 @@ void IsolationForest::growTree(std::vector<size_t> &sample,
         }
         // Split value is not NAN, then obs with NAN or smaller are pushed left
       } else {
-        if ((isnan(obsVal)) || (obsVal <= val)) {
+        if ((isnan(obsVal)) || (obsVal < val)) {
           lobs.push_back(i);
         } else {
           robs.push_back(i);
@@ -67,7 +67,7 @@ void IsolationForest::growTree(std::vector<size_t> &sample,
         lobs.push_back(i);
       } else if (obsVal_len > val_len) {
         robs.push_back(i);
-      } else if (strcmp(obsVal, val) <= 0) {
+      } else if (strcmp(obsVal, val) < 0) {
         lobs.push_back(i);
       } else {
         robs.push_back(i);
@@ -124,7 +124,7 @@ double IsolationForest::pathLength(size_t const &ob,
   if (node->splitAttribute < this->n_num_attrs) {
     DataType val =
         *(DataType *)PyArray_GETPTR2(this->num_data, node->splitAttribute, ob);
-    if (val <= node->splitValue) {
+    if (val < node->splitValue) {
       return this->pathLength(ob, node->lnode, length + 1);
     } else {
       return this->pathLength(ob, node->rnode, length + 1);
@@ -138,7 +138,7 @@ double IsolationForest::pathLength(size_t const &ob,
       return this->pathLength(ob, node->lnode, length + 1);
     } else if (val_len > splitVal_len) {
       return this->pathLength(ob, node->rnode, length + 1);
-    } else if (strcmp(val, node->splitChar) <= 0) {
+    } else if (strcmp(val, node->splitChar) < 0) {
       return this->pathLength(ob, node->lnode, length + 1);
     } else {
       return this->pathLength(ob, node->rnode, length + 1);
