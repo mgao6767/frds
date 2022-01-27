@@ -23,9 +23,10 @@ def anomaly_scores(
         exclude_cols (list, optional): columns in the input `data` to ignore. Defaults to None.
         random_seed (int, optional): random seed for reproducibility. Defaults to 1.
         name (str, optional): column name of the return DataFrame. Defaults to "AnomalyScore".
+        workers (int, optional): number of CPUs to use for multiprocessing. Defaults to all CPUs.
 
     Returns:
-        pd.DataFrame: [description]
+        pd.DataFrame: indexed DataFrame of the anomaly scores.
     """
     exclude_cols = [] if exclude_cols is None else exclude_cols
     data = data.drop(columns=exclude_cols)
@@ -38,13 +39,6 @@ def anomaly_scores(
     # make an empty array to store calculated anomaly scores
     a_scores = np.empty(n_obs, dtype=np.double)
     # magic at work
-    ext.iforest(
-        num_data,
-        char_data,
-        a_scores,
-        forest_size,
-        tree_size,
-        random_seed,
-    )
+    ext.iforest(num_data, char_data, a_scores, forest_size, tree_size, random_seed)
     # the order is preserved
     return pd.DataFrame(a_scores, index=obs, columns=[name])

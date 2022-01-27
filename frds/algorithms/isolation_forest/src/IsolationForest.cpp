@@ -96,6 +96,7 @@ IsolationForest::IsolationForest(PyArrayObject *num_data,
   this->num_data = num_data;
   this->char_data = char_data;
   this->trees.reserve(forestSize);
+  this->anomalyScores.resize(this->nObs);
   this->randomGen = std::mt19937_64(randomSeed);
   this->uniformDist =
       std::uniform_int_distribution<size_t>(0, n_num_attrs + n_char_attrs - 1);
@@ -104,23 +105,6 @@ IsolationForest::IsolationForest(PyArrayObject *num_data,
 inline double IsolationForest::averagePathLength(size_t const &nObs) {
   auto n = (double)nObs;
   return 2 * (log(n - 1) + EULER_GAMMA) - (2 * (n - 1) / n);
-}
-
-void IsolationForest::growForest() {
-  // Make a vector from 0 to (nObs-1) representing the indices of observations
-  std::vector<size_t> obs(this->nObs);
-  std::iota(obs.begin(), obs.end(), 0);
-
-  for (size_t i = 0; i < this->forestSize; i++) {
-    // Sample `treeSize` observations without replacement
-    std::vector<size_t> sample;
-    std::sample(obs.begin(), obs.end(), std::back_inserter(sample),
-                this->treeSize, this->randomGen);
-
-    auto tree = std::make_unique<IsolationTree>();
-    this->growTree(sample, tree->root);
-    this->trees.push_back(std::move(tree));
-  }
 }
 
 double IsolationForest::anomalyScore(size_t const &ob) {
@@ -164,10 +148,12 @@ double IsolationForest::pathLength(size_t const &ob,
 
 std::thread IsolationForest::grow(const unsigned int jobs) {
   return std::thread([this, jobs] {
+    // Make a vector from 0 to (nObs-1) representing the indices of observations
     std::vector<size_t> obs(this->nObs);
     std::iota(obs.begin(), obs.end(), 0);
     std::vector<size_t> sample;
     for (size_t i = 0; i < jobs; i++) {
+      // Sample `treeSize` observations without replacement
       std::sample(obs.begin(), obs.end(), std::back_inserter(sample),
                   this->treeSize, this->randomGen);
       auto tree = std::make_unique<IsolationTree>();
@@ -178,3 +164,60 @@ std::thread IsolationForest::grow(const unsigned int jobs) {
     }
   });
 };
+
+void IsolationForest::grow() {
+  const auto jobs_per_processor = this->forestSize / this->workers;
+  std::vector<std::thread> ts;
+  ts.reserve(this->workers);
+
+  Py_BEGIN_ALLOW_THREADS
+
+      for (size_t i = 0; i < this->workers; i++) {
+    auto jobs =
+        i == 0 ? this->forestSize - jobs_per_processor * (this->workers - 1)
+               : jobs_per_processor;
+    auto t = this->grow(jobs);
+    ts.push_back(std::move(t));
+  }
+
+  for (auto &t : ts) {
+    if (t.joinable()) t.join();
+  }
+  Py_END_ALLOW_THREADS
+}
+
+std::thread IsolationForest::calAnomalyScores(const size_t &start_ob,
+                                              const size_t &n) {
+  return std::thread([this, start_ob, n] {
+    for (size_t i = start_ob; i < start_ob + n; i++) {
+      // no need to lock because the A-score of an observation is calculated in
+      // one thread
+      this->anomalyScores[i] = this->anomalyScore(i);
+    }
+  });
+};
+
+void IsolationForest::calculateAnomalyScores() {
+  const auto jobs_per_processor = this->nObs / this->workers;
+  std::vector<std::thread> ts;
+  ts.reserve(this->workers);
+
+  Py_BEGIN_ALLOW_THREADS
+
+      for (size_t i = 0; i < this->workers; i++) {
+    auto jobs = i == this->workers - 1 ? this->nObs - jobs_per_processor * i
+                                       : jobs_per_processor;
+    if (i < this->workers - 1) {
+      ts.push_back(
+          this->calAnomalyScores(i * jobs_per_processor, jobs_per_processor));
+    } else {
+      auto remain = this->nObs - jobs_per_processor * i;
+      ts.push_back(this->calAnomalyScores(this->nObs - remain, remain));
+    }
+  }
+
+  for (auto &t : ts) {
+    if (t.joinable()) t.join();
+  }
+  Py_END_ALLOW_THREADS
+}

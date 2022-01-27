@@ -34,13 +34,12 @@ class IsolationTree {
           rnode(nullptr) {}
   };
 
- public:
-  IsolationTree() = default;
-  ~IsolationTree() = default;
-
   typedef std::unique_ptr<Node> ptrNode;
   ptrNode root;
 
+ public:
+  IsolationTree() = default;
+  ~IsolationTree() = default;
   friend class IsolationForest;
 };
 
@@ -49,6 +48,12 @@ class IsolationForest {
   /* data */
   PyArrayObject *num_data, *char_data;
   std::uniform_int_distribution<size_t> uniformDist;
+  std::mt19937_64 randomGen;
+  const size_t treeSize, forestSize, randomSeed, maxTreeHeight;
+  const size_t n_num_attrs, n_char_attrs, nObs;
+  const unsigned int workers = std::thread::hardware_concurrency();
+  std::vector<std::unique_ptr<IsolationTree>> trees;
+  std::mutex mylock;
 
   /* methods */
   inline double averagePathLength(size_t const &nObs);
@@ -57,21 +62,19 @@ class IsolationForest {
   void growTree(std::vector<size_t> &sample,
                 std::unique_ptr<IsolationTree::Node> &node,
                 int const height = 0);
+  std::thread grow(const unsigned int jobs);
+  std::thread calAnomalyScores(const size_t &start_ob, const size_t &n);
+  double anomalyScore(size_t const &ob);
 
  public:
-  std::mt19937_64 randomGen;
-  const size_t treeSize, forestSize, randomSeed, maxTreeHeight;
-  const size_t n_num_attrs, n_char_attrs, nObs;
-  std::vector<std::unique_ptr<IsolationTree>> trees;
-  std::mutex mylock;
+  std::vector<double> anomalyScores;
   IsolationForest(PyArrayObject *num_data, PyArrayObject *char_data,
                   size_t const &treeSize = 256,
                   size_t const &forestSize = 1'000,
                   size_t const &randomSeed = 1);
   ~IsolationForest() = default;
-  void growForest();
-  double anomalyScore(size_t const &ob);
-  std::thread grow(const unsigned int jobs);
+  void grow();
+  void calculateAnomalyScores();
 };
 
 #endif  // FRDS_ALGO_ISOLATION_FOREST_H
