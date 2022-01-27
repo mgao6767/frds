@@ -45,9 +45,29 @@ static PyObject *iforest_wrapper(PyObject *self, PyObject *args) {
 
   auto iforest =
       IsolationForest(num_arr, char_arr, treeSize, forestSize, randomSeed);
-  iforest.growForest();
-  // write the ascores to the output array
-  for (npy_intp i = 0; i < nObs; i++) {
+
+  const auto processor_count = std::thread::hardware_concurrency();
+  const auto jobs_per_processor = forestSize / processor_count;
+  std::vector<std::thread> ts;
+  ts.reserve(processor_count);
+
+  Py_BEGIN_ALLOW_THREADS
+
+      for (size_t i = 0; i < processor_count; i++) {
+    auto jobs = i == 0 ? forestSize - jobs_per_processor * (processor_count - 1)
+                       : jobs_per_processor;
+    auto t = iforest.grow(jobs);
+    ts.push_back(std::move(t));
+  }
+
+  for (auto &t : ts) {
+    if (t.joinable()) t.join();
+    // iforest.trees.push_back(std::move(tree));
+  }
+  Py_END_ALLOW_THREADS
+
+      // write the ascores to the output array
+      for (npy_intp i = 0; i < nObs; i++) {
     PyArray_SETITEM(outArr, (char *)PyArray_GETPTR1(outArr, i),
                     PyFloat_FromDouble(iforest.anomalyScore(i)));
   }

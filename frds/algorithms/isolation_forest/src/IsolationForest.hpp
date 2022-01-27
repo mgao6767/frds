@@ -3,7 +3,9 @@
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <memory>
+#include <mutex>
 #include <random>
+#include <thread>
 #include <vector>
 
 #include "numpy/arrayobject.h"
@@ -32,12 +34,12 @@ class IsolationTree {
           rnode(nullptr) {}
   };
 
-  typedef std::unique_ptr<Node> ptrNode;
-  ptrNode root;
-
  public:
   IsolationTree() = default;
   ~IsolationTree() = default;
+
+  typedef std::unique_ptr<Node> ptrNode;
+  ptrNode root;
 
   friend class IsolationForest;
 };
@@ -46,10 +48,6 @@ class IsolationForest {
  private:
   /* data */
   PyArrayObject *num_data, *char_data;
-  const size_t treeSize, forestSize, randomSeed, maxTreeHeight;
-  const size_t n_num_attrs, n_char_attrs, nObs;
-  std::vector<std::unique_ptr<IsolationTree>> trees;
-  std::mt19937_64 randomGen;
   std::uniform_int_distribution<size_t> uniformDist;
 
   /* methods */
@@ -61,6 +59,11 @@ class IsolationForest {
                 int const height = 0);
 
  public:
+  std::mt19937_64 randomGen;
+  const size_t treeSize, forestSize, randomSeed, maxTreeHeight;
+  const size_t n_num_attrs, n_char_attrs, nObs;
+  std::vector<std::unique_ptr<IsolationTree>> trees;
+  std::mutex mylock;
   IsolationForest(PyArrayObject *num_data, PyArrayObject *char_data,
                   size_t const &treeSize = 256,
                   size_t const &forestSize = 1'000,
@@ -68,6 +71,7 @@ class IsolationForest {
   ~IsolationForest() = default;
   void growForest();
   double anomalyScore(size_t const &ob);
+  std::thread grow(const unsigned int jobs);
 };
 
 #endif  // FRDS_ALGO_ISOLATION_FOREST_H

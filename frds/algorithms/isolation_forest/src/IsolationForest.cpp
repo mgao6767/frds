@@ -161,3 +161,20 @@ double IsolationForest::pathLength(size_t const &ob,
     }
   }
 }
+
+std::thread IsolationForest::grow(const unsigned int jobs) {
+  return std::thread([this, jobs] {
+    std::vector<size_t> obs(this->nObs);
+    std::iota(obs.begin(), obs.end(), 0);
+    std::vector<size_t> sample;
+    for (size_t i = 0; i < jobs; i++) {
+      std::sample(obs.begin(), obs.end(), std::back_inserter(sample),
+                  this->treeSize, this->randomGen);
+      auto tree = std::make_unique<IsolationTree>();
+      growTree(sample, tree->root);
+      this->mylock.lock();
+      this->trees.push_back(std::move(tree));
+      this->mylock.unlock();
+    }
+  });
+};
