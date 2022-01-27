@@ -27,7 +27,7 @@ class IsolationTree {
          bool isExNode, int nObs)
         : splitAttribute(splitAttribute),
           splitValue(splitValue),
-          splitChar(splitChar != nullptr ? splitChar : ""),
+          splitChar(splitChar),
           isExNode(isExNode),
           nObs(nObs),
           lnode(nullptr),
