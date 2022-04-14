@@ -19,7 +19,7 @@ def init_argparse() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(
         title="Sub-commands",
         dest="command",
-        description="Choose one from the following. Use `mktstructure subcommand -h` to see help for each sub-command.",
+        description="Choose one from the following. Use `frds-mktstructure subcommand -h` to see help for each sub-command.",
     )
     parser_download = subparsers.add_parser(
         "download",
