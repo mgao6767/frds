@@ -9,17 +9,15 @@ repo_name: mgao6767/frds
 repo_url: https://github.com/mgao6767/frds/
 
 # Copyright
-copyright: Copyright &copy; 2020-2021 frds.io
+copyright: Copyright &copy; 2020-2022 frds.io
 
 # Configuration
 theme:
   name: material
   features:
-    - tabs
     - navigation.tabs
-    # - navigation.tabs.sticky
-    # - navigation.expand
     - navigation.top
+    - navigation.tracking
     - content.code.annotate
   language: en
   palette:
@@ -37,18 +35,21 @@ plugins:
   - tags:
       tags_file: measures.md
   - search # necessary for search to work
-  - git-revision-date-localized
+  - git-revision-date-localized:
+      enable_creation_date: true
   - mkdocs-jupyter:
       include_source: True
       ignore_h1_titles: True
   - minify:
       minify_html: true
   - mkapi:
-      # src_dirs: [frds]
+      src_dirs: [frds]
       filters: [strict]
 
 # Extensions
 markdown_extensions:
+  - pymdownx.tabbed:
+      alternate_style: true
   - attr_list
   - md_in_html
   - meta
