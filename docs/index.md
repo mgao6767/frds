@@ -234,5 +234,5 @@ Sub-commands:
 ## Next step
 
 - [x] Introduction of `frds`
-- [ ] Check out the [notes to get started](https://frds.io/../../getting-started/)
-- [ ] Check out the [documentation of built-in measures](https://frds.io/measures/)
+- [ ] Check out the [notes to get started](/docs)
+- [ ] Check out the [documentation of built-in measures](/measures)
