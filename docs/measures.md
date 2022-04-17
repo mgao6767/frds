@@ -1,4 +1,4 @@
-# Built-in Measures and Algorithms
+# Built-ins
 
 [TAGS]
 

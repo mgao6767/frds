@@ -38,8 +38,8 @@ It is developed and maintained by [Dr. Mingze Gao](https://mingze-gao.com) from 
     pip install -e .
     ```
 
-!!! note
-    On Windows, [Microsoft Visual C++ Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) may need to be installed so that the C/C++ extensions in the package can be compiled. 
+!!! info "Note"
+    On Windows, [Microsoft Visual C++ Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) may be needed to compile the C/C++ extensions in the package.
 
 ## Built-in measures
 
@@ -119,10 +119,10 @@ Additionally, `frds` provides an interface to load data from common data sources
                                         FYEAR INDFMT CONSOL POPSRC DATAFMT   TIC      CUSIP                   CONM  ... PRCL_F   ADJEX_F RANK    AU  AUOP  AUOPIC CEOSO CFOSO
     GVKEY  DATADATE                                                                                                 ...
     001000 1961-12-31 00:00:00.000000  1961.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.341831  NaN  None  None    None  None  None
-        1962-12-31 00:00:00.000000  1962.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.341831  NaN  None  None    None  None  None
-        1963-12-31 00:00:00.000000  1963.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.244497  NaN  None  None    None  None  None
-        1964-12-31 00:00:00.000000  1964.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.089999  NaN  None  None    None  None  None
-        1965-12-31 00:00:00.000000  1965.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.089999  NaN  None  None    None  None  None
+           1962-12-31 00:00:00.000000  1962.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.341831  NaN  None  None    None  None  None
+           1963-12-31 00:00:00.000000  1963.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.244497  NaN  None  None    None  None  None
+           1964-12-31 00:00:00.000000  1964.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.089999  NaN  None  None    None  None  None
+           1965-12-31 00:00:00.000000  1965.0   INDL      C      D     STD  AE.2  000032102  A & E PLASTIK PAK INC  ...    NaN  3.089999  NaN  None  None    None  None  None
 
     [5 rows x 946 columns]
     ```
@@ -134,7 +134,7 @@ Additionally, `frds` provides an interface to load data from common data sources
         setup(username="username", password="password", save_credentials=True)
         ```
 
-        If `save_credentials=True`, the username and password will be saved locally in `credentials.json` in the `frds` folder. Then in later uses, no more setup is required (no just current session).
+        If `save_credentials=True`, the username and password will be saved locally in `credentials.json` in the `frds` folder. Then in later uses, no more setup is required (not just current session).
 
         The `frds` folder is created under the user's home directory to store downloaded data upon installation.
 

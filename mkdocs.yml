@@ -18,6 +18,8 @@ theme:
     - navigation.tabs
     - navigation.top
     - navigation.tracking
+    - navigation.indexes
+    - navigation.sections
     - content.code.annotate
   language: en
   palette:
@@ -100,11 +102,22 @@ extra:
 nav:
   - Home:
     - FRDS: index.md
-    - Getting Started: https://frds.io/getting-started/
-    - Documentation: https://frds.io/measures/
-  - Getting Started: getting-started.md
+    - Getting started: /docs
+    - frds-mktstructure: /mktstructure
+    - Measures: /measures
+  - Documentation: 
+      - docs/index.md
+      - frds:
+          - Working with WRDS data: docs/wrds.md
+          - Using built-in measures: docs/measures.md
+      - frds-mktstructure: 
+          - mktstructure/index.md
+          - Download data: mktstructure/download-data.md
+          - Clean data: mktstructure/clean-data.md
+          - Classify trade direction: mktstructure/classify-trade-direction.md
+          - Compute measures: mktstructure/compute-measures.md
   - Measures:
-      - Measures: measures.md
+      - measures.md
       - Algorithms:
           - Bunching: algorithms/bunching.md
       - General:
