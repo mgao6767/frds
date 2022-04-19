@@ -14,7 +14,6 @@ pip install frds -U
 ```
 
 ### Install from source
-    
 
 ``` bash
 git clone https://github.com/mgao6767/frds.git
@@ -30,9 +29,11 @@ pip install -e .
 
 On Windows, [Microsoft Visual C++ Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) may need to be installed so that the C/C++ extensions in the package can be compiled. 
 
-## Example usage
+## Note
 
-### Built-in measures
+This library is still under development and breaking changes may be expected.
+
+## Built-in measures
 
 The primary purpose of `frds` is to offer ready-to-use functions used in researches.
 
@@ -74,9 +75,15 @@ Another example, [Distress Insurance Premium (DIP)](https://frds.io/measures/dis
 
 For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/).
 
-### Data source integration
+## Data source integration
 
-Additionally, `frds` provides an interface to load data from common data sources such as the [Wharton Research Data Services (WRDS)](https://wrds-web.wharton.upenn.edu/wrds/).
+Additionally, `frds` provides an interface to load data from common data sources such as
+
+- [Wharton Research Data Services (WRDS)](https://wrds-web.wharton.upenn.edu/wrds/)
+- [Refinitiv Tick History (formerly Thomson Reuters Tick History)](https://www.refinitiv.com/en/market-data/data-feeds/tick-history)
+- more to come...
+
+### WRDS
 
 As an example, let's say we want to download the Compustat Fundamentals Annual dataset.
 
@@ -117,6 +124,28 @@ GVKEY   DATADATE
 dtype: float64
 ```
 
-## Note
+### Refinitiv Tick History
 
-This library is still under development and breaking changes may be expected.
+`frds` provides a dedicated command-line tool `frds-mktstructure`.
+
+Use `-h` or `--help` to see the usage instruction:
+
+``` bash title="frds-mktstructure can be used without programming"
+$ frds-mktstructure -h
+usage: frds-mktstructure [OPTION]...
+
+Download data from Refinitiv Tick History and compute some market microstructure measures.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+
+Sub-commands:
+  Choose one from the following. Use `frds-mktstructure subcommand -h` to see help for each sub-command.
+
+  {download,clean,classify,compute}
+    download            Download data from Refinitiv Tick History
+    clean               Clean downloaded data
+    classify            Classify ticks into buy and sell orders
+    compute             Compute market microstructure measures
+```
