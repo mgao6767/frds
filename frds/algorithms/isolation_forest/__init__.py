@@ -11,7 +11,7 @@ def anomaly_scores(
     forest_size: int = 1000,
     tree_size: int = 256,
     exclude_cols: list = None,
-    random_seed: int = 1,
+    random_seed: int = 1021,
     name: str = "AnomalyScore",
 ) -> pd.DataFrame:
     """Calculate the anomaly socres using Isolation Forest
@@ -21,9 +21,8 @@ def anomaly_scores(
         tree_size (int, optional): number of observations per Isolation Tree. Defaults to 256.
         forest_size (int, optional): number of trees. Defaults to 1_000.
         exclude_cols (list, optional): columns in the input `data` to ignore. Defaults to None.
-        random_seed (int, optional): random seed for reproducibility. Defaults to 1.
+        random_seed (int, optional): random seed for reproducibility. Defaults to 1021.
         name (str, optional): column name of the return DataFrame. Defaults to "AnomalyScore".
-        workers (int, optional): number of CPUs to use for multiprocessing. Defaults to all CPUs.
 
     Returns:
         pd.DataFrame: indexed DataFrame of the anomaly scores.

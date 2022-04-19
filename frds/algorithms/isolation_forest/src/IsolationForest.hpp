@@ -48,7 +48,6 @@ class IsolationForest {
   /* data */
   PyArrayObject *num_data, *char_data;
   std::uniform_int_distribution<size_t> uniformDist;
-  std::mt19937_64 randomGen;
   const size_t treeSize, forestSize, randomSeed, maxTreeHeight;
   const size_t n_num_attrs, n_char_attrs, nObs;
   const unsigned int workers = std::thread::hardware_concurrency();
@@ -60,9 +59,9 @@ class IsolationForest {
   double pathLength(size_t const &ob,
                     std::unique_ptr<IsolationTree::Node> &node, int length = 0);
   void growTree(std::vector<size_t> &sample,
-                std::unique_ptr<IsolationTree::Node> &node,
-                int const height = 0);
-  std::thread grow(const unsigned int jobs);
+                std::unique_ptr<IsolationTree::Node> &node, int const height,
+                std::mt19937_64 randomGen);
+  std::thread grow(const unsigned int thread_id, const unsigned int jobs);
   std::thread calAnomalyScores(const size_t &start_ob, const size_t &n);
   double anomalyScore(size_t const &ob);
 

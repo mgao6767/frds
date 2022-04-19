@@ -11,14 +11,14 @@
 
 void IsolationForest::growTree(std::vector<size_t> &sample,
                                std::unique_ptr<IsolationTree::Node> &node,
-                               int const height) {
+                               int const height, std::mt19937_64 randomGen) {
   auto nObs = sample.size();
   if ((nObs <= 1) || (height >= this->maxTreeHeight)) {
     node = std::make_unique<IsolationTree::Node>(-1, NAN, nullptr, true, nObs);
     return;
   }
   // Here, randomly pick an attribute
-  auto attr = this->uniformDist(this->randomGen);
+  auto attr = this->uniformDist(randomGen);
 
   std::vector<size_t> lobs, robs;
   lobs.reserve(nObs);
@@ -29,7 +29,7 @@ void IsolationForest::growTree(std::vector<size_t> &sample,
     // When the datatype of this attribute is numeric, pick a split value
     // directly from numpy array.
     DataType val = *(DataType *)PyArray_GETPTR2(this->num_data, attr,
-                                                sample[dist(this->randomGen)]);
+                                                sample[dist(randomGen)]);
     for (auto &i : sample) {
       auto obsVal = *(DataType *)PyArray_GETPTR2(this->num_data, attr, i);
       // NAN is set to be "smaller" than any value
@@ -55,9 +55,8 @@ void IsolationForest::growTree(std::vector<size_t> &sample,
 
   } else {
     // The datatype of the attribute is string
-    CharDataType val =
-        (CharDataType)PyArray_GETPTR2(this->char_data, attr - this->n_num_attrs,
-                                      sample[dist(this->randomGen)]);
+    CharDataType val = (CharDataType)PyArray_GETPTR2(
+        this->char_data, attr - this->n_num_attrs, sample[dist(randomGen)]);
     const auto val_len = strlen(val);
     for (auto &i : sample) {
       auto obsVal = (CharDataType)PyArray_GETPTR2(this->char_data,
@@ -77,8 +76,8 @@ void IsolationForest::growTree(std::vector<size_t> &sample,
     node = std::make_unique<IsolationTree::Node>(attr, NAN, val, false, nObs);
   }
 
-  growTree(lobs, node->lnode, height + 1);
-  growTree(robs, node->rnode, height + 1);
+  growTree(lobs, node->lnode, height + 1, randomGen);
+  growTree(robs, node->rnode, height + 1, randomGen);
 }
 
 IsolationForest::IsolationForest(PyArrayObject *num_data,
@@ -97,7 +96,7 @@ IsolationForest::IsolationForest(PyArrayObject *num_data,
   this->char_data = char_data;
   this->trees.reserve(forestSize);
   this->anomalyScores.resize(this->nObs);
-  this->randomGen = std::mt19937_64(randomSeed);
+  // this->randomGen = std::mt19937_64(randomSeed);
   this->uniformDist =
       std::uniform_int_distribution<size_t>(0, n_num_attrs + n_char_attrs - 1);
 }
@@ -146,18 +145,27 @@ double IsolationForest::pathLength(size_t const &ob,
   }
 }
 
-std::thread IsolationForest::grow(const unsigned int jobs) {
-  return std::thread([this, jobs] {
+std::thread IsolationForest::grow(const unsigned int thread_id,
+                                  const unsigned int jobs) {
+  return std::thread([this, thread_id, jobs] {
     // Make a vector from 0 to (nObs-1) representing the indices of observations
     std::vector<size_t> obs(this->nObs);
     std::iota(obs.begin(), obs.end(), 0);
     std::vector<size_t> sample;
-    for (size_t i = 0; i < jobs; i++) {
+    // Make use of nObs and randomSeed in later random engine init
+    auto random_offset =
+        this->nObs %
+        (this->randomSeed > 0 ? this->randomSeed : 1 - this->randomSeed);
+    for (size_t i = thread_id * jobs; i < thread_id * jobs + jobs; i++) {
       // Sample `treeSize` observations without replacement
+      // Random engine for the i-th sampling and tree construction
+      // The samples chosen and tree grown is thus determined by the number of
+      // trees and random seed only, unaffected by the worker threads used
+      static thread_local auto randomGen = std::mt19937_64(i + random_offset);
       std::sample(obs.begin(), obs.end(), std::back_inserter(sample),
-                  this->treeSize, this->randomGen);
+                  this->treeSize, randomGen);
       auto tree = std::make_unique<IsolationTree>();
-      growTree(sample, tree->root);
+      growTree(sample, tree->root, 0, randomGen);
       this->mylock.lock();
       this->trees.push_back(std::move(tree));
       this->mylock.unlock();
@@ -176,7 +184,7 @@ void IsolationForest::grow() {
     auto jobs =
         i == 0 ? this->forestSize - jobs_per_processor * (this->workers - 1)
                : jobs_per_processor;
-    auto t = this->grow(jobs);
+    auto t = this->grow(i, jobs);
     ts.push_back(std::move(t));
   }
 
