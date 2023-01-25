@@ -43,3 +43,14 @@ def cmd_download(args: argparse.Namespace):
         parse_to_data_dir("__tmp.csv", args.data_dir, "1")
 
         os.remove("__tmp.csv")
+
+        if args.compress:
+
+            print("Compressing parsed data.")
+            for root, _, files in os.walk(args.data_dir):
+                for f in [f for f in files if "gz" not in f.lower()]:
+                    with open(os.path.join(root, f), "rb") as fin:
+                        data = fin.read()
+                    with gzip.open(os.path.join(root, f + ".gz"), "wb") as fout:
+                        fout.write(data)
+                    os.remove(os.path.join(root, f))

@@ -97,6 +97,13 @@ def init_argparse() -> argparse.ArgumentParser:
         default="./data",
         help="output data directory (used when --parse is set)",
     )
+    parser_download.add_argument(
+        "--compress",
+        default=False,
+        const=True,
+        action="store_const",
+        help="if set, compress parsed data (effective only when --parse is set)",
+    )
 
     # parser for `clean` subcommand
     parser_clean.add_argument(
