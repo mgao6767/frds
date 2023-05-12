@@ -4,8 +4,7 @@
 
 [`frds`](https://github.com/mgao6767/frds/) is a Python package for computing [a collection of academic measures](/measures/) used in the finance literature. It is developed by [Dr. Mingze Gao](https://mingze-gao.com) from the University of Sydney, as a personal project during his postdoctoral research fellowship.
 
-![frds](https://github.com/mgao6767/frds/raw/master/images/frds_logo.png)
-
+![frds](https://github.com/mgao6767/frds/raw/main/images/frds_logo.png)
 
 ## Installation
 
@@ -56,10 +55,10 @@ The primary purpose of `frds` is to offer ready-to-use functions.
     0.7746543307660252
     ```
 
-    1. `#!python absorption_ratio` function can also be imported using:
+    1. We could also import directly the `estimate` function in `#!python absorption_ratio`. 
     
         ``` python
-        from frds.measures.bank import absorption_ratio
+        from frds.measures.absorption_ratio import estimate
         ```
         
         :octicons-light-bulb-16: Tip: You can use ++tab++ to navigate annotations.
