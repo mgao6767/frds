@@ -9,7 +9,7 @@ repo_name: mgao6767/frds
 repo_url: https://github.com/mgao6767/frds/
 
 # Copyright
-copyright: Copyright &copy; 2020-2022 frds.io
+copyright: Copyright &copy; 2020-2023 frds.io
 
 # Configuration
 theme:
@@ -19,18 +19,39 @@ theme:
     - navigation.top
     - navigation.tracking
     - navigation.indexes
-    - navigation.sections
+    # - navigation.sections
     - content.code.annotate
+    - content.code.copy
+    - content.code.select
   language: en
   palette:
-    primary: indigo
-    accent: indigo
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      primary: white
+      accent: blue
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      primary: white
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
   font:
     text: Roboto
     code: Roboto Mono
   favicon: images/frds_icon.png
-  logo: images/image.png
-  custom_dir: overrides
+  logo: images/frds_icon.png
+  icon:
+    repo: fontawesome/brands/github
 
 # Plugins
 plugins:
@@ -39,14 +60,9 @@ plugins:
   - search # necessary for search to work
   - git-revision-date-localized:
       enable_creation_date: true
-  - mkdocs-jupyter:
-      include_source: True
-      ignore_h1_titles: True
   - minify:
       minify_html: true
-  - mkapi:
-      src_dirs: [frds]
-      filters: [strict]
+  - mkdocstrings
 
 # Extensions
 markdown_extensions:
@@ -87,56 +103,17 @@ markdown_extensions:
 
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
-  - javascripts/extra.js
-
-extra_css:
-  - stylesheets/extra.css
 
 extra:
-  generator: false
-  analytics:
-    provider: google
-    property: UA-114057186-1
   generator: false
 
 nav:
   - Home:
     - FRDS: index.md
-    - Getting started: /docs
-    - frds-mktstructure: /mktstructure
-    - Measures: /measures
-  - Documentation: 
-      - docs/index.md
-      - frds:
-          - Working with WRDS data: docs/wrds.md
-          - Using built-in measures: docs/measures.md
-      - frds-mktstructure: 
-          - mktstructure/index.md
-          - Download data: mktstructure/download-data.md
-          - Clean data: mktstructure/clean-data.md
-          - Classify trade direction: mktstructure/classify-trade-direction.md
-          - Compute measures: mktstructure/compute-measures.md
   - Measures:
       - measures.md
-      - Algorithms:
-          - Bunching: algorithms/bunching.md
-      - General:
-          - HHI index: measures/hhi_index.md
-          - Kyle's lambda: measures/kyle_lambda.md
       - Banking:
           - Absoprtion ratio: measures/absorption_ratio.md
-          - Contingent claim analysis: measures/cca.md 
-          - Distress insurance premium: measures/distress_insurance_premium.md
-          - Marginal expected shortfall: measures/marginal_expected_shortfall.md
           - Systemic expected shortfall: measures/systemic_expected_shortfall.md
-          - Z-score: measures/bank_z_score.md
-      - Corporate:
-          - Book leverage: measures/book_leverage.md
-          - Capital expenditure: measures/capital_expenditure.md
-          - Firm size: measures/firm_size.md
-          - Market-to-book ratio: measures/market_to_book.md
-          - ROA: measures/roa.md
-          - ROE: measures/roe.md
-          - Tangibility: measures/tangibility.md
-  - Return to My Personal Site: https://mingze-gao.com
+  - Author Site: https://mingze-gao.com
 

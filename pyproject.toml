@@ -1,0 +1,36 @@
+[project]
+name = "frds"
+version = "1.0.0rc1"
+authors = [
+  { name="Mingze Gao", email="adrian.gao@outlook.com" },
+]
+description = "Financial Research Data Services"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+license = {text = "MIT License"}
+dependencies = [
+  "numpy",
+  "pandas",
+  "scipy"
+]
+
+
+[project.urls]
+homepage = "https://github.com/mgao6767/frds"
+documentation = "https://frds.io"
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
