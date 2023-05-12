@@ -62,7 +62,10 @@ plugins:
       enable_creation_date: true
   - minify:
       minify_html: true
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
 
 # Extensions
 markdown_extensions:
@@ -106,6 +109,13 @@ extra_javascript:
 
 extra:
   generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mgao6767/frds/
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/frds/
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:mingze.gao@sydney.edu.au
 
 nav:
   - Home:
