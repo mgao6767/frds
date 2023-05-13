@@ -8,7 +8,7 @@ def estimate(
     mes_firm: float,
     lvg_firm: float,
 ) -> float:
-    """
+    """Systemic Expected Shortfall
 
     Args:
         mes_training_sample (np.ndarray): (n_firms,) array of firm ex ante MES.
@@ -21,14 +21,14 @@ def estimate(
         float: The systemic risk that firm $i$ poses to the system at a future time.
 
     Examples:
-        >>> from frds.measures import systemic_expected_shortfall
+        >>> from frds.measures import systemic_expected_shortfall as ses
         >>> import numpy as np
         >>> mes_training_sample = np.array([-0.023, -0.07, 0.01])
         >>> lvg_training_sample = np.array([1.8, 1.5, 2.2])
         >>> ses_training_sample = np.array([0.3, 0.4, -0.2])
         >>> mes_firm = 0.04
         >>> lvg_firm = 1.7
-        >>> systemic_expected_shortfall.estimate(mes_training_sample, lvg_training_sample, ses_training_sample, mes_firm, lvg_firm)
+        >>> ses.estimate(mes_training_sample, lvg_training_sample, ses_training_sample, mes_firm, lvg_firm)
         -0.33340757238306845
 
     """
