@@ -119,11 +119,13 @@ extra:
 
 nav:
   - Home:
-    - FRDS: index.md
+    - frds: index.md
+    - Author: https://mingze-gao.com
   - Measures:
       - measures.md
       - Banking:
           - Absoprtion ratio: measures/absorption_ratio.md
+          - Contingent claim analysis: measures/contingent_claim_analysis.md
           - Distress insurance premium: measures/distress_insurance_premium.md
           - Marginal expected shortfall: measures/marginal_expected_shortfall.md
           - Systemic expected shortfall: measures/systemic_expected_shortfall.md

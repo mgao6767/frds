@@ -37,7 +37,7 @@ The general steps are:
 Systemic risk measures:
 
 * [Absorption Ratio](/measures/absorption_ratio/)
-* [Contingent Claim Analysis](/measures/cca/)
+* [Contingent Claim Analysis](/measures/contingent_claim_analysis/)
 * [Marginal Expected Shortfall (MES)](/measures/marginal_expected_shortfall/)
 * [Systemic Expected Shortfall (SES)](/measures/systemic_expected_shortfall/)
 

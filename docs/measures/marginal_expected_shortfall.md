@@ -28,7 +28,7 @@ It is used to construct the [Systemic Expected Shortfall](/measures/systemic_exp
 Systemic risk measures:
 
 * [Absorption Ratio](/measures/absorption_ratio/)
-* [Contingent Claim Analysis](/measures/cca/)
+* [Contingent Claim Analysis](/measures/contingent_claim_analysis/)
 * [Distress Insurance Premium](/measures/distress_insurance_premium/)
 * [Systemic Expected Shortfall (SES)](/measures/systemic_expected_shortfall/)
 
