@@ -19,10 +19,12 @@ theme:
     - navigation.top
     - navigation.tracking
     - navigation.indexes
-    # - navigation.sections
+    - navigation.footer
+    - navigation.sections
     - content.code.annotate
     - content.code.copy
     - content.code.select
+    - content.tooltips
   language: en
   palette:
     # Palette toggle for automatic mode
@@ -69,6 +71,7 @@ plugins:
 
 # Extensions
 markdown_extensions:
+  - abbr
   - pymdownx.tabbed:
       alternate_style: true
   - attr_list
@@ -103,6 +106,10 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tabbed
   - pymdownx.tilde
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+
 
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
@@ -120,14 +127,15 @@ extra:
 nav:
   - Home:
     - frds: index.md
-    - Author: https://mingze-gao.com
-  - Measures:
+    - Measures:
       - measures.md
       - Banking:
           - Absoprtion ratio: measures/absorption_ratio.md
           - Contingent claim analysis: measures/contingent_claim_analysis.md
           - Distress insurance premium: measures/distress_insurance_premium.md
+          - Long-run MES (LRMES): measures/long_run_mes.md
           - Marginal expected shortfall: measures/marginal_expected_shortfall.md
+          - SRISK: measures/srisk.md
           - Systemic expected shortfall: measures/systemic_expected_shortfall.md
           - Z-score: measures/z_score.md
   - Author Site: https://mingze-gao.com
