@@ -12,7 +12,7 @@ The difference between put price and CDS price as a measure of firm's contributi
 
 ## API
 
-### ::: frds.measures.contingent_claims_analysis
+### ::: frds.measures.contingent_claim_analysis
 
 ## References
 
