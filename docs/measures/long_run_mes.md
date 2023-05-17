@@ -55,7 +55,7 @@ $$
 \text{Corr}
 \begin{pmatrix}
   \epsilon_{it} \\ \epsilon_{mt}
-\end{pmatrix}
+\end{pmatrix} = R_t
 = \begin{bmatrix}
   1 & \rho_{it} \\
   \rho_{it} & 1
@@ -68,7 +68,7 @@ where $Q_{it}$ is the so-called pseudo correlation matrix.
 The DCC then models the dynamics of $Q_{it}$ as
 
 $$
-Q_{it} = (1-\alpha_{Ci}-\beta_{Ci})S_i + \alpha_{Ci} + \begin{bmatrix}
+Q_{it} = (1-\alpha_{Ci}-\beta_{Ci})S_i + \alpha_{Ci} \begin{bmatrix}
   \epsilon_{it} \\ \epsilon_{mt}
 \end{bmatrix}\begin{bmatrix}
   \epsilon_{it} \\ \epsilon_{mt}
@@ -80,6 +80,18 @@ where $S_i$ is the unconditional correlation matrix of the firm and market adjus
 ### Estimating GARCH-DCC
 
 The above model is typically estimated by a two–step QML estimation procedure. More extensive details on this modeling approach and estimation are provided in [Engle (2009)](http://www.jstor.org/stable/j.ctt7sb6w).
+
+??? note "Note by Mingze"
+    Equation 4.33 in [Engle (2009)](http://www.jstor.org/stable/j.ctt7sb6w) shows that the log likelihood can be additively divided into two parts, one concerns the variance and the other concerns correlation. Therefore, we can solve for the variance and correlation parameters in two separate steps, hence "two-step" QML.
+
+Specifically, we first estimate a GJR-GARCH(1,1) for each firm (and market)'s log return series to obtain the conditional volatilities $\sigma$ and hence $\epsilon=r/\sigma$. In the second step, we use the estimated coefficients to estimate the DCC model for $\epsilon$ for each pair of firm returns and market returns.
+
+!!! note
+    Refer to [algorithms/dcc_garch](/algorithms/dcc_garch) for the estimation process.
+
+### Predicting LRMES
+
+**Appendix A. Simulation Algorithm for LRMES** in [Engle (2009)](http://www.jstor.org/stable/j.ctt7sb6w) describes the exact steps to construct LRMES forecasts.
 
 ## API
 
