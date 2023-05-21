@@ -130,15 +130,15 @@ nav:
     - Measures:
       - measures.md
       - Banking:
-          - Absoprtion ratio: measures/absorption_ratio.md
-          - Contingent claim analysis: measures/contingent_claim_analysis.md
-          - Distress insurance premium: measures/distress_insurance_premium.md
-          - 🚧 Long-run MES (LRMES): measures/long_run_mes.md
-          - Marginal expected shortfall: measures/marginal_expected_shortfall.md
+          - Absoprtion Ratio: measures/absorption_ratio.md
+          - Contingent Claim Analysis: measures/contingent_claim_analysis.md
+          - Distress Insurance Premium: measures/distress_insurance_premium.md
+          - Long-Run MES (LRMES): measures/long_run_mes.md
+          - Marginal Expected Shortfall: measures/marginal_expected_shortfall.md
           - 🚧 SRISK: measures/srisk.md
-          - Systemic expected shortfall: measures/systemic_expected_shortfall.md
+          - Systemic Expected Shortfall: measures/systemic_expected_shortfall.md
           - Z-score: measures/z_score.md
     - Algorithms:
-      - 🚧 Dynamic conditional correlation: algorithms/dcc_garch.md
+      - 🚧 DCC: algorithms/dcc_garch.md
   - Author Site: https://mingze-gao.com
 

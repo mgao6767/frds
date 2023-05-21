@@ -20,6 +20,7 @@ classifiers = [
 ]
 license = {text = "MIT License"}
 dependencies = [
+  "arch",
   "numpy",
   "pandas",
   "scipy"

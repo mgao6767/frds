@@ -100,6 +100,7 @@ where,
 
 Systemic risk measures:
 
+* [Long-Run MES](/measures/long_run_mes/)
 * [Absorption Ratio](/measures/absorption_ratio/)
 * [Distress Insurance Premium](/measures/distress_insurance_premium/)
 * [Contingent Claim Analysis](/measures/contingent_claim_analysis/)
