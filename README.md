@@ -23,8 +23,8 @@ If there's any issue (likely), please contact me at [mingze.gao@sydney.edu.au](m
 More to be added. For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/).
 
 * [Absorption Ratio](https://frds.io/measures/absorption_ratio/)
-* [Distress Insurance Premium](https://frds.io/measures/distress_insurance_premium/)
 * [Contingent Claim Analysis](https://frds.io/measures/contingent_claim_analysis/)
+* [Distress Insurance Premium](https://frds.io/measures/distress_insurance_premium/)
 * [Long-Run MES](https://frds.io/measures/long_run_mes/)
 * [Marginal Expected Shortfall (MES)](https://frds.io/measures/marginal_expected_shortfall/)
 * [SRISK](https://frds.io/measures/srisk/)
