@@ -7,16 +7,22 @@ tags:
 
 ## Introduction
 
-🚧 Under construction.
+(Utility) code to estimate DCC model, after estimating a GARCH model for volatilities, based on 2-step QML.
 
 ## API
 
 ### ::: frds.algorithms.dcc
 
+## TODO
+
+- [ ] Use C++ to rewrite for execution speed.
+
 ## References
 
 ## See Also
 
+* [Long-Run MES](/measures/long_run_mes/)
+* [SRISK](/measures/srisk/)
 * [https://github.com/Topaceminem/DCC-GARCH](https://github.com/Topaceminem/DCC-GARCH)
 
 ---

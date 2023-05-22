@@ -48,7 +48,7 @@ def estimate(
         [1510 rows x 3 columns]
         >>> mkt_returns = np.log(df.SPY.pct_change()+1).dropna().to_numpy()
         >>> firm_returns = np.array([np.log(df.JPM.pct_change()+1).dropna().to_numpy(),
-                                     np.log(df.GS.pct_change()+1).dropna().to_numpy()]).T
+        ...                          np.log(df.GS.pct_change()+1).dropna().to_numpy()]).T
         >>> lrmes.estimate(firm_returns, mkt_returns)
         array([ 0.12958814, -0.09460028])
 

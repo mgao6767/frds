@@ -68,7 +68,7 @@ $$
 \end{align}
 $$
 
-!!! info "Assumption"
+!!! note "Assumption"
     If debt cannot be renegotiated in case of systemic event, $E_t(D_{it+h} | R_{mt+1:t+h} < C)=D_{it}$
 
 So we have,

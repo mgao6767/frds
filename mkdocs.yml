@@ -21,6 +21,7 @@ theme:
     - navigation.indexes
     - navigation.footer
     - navigation.sections
+    - navigation.expand
     - content.code.annotate
     - content.code.copy
     - content.code.select
@@ -135,10 +136,10 @@ nav:
           - Distress Insurance Premium: measures/distress_insurance_premium.md
           - Long-Run MES (LRMES): measures/long_run_mes.md
           - Marginal Expected Shortfall: measures/marginal_expected_shortfall.md
-          - 🚧 SRISK: measures/srisk.md
+          - SRISK: measures/srisk.md
           - Systemic Expected Shortfall: measures/systemic_expected_shortfall.md
           - Z-score: measures/z_score.md
     - Algorithms:
-      - 🚧 DCC: algorithms/dcc_garch.md
+      - DCC: algorithms/dcc_garch.md
   - Author Site: https://mingze-gao.com
 
