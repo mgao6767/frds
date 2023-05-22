@@ -95,6 +95,8 @@ where,
 ## References
 
 * [Brownlees and Engle (2017)](https://doi.org/10.1093/rfs/hhw060), SRISK: A Conditional Capital Shortfall Measure of Systemic Risk, *Review of Financial Studies*, 30 (1), 48–79.
+* [Duan and Zhang (2015)](http://dx.doi.org/10.2139/ssrn.2675877), Non-Gaussian Bridge Sampling with an Application, *SSRN*.
+* [Orskaug (2009)](https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/259296/724505_FULLTEXT01.pdf), Multivariate dcc-garch model with various error distributions.
 
 ## See Also
 
