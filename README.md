@@ -16,7 +16,23 @@ pip install frds
 
 This library is still under development and breaking changes may be expected.
 
-## Built-in measures
+If there's any issue (likely), please contact me at [mingze.gao@sydney.edu.au](mailto:mingze.gao@sydney.edu.au)
+
+## Supported measures
+
+More to be added. For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/).
+
+* [Absorption Ratio](https://frds.io/measures/absorption_ratio/)
+* [Distress Insurance Premium](https://frds.io/measures/distress_insurance_premium/)
+* [Contingent Claim Analysis](https://frds.io/measures/contingent_claim_analysis/)
+* [Long-Run MES](https://frds.io/measures/long_run_mes/)
+* [Marginal Expected Shortfall (MES)](https://frds.io/measures/marginal_expected_shortfall/)
+* [SRISK](https://frds.io/measures/srisk/)
+* [Systemic Expected Shortfall (SES)](https://frds.io/measures/systemic_expected_shortfall/)
+* [Z-score](https://frds.io/measures/z_score)
+
+
+## Examples
 
 The primary purpose of `frds` is to offer ready-to-use functions.
 
@@ -55,5 +71,3 @@ Another example, [Distress Insurance Premium (DIP)](https://frds.io/measures/dis
 >>> distress_insurance_premium.estimate(default_probabilities, correlations)       
 0.28661995758
 ```
-
-For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/).
