@@ -143,5 +143,6 @@ nav:
           - LOB Slope: measures/lob_slope.md
     - Algorithms:
       - DCC: algorithms/dcc_garch.md
+      - Isolation Forest: algorithms/isolation_forest.md
   - Author Site: https://mingze-gao.com
 
