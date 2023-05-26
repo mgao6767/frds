@@ -139,6 +139,8 @@ nav:
           - SRISK: measures/srisk.md
           - Systemic Expected Shortfall: measures/systemic_expected_shortfall.md
           - Z-score: measures/z_score.md
+      - Market Microstructure:
+          - LOB Slope: measures/lob_slope.md
     - Algorithms:
       - DCC: algorithms/dcc_garch.md
   - Author Site: https://mingze-gao.com
