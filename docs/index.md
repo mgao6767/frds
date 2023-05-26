@@ -33,6 +33,8 @@
     pip install -e .
     ```
 
+New measures are gradually added. Each version bump typically means a new measure has been supported, so please upgrade `frds` regularly.
+
 ## Built-in measures
 
 The primary purpose of `frds` is to offer ready-to-use functions.
@@ -87,4 +89,11 @@ The primary purpose of `frds` is to offer ready-to-use functions.
     0.28661995758
     ```
 
-For a complete list of supported built-in measures, please check [frds.io/measures/](/measures/).
+[:fontawesome-solid-list: a complete list of supported measures](/measures/){ .md-button }
+
+## Contact
+
+* Author Email: [mingze.gao@sydney.edu.au](mailto:mingze.gao@sydney.edu.au)
+* Preferred: [GitHub issues](https://github.com/mgao6767/frds/issues/new?assignees=mgao6767&labels=&template=bug_report.md&title=%5BBUG%5D).
+
+---
