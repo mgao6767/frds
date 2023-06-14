@@ -141,6 +141,8 @@ nav:
           - Z-score: measures/z_score.md
       - Market Microstructure:
           - LOB Slope: measures/lob_slope.md
+      - General:
+          - Option Price: measures/option_price.md
     - Algorithms:
       - DCC: algorithms/dcc_garch.md
       - Isolation Forest: algorithms/isolation_forest.md
