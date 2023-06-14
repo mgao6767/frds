@@ -1,7 +1,6 @@
 from typing import Tuple
 import numpy as np
-
-from frds.utils import normal_cdf
+from scipy.stats import norm
 
 
 def blsprice(
@@ -28,6 +27,6 @@ def blsprice(
     """
     d1 = (np.log(S / K) + (r - q + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
     d2 = d1 - sigma * np.sqrt(T)
-    call = S * np.exp(-q * T) * normal_cdf(d1) - K * np.exp(-r * T) * normal_cdf(d2)
-    put = K * np.exp(-r * T) * normal_cdf(-d2) - S * np.exp(-q * T) * normal_cdf(-d1)
+    call = S * np.exp(-q * T) * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)
+    put = K * np.exp(-r * T) * norm.cdf(-d2) - S * np.exp(-q * T) * norm.cdf(-d1)
     return call, put
