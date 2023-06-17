@@ -2,6 +2,7 @@ import unittest
 import pathlib
 import numpy as np
 from numpy.testing import assert_array_almost_equal
+from scipy.optimize import fsolve
 
 import matlab.engine
 import matlab
@@ -15,10 +16,6 @@ class MertonSolutionTestCase(unittest.TestCase):
         mp = pathlib.Path(__file__).parent.joinpath("matlab").as_posix()
         self.eng = matlab.engine.start_matlab()
         self.eng.cd(mp, nargout=0)
-
-    def test_merton_solution(self):
-        # Check if `merton_solution` in Python provides the same result
-        # as `MertonSolution` in Matlab.
 
         # fmt: off
         fs = np.arange(-0.8, 0.85, 0.05) / (0.2 * np.sqrt(0.5) * np.sqrt(10))
@@ -50,9 +47,26 @@ class MertonSolutionTestCase(unittest.TestCase):
 
         K = sigEt.shape[0]
 
+        self.K = K
+        self.Et = Et
+        self.sigEt = sigEt
+        self.r = r
+        self.D = D
+        self.H = H
+        self.y = y
 
-        # Check is done here
+    def test_merton_solution(self):
+        # Check if `merton_solution` in Python provides the same result
+        # as `MertonSolution` in Matlab.
+        K = self.K
+        Et = self.Et
+        sigEt = self.sigEt
+        r = self.r
+        D = self.D
+        H = self.H
+        y = self.y
 
+        # fmt: off
         for k in range(K):
             # Result from Python code
             initb = [Et[k] + D * np.exp(-r * H), sigEt[k] / 2]
@@ -64,5 +78,31 @@ class MertonSolutionTestCase(unittest.TestCase):
 
             # Up to 9 decimals
             assert_array_almost_equal(np.array(_a), np.array(_b).ravel(), decimal=9)
+
+        # fmt: on
+
+    def test_fsolve_merton_solution(self):
+        K = self.K
+        Et = self.Et
+        sigEt = self.sigEt
+        r = self.r
+        D = self.D
+        H = self.H
+        y = self.y
+
+        # fmt: off
+        # for k in range(K):
+        for k in [2]:
+            # Result from Python code
+            initb = [Et[k] + D * np.exp(-r * H), sigEt[k] / 2]
+            bout_py = fsolve(lambda b: merton_solution(b, Et[k], D, r, y, H, sigEt[k]), initb)
+
+            # Result from Matlab code
+            bout_matlab = fsolve(lambda b: 
+                                 np.array(self.eng.MertonSolution(matlab.double(b), Et[k], D, r, y, float(H), sigEt[k])).ravel(), 
+                                 initb)
+
+            # Up to 9 decimals
+            assert_array_almost_equal(np.array(bout_py), np.array(bout_matlab).ravel(), decimal=9)
 
         # fmt: on
