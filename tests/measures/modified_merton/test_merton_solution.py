@@ -4,8 +4,12 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 from scipy.optimize import fsolve
 
-import matlab.engine
-import matlab
+try:
+    import matlab.engine
+    import matlab
+except ImportError:
+    raise unittest.SkipTest("MATLAB Engine API not available.")
+
 
 from frds.measures.modified_merton.merton_solution import merton_solution
 from frds.measures.modified_merton.mod_merton_computation import mod_merton_computation
