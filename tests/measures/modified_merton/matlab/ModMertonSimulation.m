@@ -6,14 +6,14 @@ close all;
 clc;
 
 %output directory 
-direc = ['/Users/snagel/Dropbox/hdrive/Research/projects/BankCreditRisk/output/']; 
+direc = ['.']; 
 
 comp = 1;  %1 to re-calculate, 0 to use already saved file;  
 
 fs = [-0.8:0.05:0.8]'/(0.2*sqrt(0.5)*sqrt(10)); %range for dW_0 shocks
 
 N = 10;               %number of loan cohorts   
-Nsim2 = 10000;        %number of simulated factor realization paths (10,000 works well) 
+Nsim2 = 1000;        %number of simulated factor realization paths (10,000 works well) 
 
 r = 0.01;      %risk-free rate;  
 d = 0.005;     %depreciation rate of borrower assets
@@ -41,9 +41,9 @@ for j = 3; %1:10  % j = 3 for the plots in the main part of the paper
    
       [Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu, F, sigLt] = ModMertonComputation(fs, param, N, Nsim2); 
 
-      save([direc,'Simoutput'], 'Lt', 'Bt', 'Et', 'LH', 'BH', 'EH', 'sigEt', ...
-        'mFt', 'def', 'mdef', 'face', 'FH', 'Gt', 'mu', 'F',...
-           'Nsim2', 'N', 'param');
+%       save([direc,'Simoutput'], 'Lt', 'Bt', 'Et', 'LH', 'BH', 'EH', 'sigEt', ...
+%         'mFt', 'def', 'mdef', 'face', 'FH', 'Gt', 'mu', 'F',...
+%            'Nsim2', 'N', 'param');
        
       
       
