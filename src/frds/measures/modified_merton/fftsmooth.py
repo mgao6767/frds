@@ -30,7 +30,7 @@ def fftsmooth(x, w):
     # Extrapolate linearly at edges
     dl = xk[w // 2 + 1] - xk[w // 2]  # / (w - 1)
     lex = xk[w // 2] - np.flip(np.arange(w // 2) + 1) * dl
-    ul = xk[n - w // 2] - xk[n - w // 2 - 1]  # / (w - 1)
+    ul = xk[n - w // 2 - 1] - xk[n - w // 2 - 2]  # / (w - 1)
     uex = xk[n - w // 2 - 1] + np.arange(1, w // 2 + 1) * ul
 
     xout = np.concatenate((lex, xk[w // 2 : n - w // 2], uex))
