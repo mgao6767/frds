@@ -32,7 +32,7 @@ function [Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu, F, si
     % For unknown reasons, same seed doesn't guarantee same random NORMAL values
     % in Matlab and Numpy given the same MT19937 rng.
     % This line below is a workaround. 
-      w = norminv(rand(Nsim2, 3*N),0,1)
+      w = norminv(rand(Nsim2, 3*N),0,1);
   end
    
   ival = log(bookF)-log(ltv);  %initial log asset value of borrower at origination 
