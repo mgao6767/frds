@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import fsolve
+from scipy.stats import norm
 
 from frds.measures.modified_merton.fftsmooth import fftsmooth
 from frds.measures.modified_merton.loan_payoff import loan_payoff
@@ -34,7 +35,8 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     # If not provided as input, generate them here
     if w is None:
         rng = np.random.RandomState(random_seed)
-        w = rng.normal(0, 1, (Nsim2, 3 * N))
+        # w = rng.normal(0, 1, (Nsim2, 3 * N))
+        w = norm.ppf(rng.rand(3*N, Nsim2).T, 0, 1)
 
     # initial log asset value of borrower at origination
     ival = np.log(bookF) - np.log(ltv)
@@ -257,6 +259,7 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     LH2j = LHj.copy()
     LH2j[ind1] = 0
 
+    # FIXME: loss of precision here, LH1j is same as in Matlab
     LH = np.mean(
         LH1j * np.exp(-r * (rmat - HN) * (T / N)) + LH2j * np.exp(-r * (rmat - HN + N) * (T / N)),
         axis=1,
