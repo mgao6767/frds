@@ -1,10 +1,17 @@
 import numpy as np
 from numpy.random import RandomState
 
-from frds.measures.modified_merton.mod_merton_computation import mod_merton_computation
+from frds.measures.modified_merton.mod_single_cohort_computation import (
+    mod_single_cohort_computation,
+)
 
 
-def mod_merton_create_lookup(d, y, T, H, bookD, rho, ltv, xfs, xr, xF, xsig, N, Nsim2):
+def mod_single_merton_create_lookup(
+    d, y, T, H, bookD, rho, ltv, xfs, xr, xF, xsig, N, Nsim2
+):
+    """
+    same as `mod_merton_create_lookup` except that the function called differs
+    """
     # fmt: off
     rng = RandomState(1)
     w = rng.standard_normal((Nsim2, 3 * N))
@@ -28,7 +35,7 @@ def mod_merton_create_lookup(d, y, T, H, bookD, rho, ltv, xfs, xr, xF, xsig, N, 
             for q in range(Q):
                 param = [xr[0, j, k, q], T, xF[0, j, k, q], H, bookD * np.exp(xr[0, j, k, q] * H), rho, ltv, xsig[0, j, k, q], d, y]
                 
-                Lt, Bt, Et, _, _, _, sigEt, mFt, _, mdef, *_ = mod_merton_computation(fs, param, N, Nsim2, w)
+                Lt, Bt, Et, _, _, _, sigEt, mFt, _, mdef, *_ = mod_single_cohort_computation(fs, param, N, Nsim2, w)
 
                 xLt[:, j, k, q] = Lt
                 xBt[:, j, k, q] = Bt

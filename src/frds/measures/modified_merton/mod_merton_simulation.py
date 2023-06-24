@@ -1,12 +1,17 @@
+import warnings  # fsolve may yield runtime warnings about invalid values
 import numpy as np
 from scipy.optimize import fsolve
 from scipy.interpolate import griddata
 from scipy.stats import norm
 
 from frds.measures.option_price import blsprice
+from frds.measures.modified_merton.merton_solution import merton_solution
 from frds.measures.modified_merton.mod_merton_computation import mod_merton_computation
 from frds.measures.modified_merton.mod_merton_create_lookup import (
     mod_merton_create_lookup,
+)
+from frds.measures.modified_merton.mod_single_merton_create_lookup import (
+    mod_single_merton_create_lookup,
 )
 
 
@@ -74,18 +79,13 @@ def simulate():
     fs1 = []
     bookF1 = []
 
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
+
     # Merton model fit to equity value and volatility from our model
     for k in range(K):
         initb = (Et[k] + D * np.exp(-r * H), sigEt[k] / 2)
 
-        def MertonSolution(b):
-            A, s = b
-            return [
-                (np.log(A) - np.log(D) + (r - y - s**2 / 2) * H) / (s * np.sqrt(H)),
-                norm.cdf(-mertdd[k]) - mertdef[k],
-            ]
-
-        bout = fsolve(MertonSolution, initb)
+        bout = fsolve(lambda b: merton_solution(b, Et[k], D, r, y, H, sigEt[k]), initb)
 
         A = bout[0]
         s = max(bout[1], 0.0001)
@@ -100,10 +100,14 @@ def simulate():
         mertA[k] = A
         merts[k] = s
 
+    warnings.filterwarnings("default")
+
     mktCR = Et / (Et + Bt)
     sp = (1 / H) * np.log((D * np.exp(-r * H)) / Bt)
 
+    ###########################################################################
     # Alternative Model (1):
+    ###########################################################################
     # Perfectly correlated borrowers with overlapping cohorts
     rho = 0.99  # approx to rho = 1, code can't handle rho = 1
     sig = 0.20 * np.sqrt(0.5)
@@ -114,8 +118,9 @@ def simulate():
     # so adjust bookD1 here
     bookD1 = bookD * np.mean(np.exp(r * np.arange(1, T + 1)))
 
-    # FIXME: problem is here, xfs,etc.dims don't match Matlab ndgrid's output
-    xfs, xsig, xr, xF = np.meshgrid(sfs, sig, r, np.arange(0.4, 1.45, 0.01))
+    xfs, xsig, xr, xF = np.meshgrid(
+        sfs, sig, r, np.arange(0.4, 1.45, 0.01), indexing="ij"
+    )
 
     xLt, xBt, xEt, xFt, xmdef, xsigEt = mod_merton_create_lookup(
         d, y, T, H, bookD1, rho, ltv, xfs, xr, xF, xsig, N, Nsim2
@@ -134,6 +139,49 @@ def simulate():
 
     mdefsingle1 = ymdef
     mFtsingle1 = yFt
+    # recomputing Et, sigEt based on fs1, bookF1 gets back Et, sigEt to
+    # a very good approximation
+
+    ###########################################################################
+    # Model (2) Single cohort of borrowers
+    ###########################################################################
+    T = 5
+    rho = 0.5
+    sig = 0.2
+
+    xfs, xsig, xr, xF = np.meshgrid(
+        sfs, sig, r, np.arange(0.4, 1.45, 0.01), indexing="ij"
+    )
+
+    xLt, xBt, xEt, xFt, xmdef, xsigEt = mod_single_merton_create_lookup(
+        d, y, T, H, bookD1, rho, ltv, xfs, xr, xF, xsig, N, Nsim2
+    )
+
+    xxsigEt = xsigEt.squeeze()
+    xxEt = xEt.squeeze()
+    xxmdef = xmdef.squeeze()
+    xxFt = xFt.squeeze()
+
+    ymdef = griddata(
+        (xxEt.ravel(), xxsigEt.ravel()), xxmdef.ravel(), (Et, sigEt), method="cubic"
+    )
+    yFt = griddata(
+        (xxEt.ravel(), xxsigEt.ravel()), xxFt.ravel(), (Et, sigEt), method="cubic"
+    )
+
+    mdefsingle2 = ymdef
+    mFtsingle2 = yFt
+
+    ###########################################################################
+    # Model (3) Single (or perfectly correlated) borrower model
+    ###########################################################################
+
+    ###########################################################################
+    # Model (4) Merton model with asset value and asset volatility implied
+    # from modified model
+    ###########################################################################
+
+    pass
 
 
 if __name__ == "__main__":

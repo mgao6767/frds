@@ -1,5 +1,5 @@
 
-function [Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu, F, sigLt] = ModMertonComputation(fs, param, N, Nsim2, w) 
+function [FHr2, Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu, F, sigLt] = ModMertonComputation(fs, param, N, Nsim2, w) 
 
   
   r = param(1);      %log risk free rate

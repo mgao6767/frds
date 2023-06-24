@@ -126,7 +126,7 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
 
     # From start of the first loan to the maturity of the first loan, first cohort only
     # Mingze's note: `xf1` unused, same in original Matlab code
-    xf1 = f[:, N] - f[:, 0]
+    # xf1 = f[:, N] - f[:, 0]
     # Factor shocks from the start of the first loan shocks until t
     f0w = np.tile(fw[:, N].reshape(fw[:, N].shape[0], 1), (1, N)) - fw[:, 0:N]
     # From the start of the first loan to the maturity of the first loan w/ shocks until t removed
@@ -229,21 +229,21 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     # to one that depends only on (a)
     sc = L1 / bookF
     sc[ind1] = 1
-    FHr1 = FH1j
+    FHr1 = FH1j.copy()
     FHr1[ind2] = 0
     FHr2 = FH2j / sc
     FHr2[ind1] = 0
-    Lr1 = L1
+    Lr1 = L1.copy()
     Lr1[ind2] = 0
     Lr2 = L2 / sc
     Lr2[ind1] = 0
 
     LHj = np.zeros((Nsim2, N, Nsim1))
     for j in range(N):
-        FHr = np.reshape(FHr1[:, j, :] + FHr2[:, j, :], (Nsim2 * Nsim1, 1))
-        Lr = np.reshape(Lr1[:, j, :] + Lr2[:, j, :], (Nsim2 * Nsim1, 1))
+        FHr = np.reshape(FHr1[:, j, :] + FHr2[:, j, :], (Nsim2 * Nsim1, 1), order="F")
+        Lr = np.reshape(Lr1[:, j, :] + Lr2[:, j, :], (Nsim2 * Nsim1, 1), order="F")
         ind = np.argsort(FHr.flatten())
-        sortL = Lr[ind]
+        sortL = Lr[ind].copy()
         win = int(Nsim2 * Nsim1 / 20)  # / 10 seems to give about sufficient smoothness
         LHs = fftsmooth(sortL.flatten(), win)
         newInd = np.zeros(ind.shape, dtype=np.int64)
@@ -251,7 +251,7 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
             newInd[ind[i]] = i
         LHsn = np.reshape(LHs[newInd], (Nsim2, Nsim1))
         LHsn = LHsn * sc[:, j, :]
-        LHj[:, j, :] = LHsn
+        LHj[:, j, :] = LHsn.copy()
 
     # Integrate over cohorts and discount to get portfolio payoff distribution at t+H
     LH1j = LHj.copy()
@@ -259,7 +259,6 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     LH2j = LHj.copy()
     LH2j[ind1] = 0
 
-    # FIXME: loss of precision here, LH1j is same as in Matlab
     LH = np.mean(
         LH1j * np.exp(-r * (rmat - HN) * (T / N)) + LH2j * np.exp(-r * (rmat - HN + N) * (T / N)),
         axis=1,
@@ -317,9 +316,9 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     face = face[:, :szfs]
     Gt = Gt[:szfs]
 
-    # fmt: on
 
-    return Lt, Bt, Et, LH, BH, EH, sigEt, mFt, default, mdef, face, FH, Gt, mu, F, sigLt
+    return FHr2, Lt, Bt, Et, LH, BH, EH, sigEt, mFt, default, mdef, face, FH, Gt, mu, F, sigLt
+    # fmt: on
 
 
 if __name__ == "__main__":
