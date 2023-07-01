@@ -1,5 +1,5 @@
 
-function [FHr2, Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu, F, sigLt] = ModMertonComputation(fs, param, N, Nsim2, w) 
+function [Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu, F, sigLt] = ModMertonComputation(fs, param, N, Nsim2, w) 
 
   
   r = param(1);      %log risk free rate
@@ -179,7 +179,8 @@ function [FHr2, Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu,
   for j = 1:N
     FHr = reshape(FHr1(:,j,:)+FHr2(:,j,:),Nsim2*Nsim1,1);  
     Lr = reshape(Lr1(:,j,:)+Lr2(:,j,:),Nsim2*Nsim1,1); 
-    [sortF, ind] = sort(FHr);
+    % Mingze's note: line below is changed to make sure we rely on a fixed precision
+    [sortF, ind] = sort(round(FHr, 9)); 
     sortL = Lr(ind);
     win = (Nsim2*Nsim1)/20;    %/10 seems to give about sufficient smoothness 
     LHs = fftsmooth(sortL,win); 

@@ -24,7 +24,7 @@ class ModMertonComputationTestCase(unittest.TestCase):
         fs = fs.reshape(-1, 1)
 
         N = 10        # number of loan cohorts
-        Nsim2 = 10000 # number of simulated factor realization paths (10,000 works well)
+        Nsim2 = 1000 # number of simulated factor realization paths (10,000 works well)
 
         r = 0.01      # risk-free rate
         d = 0.005     # depreciation rate of borrower assets
@@ -45,37 +45,37 @@ class ModMertonComputationTestCase(unittest.TestCase):
         param = [r, T, bookF,  H, D, rho, ltv, sig, d, y, g]
 
         # Matlab results
-        result = self.eng.ModMertonComputation(fs, matlab.double(param), matlab.double(N), matlab.double(Nsim2), nargout=17)
-        r2, Lt_mt, Bt_mt, Et_mt, LH_mt, BH_mt, EH_mt, sigEt_mt, mFt_mt, default_mt, mdef_mt, face_mt, FH_mt, Gt_mt, mu_mt, F_mt, sigLt_mt = result
+        result_mt = self.eng.ModMertonComputation(fs, matlab.double(param, size=[11,1]), matlab.double(N), matlab.double(Nsim2), nargout=16)
+        Lt_mt, Bt_mt, Et_mt, LH_mt, BH_mt, EH_mt, sigEt_mt, mFt_mt, default_mt, mdef_mt, face_mt, FH_mt, Gt_mt, mu_mt, F_mt, sigLt_mt = result_mt
 
         # Python results
         result = mod_merton_computation(fs, param, N, Nsim2)
-        r1, Lt, Bt, Et, LH, BH, EH, sigEt, mFt, default, mdef, face, FH, Gt, mu, F, sigLt = result
+        Lt, Bt, Et, LH, BH, EH, sigEt, mFt, default, mdef, face, FH, Gt, mu, F, sigLt = result
 
         n_precision = 9
 
-        # precision of 5 decimals
-        # assert_array_almost_equal(Lt, np.asarray(Lt_mt).ravel(), n_precision)
-        # assert_array_almost_equal(Bt, np.asarray(Bt_mt).ravel(), n_precision)
-        # assert_array_almost_equal(Et, np.asarray(Et_mt).ravel(), n_precision)
-        # assert_array_almost_equal(mFt, np.asarray(mFt_mt).ravel(), n_precision)
-        # assert_array_almost_equal(face, np.asarray(face_mt), n_precision)
-        # assert_array_almost_equal(FH, np.asarray(FH_mt), n_precision)
-        # assert_array_almost_equal(mu, np.asarray(mu_mt).ravel(), n_precision) # same
-        # assert_array_almost_equal(F, np.asarray(F_mt).ravel(), n_precision)
+        # NOTE: This test used to fail as results from Matlab are all zero.
+        # After debugging, it turns out the `g` was 0 but should have been param(11).
+        # This is because `matlab.double` assumes 11*1 dim for param,
+        # but the `ModMertonComputation` assumes 1*11 dim for param.
+        # This is fixed by setting `size` in `matlab.double`.
+        assert_array_almost_equal(Gt, np.asarray(Gt_mt).ravel(), n_precision) 
 
-        assert_array_almost_equal(r1.flatten(), np.asarray(r2).flatten(), n_precision) # not equal to 5 decimals
-        print(r1.flatten()[:10])
-        print(np.asarray(r2).flatten()[:10])
-        # Hard to pass
-        # assert_array_almost_equal(LH, np.asarray(LH_mt), n_precision) # not equal to 5 decimals
-        # assert_array_almost_equal(BH, np.asarray(BH_mt), n_precision) # not equal to 5 decimals
-        # assert_array_almost_equal(EH, np.asarray(EH_mt), n_precision) # not equal to 5 decimals
-        # assert_array_almost_equal(sigEt, np.asarray(sigEt_mt).ravel(), n_precision) # not equal to 5 decimals
-        # assert_array_almost_equal(default, np.asarray(default_mt), n_precision) # FIXME: default is either 0 or 1, 0.00545% differ
-        # assert_array_almost_equal(mdef, np.asarray(mdef_mt).ravel(), n_precision) # not equal to 5 decimals
-        # assert_array_almost_equal(Gt, np.asarray(Gt_mt).ravel(), n_precision) # FIXME: very different
-        # assert_array_almost_equal(sigLt, np.asarray(sigLt_mt).ravel(), n_precision) # not equal to 5 decimals
+        assert_array_almost_equal(Lt, np.asarray(Lt_mt).ravel(), n_precision)
+        assert_array_almost_equal(Bt, np.asarray(Bt_mt).ravel(), n_precision)
+        assert_array_almost_equal(Et, np.asarray(Et_mt).ravel(), n_precision)
+        assert_array_almost_equal(mFt, np.asarray(mFt_mt).ravel(), n_precision)
+        assert_array_almost_equal(face, np.asarray(face_mt), n_precision)
+        assert_array_almost_equal(FH, np.asarray(FH_mt), n_precision)
+        assert_array_almost_equal(mu, np.asarray(mu_mt).ravel(), n_precision)
+        assert_array_almost_equal(F, np.asarray(F_mt).ravel(), n_precision)
+        assert_array_almost_equal(LH, np.asarray(LH_mt), n_precision)
+        assert_array_almost_equal(BH, np.asarray(BH_mt), n_precision)
+        assert_array_almost_equal(EH, np.asarray(EH_mt), n_precision)
+        assert_array_almost_equal(sigEt, np.asarray(sigEt_mt).ravel(), n_precision)
+        assert_array_almost_equal(default, np.asarray(default_mt), n_precision) 
+        assert_array_almost_equal(mdef, np.asarray(mdef_mt).ravel(), n_precision)
+        assert_array_almost_equal(sigLt, np.asarray(sigLt_mt).ravel(), n_precision) 
 
         # fmt: on
 
