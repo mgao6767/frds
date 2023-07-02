@@ -242,14 +242,13 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     for j in range(N):
         FHr = np.reshape(FHr1[:, j, :] + FHr2[:, j, :], (Nsim2 * Nsim1, 1), order="F")
         Lr = np.reshape(Lr1[:, j, :] + Lr2[:, j, :], (Nsim2 * Nsim1, 1), order="F")
-        ind = np.argsort(FHr.flatten())
+        ind = np.round(FHr.flatten(), 9).argsort(kind="stable")
         sortL = Lr[ind].copy()
         win = int(Nsim2 * Nsim1 / 20)  # / 10 seems to give about sufficient smoothness
         LHs = fftsmooth(sortL.flatten(), win)
         newInd = np.zeros(ind.shape, dtype=np.int64)
-        for i in range(len(FHr)):
-            newInd[ind[i]] = i
-        LHsn = np.reshape(LHs[newInd], (Nsim2, Nsim1))
+        newInd[ind] = np.arange(len(FHr))
+        LHsn = np.reshape(LHs[newInd], (Nsim2, Nsim1), order="F")
         LHsn = LHsn * sc[:, j, :]
         LHj[:, j, :] = LHsn.copy()
 
@@ -317,7 +316,7 @@ def mod_merton_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     Gt = Gt[:szfs]
 
 
-    return FHr2, Lt, Bt, Et, LH, BH, EH, sigEt, mFt, default, mdef, face, FH, Gt, mu, F, sigLt
+    return Lt, Bt, Et, LH, BH, EH, sigEt, mFt, default, mdef, face, FH, Gt, mu, F, sigLt
     # fmt: on
 
 
