@@ -4,8 +4,9 @@ function [xLt, xBt, xEt, xFt, xmdef, xsigEt] = ModMertonCreateLookup(d,y,T,H,boo
 
 
 rng(1,'twister')
-w = normrnd(0,1,[Nsim2, 3*N]);
-     
+% w = normrnd(0,1,[Nsim2, 3*N]);
+w = norminv(rand(Nsim2, 3*N),0,1);
+
 J = size(xsig,2); 
 K = size(xr,3); 
 Q = size(xF,4); 
@@ -25,9 +26,9 @@ for j = 1:J
     for k = 1:K
         
         for q = 1:Q 
-           j
-           k
-           q
+        %    j
+        %    k
+        %    q
           
            param = [xr(1,j,k,q); T; xF(1,j,k,q); H; bookD*exp(xr(1,j,k,q)*H); rho; ltv; xsig(1,j,k,q); d; y];  %get face value of debt from current book value of debt
         

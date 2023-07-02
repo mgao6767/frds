@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 from numpy.random import RandomState
 
 from frds.measures.modified_merton.mod_merton_computation import mod_merton_computation
@@ -7,7 +8,7 @@ from frds.measures.modified_merton.mod_merton_computation import mod_merton_comp
 def mod_merton_create_lookup(d, y, T, H, bookD, rho, ltv, xfs, xr, xF, xsig, N, Nsim2):
     # fmt: off
     rng = RandomState(1)
-    w = rng.standard_normal((Nsim2, 3 * N))
+    w = norm.ppf(rng.rand(3*N,Nsim2)).T
     
     J = xsig.shape[1]
     K = xr.shape[2]
