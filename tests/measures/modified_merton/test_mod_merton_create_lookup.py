@@ -1,8 +1,8 @@
 import unittest
+import os
 import pathlib
 import numpy as np
-from scipy.optimize import fsolve
-from scipy.interpolate import RegularGridInterpolator
+from scipy.interpolate import griddata
 from numpy.testing import assert_array_almost_equal
 
 try:
@@ -19,9 +19,19 @@ from frds.measures.modified_merton.mod_merton_create_lookup import (
 
 class ModMertonCreateLookupTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        mp = pathlib.Path(__file__).parent.joinpath("matlab").as_posix()
+        self.mp = pathlib.Path(__file__).parent.joinpath("matlab").as_posix()
         self.eng = matlab.engine.start_matlab()
-        self.eng.cd(mp, nargout=0)
+        self.eng.cd(self.mp, nargout=0)
+
+    def make_matlab_code(self, func_name: str, func_string: str):
+        with open(pathlib.Path(self.mp).joinpath(f"{func_name}.m"), "w+") as f:
+            f.write(func_string)
+
+    def tearDown(self) -> None:
+        for root, dirs, files in os.walk(self.mp):
+            for f in files:
+                if f.startswith("FRDSTest"):
+                    os.remove(os.path.join(root, f))
 
     def test_mod_merton_create_lookup(self):
         Nsim2 = 1000
@@ -89,26 +99,48 @@ class ModMertonCreateLookupTestCase(unittest.TestCase):
         assert_array_almost_equal(xmdef, np.asarray(xmdef_mt), n_precision)
         assert_array_almost_equal(xsigEt, np.asarray(xsigEt_mt), n_precision)
 
-        return
+        # Additional tests for replicating scatteredInterpolant in Matlab
+        self.make_matlab_code(
+            "FRDSTestInterp",
+            """function [mdefsingle1, mFtsingle1] = FRDSTestInterp(Et, sigEt, xxEt, xxsigEt, xxmdef, xxFt)
+            ymdef = scatteredInterpolant(xxEt(:),xxsigEt(:),xxmdef(:),'natural','none');
+            yFt = scatteredInterpolant(xxEt(:),xxsigEt(:),xxFt(:),'natural','none');
+            mdefsingle1 = ymdef(Et,sigEt);
+            mFtsingle1 = yFt(Et,sigEt);
+            """,
+        )
+
         xxsigEt = xsigEt.squeeze()
         xxEt = xEt.squeeze()
         xxmdef = xmdef.squeeze()
         xxFt = xFt.squeeze()
 
-        ymdef = RegularGridInterpolator(
-            (xxEt.flatten(), xxsigEt.flatten(), xxmdef.flatten()),
+        ymdef = griddata(
+            (xxEt.flatten(), xxsigEt.flatten()),
+            xxmdef.flatten(),
             (Et, sigEt),
             method="cubic",
         )
-
-        yFt = RegularGridInterpolator(
-            (xxEt.flatten(), xxsigEt.flatten(), xxFt.flatten()),
+        yFt = griddata(
+            (xxEt.flatten(), xxsigEt.flatten()),
+            xxFt.flatten(),
             (Et, sigEt),
             method="cubic",
         )
 
         mdefsingle1 = ymdef
         mFtsingle1 = yFt
+
+        res_mt = self.eng.FRDSTestInterp(
+            Et, sigEt, xxEt, xxsigEt, xxmdef, xxFt, nargout=2
+        )
+        mdefsingle1_mt, mFtsingle1_mt = res_mt
+
+        n_precision = 1
+        # NOTE: almost surely to fail for higher precision due to interpolation!
+        # 12% differ on second decimal.
+        assert_array_almost_equal(mdefsingle1, mdefsingle1_mt, n_precision)
+        assert_array_almost_equal(mFtsingle1, mFtsingle1_mt, n_precision)
 
 
 if __name__ == "__main__":
