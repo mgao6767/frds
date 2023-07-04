@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 from numpy.random import RandomState
 
 from frds.measures.modified_merton.mod_single_cohort_computation import (
@@ -14,7 +15,7 @@ def mod_single_merton_create_lookup(
     """
     # fmt: off
     rng = RandomState(1)
-    w = rng.standard_normal((Nsim2, 3 * N))
+    w = norm.ppf(rng.rand(3*N,Nsim2)).T
     
     J = xsig.shape[1]
     K = xr.shape[2]

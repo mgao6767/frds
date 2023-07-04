@@ -23,7 +23,8 @@ dependencies = [
   "arch",
   "numpy",
   "pandas",
-  "scipy"
+  "scipy",
+  "matplotlib"
 ]
 
 

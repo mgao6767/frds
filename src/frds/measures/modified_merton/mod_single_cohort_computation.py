@@ -1,11 +1,13 @@
 import numpy as np
 from scipy.optimize import fsolve
+from scipy.stats import norm
 
 from frds.measures.modified_merton.fftsmooth import fftsmooth
 from frds.measures.modified_merton.loan_payoff import loan_payoff
 from frds.measures.modified_merton.find_face_value_indiv import find_face_value_indiv
 
 
+# TODO: complete and test this function
 def mod_single_cohort_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     # fmt: off
     r = param[0]  # log risk-free rate
@@ -34,7 +36,8 @@ def mod_single_cohort_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     # if not provided as input, then generate here 
     if w is None:
         rng = np.random.RandomState(random_seed)
-        w = rng.normal(0, 1, (Nsim2, N))
+        # w = rng.normal(0, 1, (Nsim2, N))
+        w = norm.ppf(rng.rand(N, Nsim2).T, 0, 1)
 
     # initial log asset value of borrower at origination
     ival = np.log(bookF) - np.log(ltv)
@@ -51,9 +54,10 @@ def mod_single_cohort_computation(fs, param, N, Nsim2, w=None, random_seed=1):
 
     # Euler discretization 
     f = np.concatenate(
-        (np.zeros((Nsim2, 1)), np.cumsum((r - d - 0.5 * sig ** 2) * (T / N) + sigf * np.sqrt(T / N) * w, axis=1)),
+        (np.zeros((Nsim2, 1)), 
+         np.cumsum((r - d - 0.5 * sig ** 2) * (T / N) + sigf * np.sqrt(T / N) * w, axis=1)),
         axis=1,
-    ) # FIXME:w is different 
+    ) 
     # from start of first loan to maturity of first loan w/ shocks until t remove
     f1 = f[:, N]
 
@@ -76,25 +80,25 @@ def mod_single_cohort_computation(fs, param, N, Nsim2, w=None, random_seed=1):
     face1 = np.ones_like(f1j) * F
 
     ft = fsa + ival
-    fH1 = f[:, N+HN] 
+    fH1 = f[:, HN].copy()
     fH1j = np.tile(fH1.reshape(Nsim2, 1), (1, Nsim1)) + fsa + ival
     FH1j = np.exp(fH1j) * np.exp(0.5 * (1 - rho) * H * sig ** 2)
     Ft = np.exp(ft)
 
-    FHr1 = FH1j
-    Lr1 = L1
+    FHr1 = FH1j.copy()
+    Lr1 = L1.copy()
 
     LHj = np.zeros((Nsim2, Nsim1))
     FHr = FHr1.flatten(order='F')
     Lr = Lr1.flatten(order='F')
-    sort_indices = np.argsort(FHr)
+    sort_indices = np.argsort(np.round(FHr, 9), kind="stable")
     sortF = FHr[sort_indices]
     sortL = Lr[sort_indices]
     win = (Nsim2 * Nsim1) // 20
     LHs = fftsmooth(sortL, win)
     new_indices = np.zeros_like(sort_indices)
     new_indices[sort_indices] = np.arange(len(FHr))
-    LH1j = LHs[new_indices].reshape(Nsim2, Nsim1)
+    LH1j = LHs[new_indices].reshape(Nsim2, Nsim1, order="F")
 
     LH = LH1j * np.exp(-r * (T - H))
     FH = FHr1
