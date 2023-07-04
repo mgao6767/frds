@@ -23,21 +23,21 @@ The following figures are produced in by running `frds.measures.modified_merton.
 
 ### Figure 2
 
-![figure2](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure2_PayoffsAtDMat.png)
+![figure2](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure2_PayoffsAtDMat.png?raw=true)
 
 ### Figure 3
 
-![figure3](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure3_mVe.png)
+![figure3](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure3_mVe.png?raw=true)
 
 ### Figure 4
 
-![figure4](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure4_mdef.png)
+![figure4](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure4_mdef.png?raw=true)
 
 ### Figure 5
 
-![figure5_panel_a](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure5_panel_a_mdefsingles.png)
+![figure5_panel_a](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure5_panel_a_mdefsingles.png?raw=true)
 
-![figure5_panel_b](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure5_panel_b_mertalt.png)
+![figure5_panel_b](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure5_panel_b_mertalt.png?raw=true)
 
 ## TODO
 

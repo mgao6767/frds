@@ -22,19 +22,22 @@ If there's any issue (likely), please contact me at [mingze.gao@sydney.edu.au](m
 
 More to be added. For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/).
 
-* [Absorption Ratio](https://frds.io/measures/absorption_ratio/)
-* [Contingent Claim Analysis](https://frds.io/measures/contingent_claim_analysis/)
-* [Distress Insurance Premium](https://frds.io/measures/distress_insurance_premium/)
-* [Long-Run MES](https://frds.io/measures/long_run_mes/)
-* [Marginal Expected Shortfall (MES)](https://frds.io/measures/marginal_expected_shortfall/)
-* [SRISK](https://frds.io/measures/srisk/)
-* [Systemic Expected Shortfall (SES)](https://frds.io/measures/systemic_expected_shortfall/)
+* [Absorption Ratio](https://frds.io/measures/absorption_ratio/) in Kritzman, Li, Page, and Rigobon (2010).
+* [Contingent Claim Analysis](https://frds.io/measures/contingent_claim_analysis/) in Gray and Jobst (2010).
+* [Distress Insurance Premium](https://frds.io/measures/distress_insurance_premium/) in Huang, Zhou, and Zhu (2009).
+* [Long-Run MES](https://frds.io/measures/long_run_mes/) in Brownlees and Engle (2017).
+* [Marginal Expected Shortfall (MES)](https://frds.io/measures/marginal_expected_shortfall/) in Acharya, Pedersen, Philippon, and Richardson (2010).
+* [Modified Default Probability](https://frds.io/measures/modified_default_probability/) in Nagel and Purnanandam (2020)
+* [SRISK](https://frds.io/measures/srisk/) in Brownlees and Engle (2017).
+* [Systemic Expected Shortfall (SES)](https://frds.io/measures/systemic_expected_shortfall/) in Acharya, Pedersen, Philippon, and Richardson (2010).
 * [Z-score](https://frds.io/measures/z_score)
 
 
 ## Examples
 
 The primary purpose of `frds` is to offer ready-to-use functions.
+
+### Absorption Ratio
 
 For example, Kritzman, Li, Page, and Rigobon (2010) propose an [Absorption Ratio](https://frds.io/measures/absorption_ratio/) that measures the fraction of the total variance of a set of asset returns explained or absorbed by a fixed number of eigenvectors. It captures the extent to which markets are unified or tightly coupled.
 
@@ -51,6 +54,8 @@ For example, Kritzman, Li, Page, and Rigobon (2010) propose an [Absorption Ratio
 >>> absorption_ratio.estimate(data, fraction_eigenvectors=0.2)
 0.7746543307660252
 ```
+
+### Distress Insurance Premium
 
 Another example, [Distress Insurance Premium (DIP)](https://frds.io/measures/distress_insurance_premium/) proposed by Huang, Zhou, and Zhu (2009) as a systemic risk measure of a hypothetical insurance premium against a systemic financial distress, defined as total losses that exceed a given threshold, say 15%, of total bank liabilities.
 
@@ -71,3 +76,39 @@ Another example, [Distress Insurance Premium (DIP)](https://frds.io/measures/dis
 >>> distress_insurance_premium.estimate(default_probabilities, correlations)       
 0.28661995758
 ```
+
+### Modified Default Probability (bank)
+
+More examples. [Nagel and Purnanandam (2020)](https://doi.org/10.1093/rfs/hhz125) introduce the Modified Default Probability for banks. Banks' assets are contingent claims on borrowers' collateral assets, hence banks' equity and debt are contingent claims on these contingent claims. While borrowers' assets value may follow a lognormal distribution, banks' assets do not.
+
+Below is a one-liner replication of the simulations.
+
+```python
+>>> from frds.measures.modified_merton import mod_merton_simulation
+>>> mod_merton_simulation.simulate()
+----------------------------------------------------------------------------
+                                        Borrower asset value
+                                    ----------------------------------------
+                                    No shock        +ve shock       -ve shock
+----------------------------------------------------------------------------
+A. True properties
+Agg. Borrower Asset Value           1.06            1.33            0.85
+Bank Asset Value                    0.74            0.79            0.67
+Bank Market Equity/Market Assets    0.12            0.16            0.07
+Bank 5Y RN Default Prob.            0.23            0.11            0.49
+Bank Credit Spread (%)              0.50            0.19            1.37
+----------------------------------------------------------------------------
+B. Misspecified estimates based on standard Merton model
+Merton 5Y RN Default Prob.          0.13            0.01            0.58
+Merton Credit Spread (%)            0.12            0.00            1.54
+----------------------------------------------------------------------------
+```
+
+These results are largely the same as Table 1 in Nagel and Purnanandam (2020). Additionally, several plots will be saved in the working directory, e.g., Figure 2:
+
+![figure2](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure2_PayoffsAtDMat.png?raw=true)
+
+And another sample output, Figure 4:
+
+![figure4](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure4_mdef.png?raw=true)
+
