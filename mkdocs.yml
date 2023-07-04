@@ -136,6 +136,7 @@ nav:
           - Distress Insurance Premium: measures/distress_insurance_premium.md
           - Long-Run MES (LRMES): measures/long_run_mes.md
           - Marginal Expected Shortfall: measures/marginal_expected_shortfall.md
+          - 🚧 Modified Default Probability: measures/modified_default_probability.md
           - SRISK: measures/srisk.md
           - Systemic Expected Shortfall: measures/systemic_expected_shortfall.md
           - Z-score: measures/z_score.md

@@ -1,7 +1,7 @@
 ---
 tags:
   - Banking
-  - Insolvency Risk
+  - Credit Risk
 ---
 
 # Z-score
