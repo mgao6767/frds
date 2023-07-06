@@ -17,9 +17,14 @@ from frds.measures.modified_merton.mod_merton_computation import mod_merton_comp
 
 class MertonSolutionTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        mp = pathlib.Path(__file__).parent.joinpath("matlab").as_posix()
+        frds_path = [
+            i for i in pathlib.Path(__file__).parents if i.as_posix().endswith("frds")
+        ].pop()
+        self.mp = frds_path.joinpath(
+            "src", "frds", "measures", "modified_merton", "matlab"
+        ).as_posix()
         self.eng = matlab.engine.start_matlab()
-        self.eng.cd(mp, nargout=0)
+        self.eng.cd(self.mp, nargout=0)
 
         # fmt: off
         fs = np.arange(-0.8, 0.85, 0.05) / (0.2 * np.sqrt(0.5) * np.sqrt(10))
@@ -110,3 +115,7 @@ class MertonSolutionTestCase(unittest.TestCase):
             assert_array_almost_equal(np.array(bout_py), np.array(bout_matlab).ravel(), decimal=9)
 
         # fmt: on
+
+
+if __name__ == "__main__":
+    unittest.main()

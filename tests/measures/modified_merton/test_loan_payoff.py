@@ -14,12 +14,17 @@ from frds.measures.modified_merton.loan_payoff import loan_payoff
 
 class LoanPayoffTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        mp = pathlib.Path(__file__).parent.joinpath("matlab").as_posix()
+        frds_path = [
+            i for i in pathlib.Path(__file__).parents if i.as_posix().endswith("frds")
+        ].pop()
+        self.mp = frds_path.joinpath(
+            "src", "frds", "measures", "modified_merton", "matlab"
+        ).as_posix()
         self.eng = matlab.engine.start_matlab()
-        self.eng.cd(mp, nargout=0)
+        self.eng.cd(self.mp, nargout=0)
 
     def test_loan_payoff(self):
-        result = self.eng.GenTestDataLoanPayoff(nargout=6)
+        result = self.eng.FRDSGenTestDataLoanPayoff(nargout=6)
 
         F, _, ival, rho, sig, T = result
         f1j = np.asarray(result[1])

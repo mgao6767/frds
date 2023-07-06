@@ -1,4 +1,4 @@
-function [F, f1j, ival, rho, sig, T] = GenTestDataLoanPayoff()
+function [F, f1j, ival, rho, sig, T] = FRDSGenTestDataLoanPayoff()
 fs = [-0.8:0.05:0.8]'/(0.2*sqrt(0.5)*sqrt(10)); %range for dW_0 shocks
 
 N = 10;               %number of loan cohorts

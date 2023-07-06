@@ -26,7 +26,13 @@ function [Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu, F, si
   %if not provided as input, then generate here 
   if nargin < 5
       rng(1,'twister')
-      w = normrnd(0,1,[Nsim2, 3*N]);
+    %   w = normrnd(0,1,[Nsim2, 3*N]);
+    % Mingze's note
+    % This is to produce the same random normal values as numpy
+    % For unknown reasons, same seed doesn't guarantee same random NORMAL values
+    % in Matlab and Numpy given the same MT19937 rng.
+    % This line below is a workaround. 
+      w = norminv(rand(Nsim2, 3*N),0,1);
   end
    
   ival = log(bookF)-log(ltv);  %initial log asset value of borrower at origination 
@@ -173,7 +179,8 @@ function [Lt, Bt, Et, LH, BH, EH, sigEt, mFt, def, mdef, face, FH, Gt, mu, F, si
   for j = 1:N
     FHr = reshape(FHr1(:,j,:)+FHr2(:,j,:),Nsim2*Nsim1,1);  
     Lr = reshape(Lr1(:,j,:)+Lr2(:,j,:),Nsim2*Nsim1,1); 
-    [sortF, ind] = sort(FHr);
+    % Mingze's note: line below is changed to make sure we rely on a fixed precision
+    [sortF, ind] = sort(round(FHr, 9)); 
     sortL = Lr(ind);
     win = (Nsim2*Nsim1)/20;    %/10 seems to give about sufficient smoothness 
     LHs = fftsmooth(sortL,win); 

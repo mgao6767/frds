@@ -6,7 +6,7 @@ close all;
 clc;
 
 %output directory 
-direc = ['/Users/snagel/Dropbox/hdrive/Research/projects/BankCreditRisk/output/']; 
+direc = ['./']; 
 
 comp = 1;  %1 to re-calculate, 0 to use already saved file;  
 

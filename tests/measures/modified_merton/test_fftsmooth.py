@@ -15,9 +15,14 @@ from frds.measures.modified_merton.fftsmooth import fftsmooth
 
 class FFTSmoothTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        mp = pathlib.Path(__file__).parent.joinpath("matlab").as_posix()
+        frds_path = [
+            i for i in pathlib.Path(__file__).parents if i.as_posix().endswith("frds")
+        ].pop()
+        self.mp = frds_path.joinpath(
+            "src", "frds", "measures", "modified_merton", "matlab"
+        ).as_posix()
         self.eng = matlab.engine.start_matlab()
-        self.eng.cd(mp, nargout=0)
+        self.eng.cd(self.mp, nargout=0)
 
     def test_fftsmooth(self):
         Nsim1 = 99
