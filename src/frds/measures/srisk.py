@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union
 
 from .long_run_mes import estimate as lrmes
 
@@ -6,8 +7,8 @@ from .long_run_mes import estimate as lrmes
 def estimate(
     firm_returns: np.ndarray,
     market_returns: np.ndarray,
-    W: float | np.ndarray,
-    D: float | np.ndarray,
+    W: Union[float, np.ndarray],
+    D: Union[float, np.ndarray],
     k=0.08,
     lrmes_h=22,
     lrmes_S=10000,
