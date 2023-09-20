@@ -4,7 +4,7 @@ from scipy.stats import norm
 
 
 def blsprice(
-    S: float, K: float, r: float, T: float, sigma: float, q=0
+    S: float, K: float, r: float, T: float, sigma: float, q=0.0
 ) -> Tuple[float, float]:
     """European option values from Black-Scholes model
 
@@ -14,7 +14,7 @@ def blsprice(
         r (float): Annualized continuously compounded risk-free rate of return over the life of the option, expressed as a positive decimal number
         T (float): Time to expiration of the option, expressed in years.
         sigma (float): Annualized asset price volatility (i.e., annualized standard deviation of the continuously compounded asset return), expressed as a positive decimal number.
-        q (int, optional): Annualized continuously compounded yield of the underlying asset over the life of the option, expressed as a decimal number. Defaults to 0.
+        q (float, optional): Annualized continuously compounded yield of the underlying asset over the life of the option, expressed as a decimal number. Defaults to 0.0.
 
     Returns:
         Tuple[float, float]: Prices of European call and put options
