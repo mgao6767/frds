@@ -1,22 +1,20 @@
-import unittest
-from frds.measures import distress_insurance_premium as dip
+import pytest
 import numpy as np
+from frds.measures import DistressInsurancePremium
 
 
-class DistressInsurancePremiumCase(unittest.TestCase):
-    def test_dip(self):
-        # Data from and results computed using the Matlab code by Dimitrios Bisias, Andrew W. Lo, and Stavros Valavanis
-
-        default_probabilities = np.array([0.02, 0.10, 0.03, 0.20, 0.50, 0.15])
-        correlations = np.array(
-            [
-                [1, -0.1260125, -0.6366762, 0.1744837, 0.4689378, 0.2831761],
-                [-0.1260125, 1, 0.294223, 0.673963, 0.1499695, 0.05250343],
-                [-0.6366762, 0.294223, 1, 0.07259309, -0.6579669, -0.0848825],
-                [0.1744837, 0.673963, 0.07259309, 1, 0.2483188, 0.5078022],
-                [0.4689378, 0.1499695, -0.6579669, 0.2483188, 1, -0.3703121],
-                [0.2831761, 0.05250343, -0.0848825, 0.5078022, -0.3703121, 1],
-            ]
-        )
-        dip_result = dip.estimate(default_probabilities, correlations)
-        self.assertAlmostEqual(dip_result, 0.29, 2)
+def test_dip():
+    default_probabilities = np.array([0.02, 0.10, 0.03, 0.20, 0.50, 0.15])
+    correlations = np.array(
+        [
+            [1.000, -0.126, -0.637, 0.174, 0.469, 0.283],
+            [-0.126, 1.000, 0.294, 0.674, 0.150, 0.053],
+            [-0.637, 0.294, 1.000, 0.073, -0.658, -0.085],
+            [0.174, 0.674, 0.073, 1.000, 0.248, 0.508],
+            [0.469, 0.150, -0.658, 0.248, 1.000, -0.370],
+            [0.283, 0.053, -0.085, 0.508, -0.370, 1.000],
+        ]
+    )
+    dip = DistressInsurancePremium(default_probabilities, correlations)
+    res = dip.estimate()
+    assert res == pytest.approx(0.28657335507)
