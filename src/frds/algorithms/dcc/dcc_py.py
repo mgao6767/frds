@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 import numpy as np
 from scipy.optimize import minimize
 
@@ -21,7 +21,7 @@ def calc_Q_avg(data: np.ndarray) -> np.ndarray:
     return Q_avg
 
 
-def calc_Q(data: np.ndarray, a: float, b: float) -> list[np.ndarray]:
+def calc_Q(data: np.ndarray, a: float, b: float) -> List[np.ndarray]:
     """Calculate list of Q, the quasi correlation matrix
 
     Args:
@@ -45,7 +45,7 @@ def calc_Q(data: np.ndarray, a: float, b: float) -> list[np.ndarray]:
     return Qs
 
 
-def calc_R(data: np.ndarray, a: float, b: float) -> list[np.ndarray]:
+def calc_R(data: np.ndarray, a: float, b: float) -> List[np.ndarray]:
     """Calculate list of R, the conditional correlation matrix
 
     Args:
