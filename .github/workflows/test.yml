@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  KMP_DETERMINISTIC_REDUCTION: yes
+  MKL_CBWR: AUTO
+
 jobs:
   build:
 
