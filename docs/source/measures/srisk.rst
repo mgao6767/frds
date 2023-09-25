@@ -7,6 +7,9 @@ Introduction
 
 A conditional capital shortfall measure of systemic risk by `Brownlees and Engle (2017) <https://doi.org/10.1093/rfs/hhw060>`_.
 
+.. warning:: This module is not yet numerically stable.
+
+
 Capital Shortfall
 -----------------
 
