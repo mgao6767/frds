@@ -5,7 +5,7 @@ from numpy.random import RandomState
 
 
 class DistressInsurancePremium:
-    """:doc:`/measures/distress_insurance_premium"""
+    """:doc:`/measures/distress_insurance_premium`"""
 
     def __init__(self, default_prob: np.ndarray, correlations: np.ndarray) -> None:
         """__init__

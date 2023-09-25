@@ -1,3 +1,9 @@
+import os
+import sys
+
+# Make known the path to code
+sys.path.append(os.path.abspath(os.path.join(__file__, "../../../src")))
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
