@@ -16,6 +16,8 @@ def generate_garch_returns(mu, omega, alpha, beta, rng: np.random.Generator):
         sigma_squared[t] = omega + alpha * (epsilon[t-1]**2) + beta * sigma_squared[t-1]
         epsilon[t] = np.sqrt(sigma_squared[t]) * np.random.normal()
         r[t] = mu + epsilon[t]
+        # Let returns be bounded to -99% to 900%
+        r[t] = np.clip(r[t], -0.99, 9.0)
         
     return r * 100
 
