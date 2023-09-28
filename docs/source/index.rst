@@ -2,9 +2,11 @@
 Financial Research Data Services
 ================================
 
-|frds|, *Financial Research Data Services*, is a Python library for computing a
-collection of academic measures used in the finance literature. It is developed
-by Dr. `Mingze Gao <http://mingze-gao.com>`_  from the University of Sydney, as 
+|frds|, *Financial Research Data Services*, is a Python library to simplify the 
+complexities often encountered in financial research. It provides a collection 
+of ready-to-use methods for computing a wide array of measures in the literature. 
+
+It is developed by Dr. `Mingze Gao <http://mingze-gao.com>`_  from the University of Sydney, as 
 a personal project during his postdoctoral research fellowship.
 
 |GitHub license|
@@ -34,12 +36,19 @@ installed via ``pip``.
 
 The structure of |frds| is simple:
 
-* :mod:`frds.measures` provides the collection of measures.
+* :mod:`frds.measures` provides a collection of measures.
+* :mod:`frds.algorithms` provides a collection of algorithms.
 * :mod:`frds.datasets` provides example datasets.
     
 --------
 Examples
 --------
+
+|frds| aims to provide out-of-the-box.
+
+
+Measure
+-------
 
 :class:`frds.measures.DistressInsurancePremium` estimates
 :doc:`/measures/distress_insurance_premium`, a systemic risk measure of a 
@@ -69,6 +78,23 @@ liabilities.
 >>> dip.estimate(default_probabilities, correlations)       
 0.2865733550799999
 
+Algorithm
+---------
+
+Use :class:`frds.algorithms.GARCHModel` to estimate a GARCH(1,1) model.
+The results are as good as those obtained from other software or libraries.
+
+>>> import pandas as pd
+>>> from frds.algorithms import GARCHModel
+>>> data_url = "https://www.stata-press.com/data/r18/stocks.dta"
+>>> df = pd.read_stata(data_url, convert_dates=["date"])
+>>> returns = df["nissan"].to_numpy() * 100
+>>> # Start to fit the model
+>>> model = GARCHModel(returns)
+>>> res = model.fit() # [mu, omega, alpha, beta, log-likelihood]
+>>> [f"{p:.4f}" for p in res]
+['0.0193', '0.0570', '0.0905', '0.8984', '-4086.4874']
+
 ---------
 Read more
 ---------
@@ -77,6 +103,7 @@ Read more
     :maxdepth: 2
 
     measures/index
+    algorithms/index
     datasets/index
 
 .. toctree::
