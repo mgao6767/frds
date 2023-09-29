@@ -72,7 +72,7 @@ Taking the natural logarithm of :math:`L`, we obtain the log-likelihood function
 .. math::
    :label: eq:loglikelihood_func
 
-   \ell(\mu, \omega, \alpha, \beta) = -\frac{1}{2} \sum_{t=1}^{T} \left(\log(2\pi)  + \log(\sigma_t^2) + \frac{(r_t-\mu)^2}{\sigma_t^2} \right)
+   \ell(\mu, \omega, \alpha, \beta) = -\frac{1}{2} \sum_{t=1}^{T} \left[\ln(2\pi)  + \ln(\sigma_t^2) + \frac{(r_t-\mu)^2}{\sigma_t^2} \right]
 
 The parameters :math:`\mu, \omega, \alpha, \beta` can then be estimated by maximizing this log-likelihood function.
 
@@ -107,7 +107,7 @@ The starting value of :math:`\omega` is relatively straightforward. Notice that 
 
 .. math::
 
-   \omega = \hat{\sigma}^2 \cdot (\alpha+\beta)
+   \omega = \hat{\sigma}^2 \cdot (1-\alpha-\beta)
 
 where we use the known sample variance of residuals :math:`\hat{\sigma}^2` as a guess for the unconditional variance :math:`\sigma^2`. However, we still need to find good starting values for :math:`\alpha` and :math:`\beta`.
 
@@ -116,9 +116,10 @@ Initial value of :math:`\alpha` and :math:`\beta`
 
 Unfortunately, there is no better way to find good starting values for :math:`\alpha` and :math:`\beta` than a grid search. Luckily, this grid search can be relatively small.
 
-First, we don't know ex ante the persistence level, so we need to vary the persistence level from some low values to some high values, e.g., from 0.1 to 0.98. Second, generally the :math:`\alpha` parameter is not too big, for example, ranging from 0.01 to 0.2.
+- First, we don't know ex ante the persistence level, so we need to vary the persistence level from some low values to some high values, e.g., from 0.1 to 0.98.
+- Second, generally the :math:`\alpha` parameter is not too big, for example, ranging from 0.01 to 0.2.
 
-We can permute combinations of the persistence level and :math:`\alpha`, which naturally gives the corresponding :math:`\beta` and hence :math:`\omega`. The "optimal" set of initial values of :math:`\omega, \alpha, \beta` are the one that gives the highest log-likelihood.
+We can permute combinations of the persistence level and :math:`\alpha`, which naturally gives the corresponding :math:`\beta` and hence :math:`\omega`. The "optimal" set of initial values of :math:`\omega, \alpha, \beta` is the one that gives the highest log-likelihood.
 
 .. note::
 
@@ -128,7 +129,7 @@ Variance bounds
 ---------------
 
 Another issue is that we want to ensure that in the estimation, condition variance 
-does not blow up to infinitity or becomes zero. Hence, we need to 
+does not blow up to infinity or becomes zero. Hence, we need to 
 construct bounds for conditional variances during the GARCH(1,1) parameter estimation process. 
 
 To do this, we can calculate loose lower and upper bounds for each observation.
@@ -165,7 +166,6 @@ Let's import the dataset.
 >>> import pandas as pd
 >>> data_url = "https://www.stata-press.com/data/r18/stocks.dta"
 >>> df = pd.read_stata(data_url, convert_dates=["date"])
->>> df.set_index("date", inplace=True)
 
 Scale returns to percentage returns for better optimization results
 
@@ -224,5 +224,5 @@ Notes
 
 I did many tests, and in 99% cases :class:`frds.algorithms.GARCHModel` performs
 equally well with ``arch``, simply because it's adapted from ``arch``. 
-In some rare cases, though, the two would produce very different estimates despite
-having almost identical log-likelihood.
+In some rare cases when the return series does not behave well, though, 
+the two would produce very different estimates despite having almost identical log-likelihood.

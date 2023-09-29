@@ -128,7 +128,7 @@ class GARCHModel:
             params (List[float]): [omega, alpha, beta]
             resids (np.ndarray): residuals from mean equation
             backcast (float): backcast value
-            var_bounds (_type_): variance bounds
+            var_bounds (np.ndarray): variance bounds
 
         Returns:
             np.ndarray: conditional variance
@@ -273,6 +273,158 @@ class GARCHModel:
         return variance
 
 
+class GJRGARCHModel(GARCHModel):
+    """:doc:`/algorithms/gjr-garch` model with constant mean and Normal noise
+
+    It estimates the model parameters only. No standard errors calculated.
+
+    This code is heavily based on the `arch <https://arch.readthedocs.io/>`_.
+    Modifications are made for easier understaing of the code flow.
+    """
+
+    def fit(self) -> List[float]:
+        """Estimates the GJR-GARCH(1,1) parameters via MLE
+
+        Returns:
+            List[float]: [mu, omega, alpha, gamma, beta, loglikelihood]
+        """
+        # fmt: off
+        # Step 1. Compute a starting value for volatility process by backcasting
+        resids = self.returns - np.mean(self.returns)
+        backcast = self._backcast(resids)
+
+        # Step 2. Compute the starting values for MLE
+        # Starting values for the volatility process
+        var_params = self._starting_values(resids)
+        # Starting value for mu is the sample mean return
+        initial_mu = self.returns.mean()
+        # Starting values are [mu, omega, alpha, beta]
+        starting_vals = [initial_mu, *var_params]
+
+        # Step 3. Compute a loose bound for the volatility process
+        # This is to avoid NaN in MLE by avoiding zero/negative variance,
+        # as well as unreasonably large variance.
+        var_bounds = self._variance_bounds(resids)
+
+        # Step 4. Set bounds for parameters
+        bounds = [
+            (-np.inf, np.inf), # No bounds for mu
+            (1e-6, np.inf), # Lower bound for omega
+            (0.0, 1.0), # Bounds for alpha 
+            (0.0, 1.0), # Bounds for gamma
+            (0.0, 1.0), # Boudns for beta
+        ]
+
+        # Step 5. Set constraint for stationarity
+        def persistence_smaller_than_one(params: List[float]):
+            _, _, alpha, gamma, beta = params
+            return 1.0 - (alpha + beta + gamma/2)
+
+        # Step 6. MLE via minimizing the negative log-likelihood
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                "Values in x were outside bounds during a minimize step",
+                RuntimeWarning,
+            )
+            opt: OptimizeResult = minimize(
+                self._loglikelihood_model,
+                starting_vals,
+                args=(backcast, var_bounds),
+                method="SLSQP",
+                bounds=bounds,
+                constraints={"type": "ineq", 
+                             "fun": persistence_smaller_than_one},
+            )
+            loglikelihood = -opt.fun
+            estimated_params = list(opt.x)
+            return [*estimated_params, loglikelihood]
+
+    def _compute_variance(
+        self,
+        params: List[float],
+        resids: np.ndarray,
+        backcast: float,
+        var_bounds: np.ndarray,
+    ) -> np.ndarray:
+        """Computes the variances conditional on given parameters
+
+        Args:
+            params (List[float]): [omega, alpha, gamma, beta]
+            resids (np.ndarray): residuals from mean equation
+            backcast (float): backcast value
+            var_bounds (np.ndarray): variance bounds
+
+        Returns:
+            np.ndarray: conditional variance
+        """
+        # fmt: off
+        omega, alpha, gamma, beta = params
+        sigma2 = np.zeros_like(resids)
+        sigma2[0] = omega + (alpha + gamma/2 + beta) * backcast
+        for t in range(1, len(resids)):
+            sigma2[t] = omega + alpha * (resids[t - 1] ** 2) + beta * sigma2[t - 1]
+            sigma2[t] += gamma * resids[t - 1] ** 2 if resids[t - 1] < 0 else 0
+            sigma2[t] = self._bounds_check(sigma2[t], var_bounds[t])
+        return sigma2
+
+    def _loglikelihood_model(
+        self, params: np.ndarray, backcast: float, var_bounds
+    ) -> float:
+        """Calculates the negative log-likelihood based on the current ``params``.
+
+        Args:
+            params (np.ndarray): [mu, omega, alpha, gamma, beta]
+            backcast (float): backcast value
+            var_bounds (np.ndarray): variance bounds
+
+        Returns:
+            float: negative log-likelihood
+        """
+        mu, omega, alpha, gamma, beta = params
+        resids = self.returns - mu
+        var_params = [omega, alpha, gamma, beta]
+        sigma2 = self._compute_variance(var_params, resids, backcast, var_bounds)
+        return -self._loglikelihood(resids, sigma2)
+
+    def _starting_values(self, resids: np.ndarray) -> List[float]:
+        """Finds the optimal initial values for the volatility model via a grid
+        search. For varying target persistence and alpha values, return the
+        combination of alpha and beta that gives the highest loglikelihood.
+
+        Args:
+            resids (np.ndarray): residuals from the mean model
+
+        Returns:
+            List[float]: [omega, alpha, gamma, beta]
+        """
+        # Candidate target persistence - we don't have a prior knowledge here
+        persistence_grid = [0.5, 0.7, 0.9, 0.98]
+        # Candidate alpha values
+        alpha_grid = [0.01, 0.05, 0.1, 0.2]
+        gamma_grid = alpha_grid
+        # Sample variance
+        var = self.returns.var()
+        # Backcast initial value for the volaility process
+        var_bounds = self._variance_bounds(resids)
+        backcast = self._backcast(resids)
+        initial_params = []
+        max_likelihood = -np.inf
+        # fmt: off
+        for alpha, gamma, p in itertools.product(*[alpha_grid, gamma_grid, persistence_grid]):
+            # Note that (alpha+beta) is the "persistence"
+            beta = p - alpha - gamma/2
+            # Note that the unconditional variance is omega/(1-persistence).
+            # As we are guessing the initial value, we use the sample variance
+            # as the unconditional variance to guess the omega value.
+            omega = var * (1 - p)
+            params = [omega, alpha, gamma, beta]
+            sigma2 = self._compute_variance(params, resids, backcast, var_bounds)
+            if -self._loglikelihood(resids, sigma2) > max_likelihood:
+                initial_params = params
+        return initial_params
+
+
 if __name__ == "__main__":
     import pandas as pd
 
@@ -286,3 +438,12 @@ if __name__ == "__main__":
     g = GARCHModel(returns)
     res = g.fit()
     print(res)
+
+    gjr = GJRGARCHModel(returns)
+    res = gjr.fit()
+    print(res)
+
+    from arch import arch_model
+
+    m = arch_model(returns, p=1, o=1, q=1)
+    print(m.fit(disp=False))
