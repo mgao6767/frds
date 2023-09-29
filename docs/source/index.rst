@@ -111,4 +111,5 @@ Read more
     :caption: Other
     :titlesonly:
 
+    GitHub <https://github.com/mgao6767/frds/>
     Mingze Gao <https://mingze-gao.com>
