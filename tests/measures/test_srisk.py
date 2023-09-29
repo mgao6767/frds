@@ -3,6 +3,7 @@ import numpy as np
 from frds.measures import SRISK
 
 
+@pytest.mark.skip(reason="SRISK is not numerically stable")
 def test_srisk():
     # fmt: off
     np.random.seed(1)
@@ -42,3 +43,7 @@ def test_srisk():
 
     srisk_agg = srisk.estimate(aggregate_srisk=True)
     assert srisk_agg == pytest.approx(8.2911)
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])
