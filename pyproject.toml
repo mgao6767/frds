@@ -1,6 +1,6 @@
 [project]
 name = "frds"
-version = "2.0.0rc3"
+version = "2.0.0rc4"
 authors = [{ name = "Mingze Gao", email = "adrian.gao@outlook.com" }]
 description = "Financial Research Data Services"
 readme = "README.md"
@@ -31,3 +31,6 @@ documentation = "https://frds.io"
 [build-system]
 requires = ["setuptools", "numpy"]
 build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+skip = ["pp*", "*i686"]
