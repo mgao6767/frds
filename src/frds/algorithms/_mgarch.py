@@ -47,7 +47,7 @@ class GARCHModel_CCC:
         self.parameters = type(self).Parameters()
 
     def fit(self) -> Parameters:
-        """Estimates the Multivariate GARCH(1,1) parameters via MLE
+        """Estimates the Multivariate GARCH(1,1)-CCC parameters via MLE
 
         Returns:
             params: :class:`frds.algorithms.GARCHModel_CCC.Parameters`
@@ -55,7 +55,12 @@ class GARCHModel_CCC:
         m1, m2 = self.model1, self.model2
         m1.fit()
         m2.fit()
-        starting_vals = self.starting_values(m1.resids, m2.resids)
+        z1 = m1.resids / np.sqrt(m1.sigma2)
+        z2 = m2.resids / np.sqrt(m2.sigma2)
+        rho = np.corrcoef(z1, z2)[1, 0]
+        m1_params = list(asdict(m1.parameters).values())[:-1]
+        m2_params = list(asdict(m2.parameters).values())[:-1]
+        starting_vals = [*m1_params, *m2_params, rho]
 
         # Step 4. Set bounds for parameters
         bounds = [
@@ -174,41 +179,6 @@ class GARCHModel_CCC:
         log_likelihood = np.sum(log_likelihood_terms)
         return log_likelihood
 
-    def starting_values(self, resids1: np.ndarray, resids2: np.ndarray) -> List[float]:
-        """Finds the optimal initial values for the volatility model via a grid
-        search. For varying target persistence and alpha values, return the
-        combination of alpha and beta that gives the highest loglikelihood.
-
-        Args:
-            resids1 (np.ndarray): Array of residuals for the first return series.
-            resids2 (np.ndarray): Array of residuals for the second return series.
-
-        Returns:
-            List[float]: [mu1, omega1, alpha1, beta1, mu2, omega2, alpha2, beta2, rho]
-        """
-        m1, m2 = self.model1, self.model2
-        # Constant correlation
-        rho_grid = np.linspace(-0.9, 0.9, 10)
-
-        initial_params = []
-        max_likelihood = -np.inf
-        for rho in rho_grid:
-            # last one is loglikelihood
-            m1_params = list(asdict(m1.parameters).values())[:-1]
-            m2_params = list(asdict(m2.parameters).values())[:-1]
-            params = [*m1_params, *m2_params, rho]
-            ll = -self.loglikelihood_model(
-                params,
-                m1.backcast_value,
-                m2.backcast_value,
-                m1.var_bounds,
-                m2.var_bounds,
-            )
-            if ll > max_likelihood:
-                initial_params = params
-
-        return initial_params
-
 
 if __name__ == "__main__":
     import pandas as pd
@@ -223,6 +193,6 @@ if __name__ == "__main__":
     nissan = df["nissan"].to_numpy() * 100
     honda = df["honda"].to_numpy() * 100
 
-    model = GARCHModel_CCC(toyota, honda)
+    model = GARCHModel_CCC(toyota, nissan)
     res = model.fit()
     pprint(res)

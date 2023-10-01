@@ -186,10 +186,14 @@ Estimation techniques
 My implementation of :class:`frds.algorithms.GARCHModel_CCC` fits the GARCH-DCC model 
 by simultaneously estimating all parameters via maxmimizing the log-likelihood :math:numref:`log_likelihood`.
 
+General steps are:
+
 1. Use :class:`frds.algorithms.GARCHModel` to estimate the :doc:`/algorithms/garch` model for each of the returns.
 
-2. Use as starting vaues the estimates and a correlation found to maximize loglikelihood.
-`
+2. Use the standardized residuals from the estimated GARCH models to compute correlation coefficient.
+
+3. Use as starting vaues the estimated parameters from above in optimizing the loglikelihood function.
+
 
 References
 ==========
@@ -228,16 +232,16 @@ Use :class:`frds.algorithms.GARCHModel_CCC` to estimate a GARCH(1,1)-CCC.
 >>> res = model_ccc.fit()
 >>> from pprint import pprint
 >>> pprint(res)
-Parameters(mu1=0.02746938560178172,
-           omega1=0.034013928248590015,
-           alpha1=0.06593333053443852,
-           beta1=0.9219586517939616,
-           mu2=0.009412154182986385,
-           omega2=0.05869540397594033,
-           alpha2=0.08305499592375533,
-           beta2=0.9040973431326755,
-           rho=0.6506782161411894,
-           loglikelihood=-7281.321453325305)
+Parameters(mu1=0.02745814255283541,
+           omega1=0.03401400758840226,
+           alpha1=0.06593379740524756,
+           beta1=0.9219575443861723,
+           mu2=0.009390068254041505,
+           omega2=0.058694325049554734,
+           alpha2=0.0830561828957614,
+           beta2=0.9040961791372522,
+           rho=0.6506770477876749,
+           loglikelihood=-7281.321453218112)
 
 These results are comparable to the ones obtained in Stata, and even marginally 
 better based on log-likelihood. In Stata, we can estimate the same model as below:

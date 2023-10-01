@@ -9,10 +9,16 @@ of ready-to-use methods for computing a wide array of measures in the literature
 It is developed by Dr. `Mingze Gao <http://mingze-gao.com>`_  from the University of Sydney, as 
 a personal project during his postdoctoral research fellowship.
 
-|GitHub license|
+|GitHub license| |PyPI Downloads| |Tests|
 
 .. |GitHub license| image:: https://img.shields.io/github/license/mgao6767/frds?color=blue
    :target: https://github.com/mgao6767/frds/blob/master/LICENSE
+
+.. |PyPI Downloads| image:: https://img.shields.io/pypi/dm/frds?label=PyPI%20downloads 
+   :target: https://pypi.org/project/frds/
+   
+.. |Tests| image:: https://github.com/mgao6767/frds/actions/workflows/test.yml/badge.svg
+   :target: https://github.com/mgao6767/frds/actions/workflows/test.yml
 
 .. |frds| replace:: :code:`frds`
 
@@ -36,16 +42,15 @@ installed via ``pip``.
 
 The structure of |frds| is simple:
 
-* :mod:`frds.measures` provides a collection of measures.
 * :mod:`frds.algorithms` provides a collection of algorithms.
+* :mod:`frds.measures` provides a collection of measures.
 * :mod:`frds.datasets` provides example datasets.
     
 --------
 Examples
 --------
 
-|frds| aims to provide out-of-the-box.
-
+Some simple examples.
 
 Measure
 -------
@@ -74,8 +79,8 @@ liabilities.
 ...         [ 0.283,  0.053, -0.085, 0.508, -0.370,  1.000],
 ...     ]
 ... )
->>> dip = DistressInsurancePremium()
->>> dip.estimate(default_probabilities, correlations)       
+>>> dip = DistressInsurancePremium(default_probabilities, correlations)
+>>> dip.estimate()
 0.2865733550799999
 
 Algorithm
@@ -107,16 +112,16 @@ The results are as good as those otained in Stata, if not better.
 >>> model_ccc = GARCHModel_CCC(toyota, nissan)
 >>> res = model_ccc.fit()
 >>> pprint(res)
-Parameters(mu1=0.02746938560178172,
-           omega1=0.034013928248590015,
-           alpha1=0.06593333053443852,
-           beta1=0.9219586517939616,
-           mu2=0.009412154182986385,
-           omega2=0.05869540397594033,
-           alpha2=0.08305499592375533,
-           beta2=0.9040973431326755,
-           rho=0.6506782161411894,
-           loglikelihood=-7281.321453325305)
+Parameters(mu1=0.02745814255283541,
+           omega1=0.03401400758840226,
+           alpha1=0.06593379740524756,
+           beta1=0.9219575443861723,
+           mu2=0.009390068254041505,
+           omega2=0.058694325049554734,
+           alpha2=0.0830561828957614,
+           beta2=0.9040961791372522,
+           rho=0.6506770477876749,
+           loglikelihood=-7281.321453218112)
 
 ---------
 Read more

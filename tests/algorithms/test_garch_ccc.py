@@ -1,43 +1,28 @@
 import pytest
-import numpy as np
-
 from frds.algorithms import GARCHModel_CCC
+from frds.datasets import StockReturns
 
 
 def test_garch_ccc():
-    rng = np.random.default_rng(42)
+    returns = StockReturns.stocks_us
 
-    # Initialize parameters
-    T = 500  # Number of observations
-    omega1, alpha1, beta1 = 0.1, 0.2, 0.7  # Parameters for first series
-    omega2, alpha2, beta2 = 0.1, 0.3, 0.6  # Parameters for second series
-    rho = 0.5  # Constant correlation
+    sp500 = returns["^GSPC"].to_numpy() * 100
+    googl = returns["GOOGL"].to_numpy() * 100
 
-    # Initialize variables
-    y1 = np.zeros(T)
-    y2 = np.zeros(T)
-    h1 = np.zeros(T)
-    h2 = np.zeros(T)
-    z1 = rng.normal(size=T)
-    z2 = rng.normal(size=T)
+    model_ccc = GARCHModel_CCC(sp500, googl)
+    res = model_ccc.fit()
 
-    # Simulate conditional variances and returns
-    for t in range(1, T):
-        h1[t] = omega1 + alpha1 * y1[t - 1] ** 2 + beta1 * h1[t - 1]
-        h2[t] = omega2 + alpha2 * y2[t - 1] ** 2 + beta2 * h2[t - 1]
-
-        # Apply constant correlation
-        e1 = np.sqrt(h1[t]) * z1[t]
-        e2 = np.sqrt(h2[t]) * (rho * z1[t] + np.sqrt(1 - rho**2) * z2[t])
-
-        y1[t] = e1
-        y2[t] = e2
-
-    model = GARCHModel_CCC(y1, y2)
-    res = model.fit()
-    print(res)
+    tol = 0.01
+    assert res.mu1 == pytest.approx(0.0699378, rel=tol)
+    assert res.omega1 == pytest.approx(0.0585878, rel=tol)
+    assert res.alpha1 == pytest.approx(0.1477404, rel=tol)
+    assert res.beta1 == pytest.approx(0.7866691, rel=tol)
+    assert res.mu2 == pytest.approx(0.0940275, rel=tol)
+    assert res.omega2 == pytest.approx(0.4842512, rel=tol)
+    assert res.alpha2 == pytest.approx(0.12166, rel=tol)
+    assert res.beta2 == pytest.approx(0.7113389, rel=tol)
+    assert res.rho == pytest.approx(0.6646705, rel=tol)
 
 
 if __name__ == "__main__":
-    # pytest.main([__file__])
-    test_garch_ccc()
+    pytest.main([__file__])
