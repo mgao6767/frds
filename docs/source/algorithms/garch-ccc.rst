@@ -8,7 +8,7 @@ Introduction
 The Multivariate GARCH(1,1) model generalizes the univariate :doc:`/algorithms/garch` 
 framework to multiple time series, capturing not only the conditional variances 
 but also the conditional covariances between the series. One common form is the 
-**Constant Conditional Correlation (CCC) model** proposed by Robert Engle (1991).
+**Constant Conditional Correlation (CCC) model** proposed by Bollerslev (1990).
 
 .. tip:: Check `Examples`_ section for code guide and comparison to Stata.
 
@@ -120,7 +120,7 @@ This function is maximized to estimate the model parameters.
 
    In the bivariate case, the log-likelihood function can be specifically written as a function of all parameters.
 
-   The log-likelihood function :math:`\ell` for the bivariate case with all parameters :math:`\Theta = (\omega_1, \alpha_1, \beta_1, \omega_2, \alpha_2, \beta_2, \rho)` is:
+   The log-likelihood function :math:`\ell` for the bivariate case with all parameters :math:`\Theta = (\mu_1, \omega_1, \alpha_1, \beta_1, \mu_2, \omega_2, \alpha_2, \beta_2, \rho)` is:
 
    .. math::
       :label: log_likelihood_bivariate
