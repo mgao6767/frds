@@ -1,0 +1,3 @@
+recursive-include src/frds/datasets *.zip
+recursive-include src/frds *.cpp
+recursive-include src/frds *.hpp

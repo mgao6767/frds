@@ -9,7 +9,7 @@ of ready-to-use methods for computing a wide array of measures in the literature
 It is developed by Dr. `Mingze Gao <http://mingze-gao.com>`_  from the University of Sydney, as 
 a personal project during his postdoctoral research fellowship.
 
-|GitHub license| |PyPI Downloads| |Tests|
+|GitHub license| |PyPI Downloads| |Tests| |PyPI Version|
 
 .. |GitHub license| image:: https://img.shields.io/github/license/mgao6767/frds?color=blue
    :target: https://github.com/mgao6767/frds/blob/master/LICENSE
@@ -19,6 +19,9 @@ a personal project during his postdoctoral research fellowship.
    
 .. |Tests| image:: https://github.com/mgao6767/frds/actions/workflows/test.yml/badge.svg
    :target: https://github.com/mgao6767/frds/actions/workflows/test.yml
+
+.. |PyPI Version| image:: https://badge.fury.io/py/frds.svg
+   :target: https://badge.fury.io/py/frds
 
 .. |frds| replace:: :code:`frds`
 

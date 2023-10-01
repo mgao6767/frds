@@ -37,5 +37,6 @@ ext_modules = [
 setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    include_package_data=True,
     ext_modules=ext_modules,
 )
