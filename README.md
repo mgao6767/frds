@@ -1,10 +1,12 @@
-![frds](https://github.com/mgao6767/frds/raw/main/images/frds_logo.png)
+![frds](https://github.com/mgao6767/frds/raw/main/docs/source/images/frds_logo.png)
 
 # FRDS - Financial Research Data Services
 
 ![LICENSE](https://img.shields.io/github/license/mgao6767/frds?color=blue) ![DOWNLOADS](https://img.shields.io/pypi/dm/frds?label=PyPI%20downloads) [![Test](https://github.com/mgao6767/frds/actions/workflows/test.yml/badge.svg)](https://github.com/mgao6767/frds/actions/workflows/test.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-[frds](https://github.com/mgao6767/frds/) is an open-sourced Python package for computing [a collection of major academic measures](https://frds.io/measures/) used in the finance literature in a simple and straightforward way.
+[frds](https://github.com/mgao6767/frds/) is a Python library to simplify the complexities often encountered in financial research. It provides a collection of ready-to-use methods for computing a wide array of measures in the literature. 
+
+It is developed by Dr. [Mingze Gao](https://mingze-gao.com) from the University of Sydney, as a personal project during his postdoctoral research fellowship.
 
 ## Installation
 
@@ -18,24 +20,12 @@ This library is still under development and breaking changes may be expected.
 
 If there's any issue (likely), please contact me at [mingze.gao@sydney.edu.au](mailto:mingze.gao@sydney.edu.au)
 
-## Supported measures
+## Supported measures and algorithms
 
-More to be added. For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/).
-
-* [Absorption Ratio](https://frds.io/measures/absorption_ratio/) in Kritzman, Li, Page, and Rigobon (2010).
-* [Contingent Claim Analysis](https://frds.io/measures/contingent_claim_analysis/) in Gray and Jobst (2010).
-* [Distress Insurance Premium](https://frds.io/measures/distress_insurance_premium/) in Huang, Zhou, and Zhu (2009).
-* [Long-Run MES](https://frds.io/measures/long_run_mes/) in Brownlees and Engle (2017).
-* [Marginal Expected Shortfall (MES)](https://frds.io/measures/marginal_expected_shortfall/) in Acharya, Pedersen, Philippon, and Richardson (2010).
-* [Modified Default Probability](https://frds.io/measures/modified_default_probability/) in Nagel and Purnanandam (2020)
-* [SRISK](https://frds.io/measures/srisk/) in Brownlees and Engle (2017).
-* [Systemic Expected Shortfall (SES)](https://frds.io/measures/systemic_expected_shortfall/) in Acharya, Pedersen, Philippon, and Richardson (2010).
-* [Z-score](https://frds.io/measures/z_score)
-
-
+For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/) and [frds.io/algorithms](https://frds.io/algorithms/).
 ## Examples
 
-The primary purpose of `frds` is to offer ready-to-use functions.
+Some simple examples.
 
 ### Absorption Ratio
 
@@ -43,7 +33,7 @@ For example, Kritzman, Li, Page, and Rigobon (2010) propose an [Absorption Ratio
 
 ``` python
 >>> import numpy as np
->>> from frds.measures import absorption_ratio
+from frds.measures import AbsorptionRatio
 >>> data = np.array( # Hypothetical 6 daily returns of 3 assets.
 ...             [
 ...                 [0.015, 0.031, 0.007, 0.034, 0.014, 0.011],
@@ -51,64 +41,34 @@ For example, Kritzman, Li, Page, and Rigobon (2010) propose an [Absorption Ratio
 ...                 [0.072, 0.043, 0.097, 0.078, 0.036, 0.083],
 ...             ]
 ...         )
->>> absorption_ratio.estimate(data, fraction_eigenvectors=0.2)
+ar = AbsorptionRatio(data)
+ar.estimate()
 0.7746543307660252
 ```
 
-### Distress Insurance Premium
+### Bivariate GARCH-CCC
 
-Another example, [Distress Insurance Premium (DIP)](https://frds.io/measures/distress_insurance_premium/) proposed by Huang, Zhou, and Zhu (2009) as a systemic risk measure of a hypothetical insurance premium against a systemic financial distress, defined as total losses that exceed a given threshold, say 15%, of total bank liabilities.
+Use [`frds.algorithms.GARCHModel_CCC`](https://frds.io/algorithms/garch-ccc) to estimate a bivariate Constant Conditional Correlation (CCC) GARCH model. The results are as good as those obtained in Stata, marginally better based on log-likelihood.
 
-``` python
->>> from frds.measures import distress_insurance_premium
->>> # hypothetical implied default probabilities of 6 banks
->>> default_probabilities = np.array([0.02, 0.10, 0.03, 0.20, 0.50, 0.15] 
->>> correlations = np.array(
-...     [
-...         [ 1.000, -0.126, -0.637, 0.174,  0.469,  0.283],
-...         [-0.126,  1.000,  0.294, 0.674,  0.150,  0.053],
-...         [-0.637,  0.294,  1.000, 0.073, -0.658, -0.085],
-...         [ 0.174,  0.674,  0.073, 1.000,  0.248,  0.508],
-...         [ 0.469,  0.150, -0.658, 0.248,  1.000, -0.370],
-...         [ 0.283,  0.053, -0.085, 0.508, -0.370,  1.000],
-...     ]
-... )
->>> distress_insurance_premium.estimate(default_probabilities, correlations)       
-0.28661995758
+``` python 
+>>> import pandas as pd
+>>> from pprint import pprint
+>>> from frds.algorithms import GARCHModel_CCC
+>>> data_url = "https://www.stata-press.com/data/r18/stocks.dta"
+>>> df = pd.read_stata(data_url, convert_dates=["date"])
+>>> nissan = df["nissan"].to_numpy() * 100
+>>> toyota = df["toyota"].to_numpy() * 100
+>>> model_ccc = GARCHModel_CCC(toyota, nissan)
+>>> res = model_ccc.fit()
+>>> pprint(res)
+Parameters(mu1=0.02745814255283541,
+           omega1=0.03401400758840226,
+           alpha1=0.06593379740524756,
+           beta1=0.9219575443861723,
+           mu2=0.009390068254041505,
+           omega2=0.058694325049554734,
+           alpha2=0.0830561828957614,
+           beta2=0.9040961791372522,
+           rho=0.6506770477876749,
+           loglikelihood=-7281.321453218112)
 ```
-
-### Modified Default Probability (bank)
-
-More examples. [Nagel and Purnanandam (2020)](https://doi.org/10.1093/rfs/hhz125) introduce the Modified Default Probability for banks. Banks' assets are contingent claims on borrowers' collateral assets, hence banks' equity and debt are contingent claims on these contingent claims. While borrowers' assets value may follow a lognormal distribution, banks' assets do not.
-
-Below is a one-liner replication of the simulations.
-
-```python
->>> from frds.measures.modified_merton import mod_merton_simulation
->>> mod_merton_simulation.simulate()
-----------------------------------------------------------------------------
-                                        Borrower asset value
-                                    ----------------------------------------
-                                    No shock        +ve shock       -ve shock
-----------------------------------------------------------------------------
-A. True properties
-Agg. Borrower Asset Value           1.06            1.33            0.85
-Bank Asset Value                    0.74            0.79            0.67
-Bank Market Equity/Market Assets    0.12            0.16            0.07
-Bank 5Y RN Default Prob.            0.23            0.11            0.49
-Bank Credit Spread (%)              0.50            0.19            1.37
-----------------------------------------------------------------------------
-B. Misspecified estimates based on standard Merton model
-Merton 5Y RN Default Prob.          0.13            0.01            0.58
-Merton Credit Spread (%)            0.12            0.00            1.54
-----------------------------------------------------------------------------
-```
-
-These results are largely the same as Table 1 in Nagel and Purnanandam (2020). Additionally, several plots will be saved in the working directory, e.g., Figure 2:
-
-![figure2](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure2_PayoffsAtDMat.png?raw=true)
-
-And another sample output, Figure 4:
-
-![figure4](https://github.com/mgao6767/frds/blob/main/docs/images/NagelPurnanandam2020/figure4_mdef.png?raw=true)
-
