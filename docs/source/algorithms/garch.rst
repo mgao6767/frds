@@ -7,6 +7,8 @@ Introduction
 
 The GARCH(1,1) model is a commonly used model for capturing the time-varying volatility in financial time series data. The model can be defined as follows:
 
+.. tip:: Check `Examples`_ section for code guide and comparison to Stata.
+
 Return equation
 ---------------
 
@@ -157,6 +159,10 @@ API
 
 .. autoclass:: frds.algorithms.GARCHModel
    :private-members:
+   :exclude-members: Parameters
+
+.. autoclass:: frds.algorithms.GARCHModel.Parameters
+   :exclude-members: __init__
 
 Examples
 ========
@@ -174,9 +180,15 @@ Scale returns to percentage returns for better optimization results
 Use :class:`frds.algorithms.GARCHModel` to estimate a GARCH(1,1). 
 
 >>> from frds.algorithms import GARCHModel
+>>> from pprint import pprint
 >>> model = GARCHModel(returns)
->>> model.fit()
-[0.019315543596552513, 0.05701047522984261, 0.0904653253307871, 0.8983752570013462, -4086.487358003049]
+>>> res = model.fit()
+>>> pprint(res)
+Parameters(mu=0.019315543596552513,
+           omega=0.05701047522984261,
+           alpha=0.0904653253307871,
+           beta=0.8983752570013462,
+           loglikelihood=-4086.487358003049)
 
 These estimates are identical to the ones produced by `arch <https://pypi.org/project/arch/>`_.
 

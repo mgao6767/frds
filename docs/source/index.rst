@@ -81,19 +81,42 @@ liabilities.
 Algorithm
 ---------
 
-Use :class:`frds.algorithms.GARCHModel` to estimate a GARCH(1,1) model.
+Use :class:`frds.algorithms.GARCHModel` to estimate a :doc:`/algorithms/garch` model.
 The results are as good as those obtained from other software or libraries.
 
 >>> import pandas as pd
+>>> from pprint import pprint
 >>> from frds.algorithms import GARCHModel
 >>> data_url = "https://www.stata-press.com/data/r18/stocks.dta"
 >>> df = pd.read_stata(data_url, convert_dates=["date"])
->>> returns = df["nissan"].to_numpy() * 100
->>> # Start to fit the model
->>> model = GARCHModel(returns)
->>> res = model.fit() # [mu, omega, alpha, beta, log-likelihood]
->>> [f"{p:.4f}" for p in res]
-['0.0193', '0.0570', '0.0905', '0.8984', '-4086.4874']
+>>> nissan = df["nissan"].to_numpy() * 100
+>>> model = GARCHModel(nissan)
+>>> res = model.fit()
+>>> pprint(res)
+Parameters(mu=0.019315543596552513,
+           omega=0.05701047522984261,
+           alpha=0.0904653253307871,
+           beta=0.8983752570013462,
+           loglikelihood=-4086.487358003049)
+
+Use :class:`frds.algorithms.GARCHModel_CCC` to estimate a bivariate :doc:`/algorithms/garch-ccc` model.
+The results are as good as those otained in Stata, if not better.
+
+>>> from frds.algorithms import GARCHModel_CCC
+>>> toyota = df["toyota"].to_numpy() * 100
+>>> model_ccc = GARCHModel_CCC(toyota, nissan)
+>>> res = model_ccc.fit()
+>>> pprint(res)
+Parameters(mu1=0.02746938560178172,
+           omega1=0.034013928248590015,
+           alpha1=0.06593333053443852,
+           beta1=0.9219586517939616,
+           mu2=0.009412154182986385,
+           omega2=0.05869540397594033,
+           alpha2=0.08305499592375533,
+           beta2=0.9040973431326755,
+           rho=0.6506782161411894,
+           loglikelihood=-7281.321453325305)
 
 ---------
 Read more

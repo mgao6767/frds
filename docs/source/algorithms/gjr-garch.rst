@@ -7,6 +7,8 @@ Introduction
 
 The GJR-GARCH model extends the basic :doc:`/algorithms/garch`  by accounting for leverage effects, where bad news (negative returns) has a greater impact on volatility than good news.
 
+.. tip:: Check `Examples`_ section for code guide and comparison to Stata.
+
 Return equation
 ---------------
 
@@ -159,6 +161,10 @@ API
 .. autoclass:: frds.algorithms.GJRGARCHModel
    :private-members:
    :inherited-members:
+   :exclude-members: Parameters
+
+.. autoclass:: frds.algorithms.GJRGARCHModel.Parameters
+   :exclude-members: __init__
 
 Examples
 ========
@@ -176,9 +182,16 @@ Scale returns to percentage returns for better optimization results
 Use :class:`frds.algorithms.GJRGARCHModel` to estimate a GJR-GARCH(1,1). 
 
 >>> from frds.algorithms import GJRGARCHModel
+>>> from pprint import pprint
 >>> model = GJRGARCHModel(returns)
->>> model.fit()
-[0.010528449295629098, 0.05512898468355955, 0.07700974411970742, 0.021814015760057957, 0.9013499076166999, -4085.741514140086]
+>>> res = model.fit()
+>>> pprint(res)
+Parameters(mu=0.010528449295629098,
+           omega=0.05512898468355955,
+           alpha=0.07700974411970742,
+           gamma=0.021814015760057957,
+           beta=0.9013499076166999,
+           loglikelihood=-4085.741514140086)
 
 These estimates are identical to the ones produced by `arch <https://pypi.org/project/arch/>`_.
 

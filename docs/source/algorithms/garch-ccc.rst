@@ -10,6 +10,8 @@ framework to multiple time series, capturing not only the conditional variances
 but also the conditional covariances between the series. One common form is the 
 **Constant Conditional Correlation (CCC) model** proposed by Robert Engle (1991).
 
+.. tip:: Check `Examples`_ section for code guide and comparison to Stata.
+
 Return equation
 ---------------
 
@@ -25,14 +27,16 @@ Here, :math:`\mathbf{r}_t` is a :math:`N \times 1` vector of returns, and :math:
 Shock equation
 --------------
 
-The shock term is decomposed as:
+The shock term is modelled as:
 
 .. math::
    :label: mv_shock_eq
 
    \boldsymbol{\epsilon}_t = \mathbf{H}_t^{1/2} \mathbf{z}_t
 
-Here, :math:`\mathbf{H}_t` is a :math:`N \times N` conditional covariance matrix, and :math:`\mathbf{z}_t` is a :math:`N \times 1` vector of standard normal innovations.
+Here, :math:`\mathbf{H}_t` is a :math:`N \times N` conditional covariance matrix, 
+:math:`\mathbf{H}_t^{1/2}` is a :math:`N \times N` positive definite matrix,
+and :math:`\mathbf{z}_t` is a :math:`N \times 1` vector of standard normal innovations.
 
 Conditional covariance matrix
 -----------------------------
@@ -42,15 +46,16 @@ In the CCC-GARCH(1,1) model, the conditional covariance matrix :math:`\mathbf{H}
 .. math::
    :label: mv_volatility_eq
 
-   \mathbf{H}_t = \text{diag}(\mathbf{h}_t)^{1/2} \mathbf{R} \text{diag}(\mathbf{h}_t)^{1/2}
+   \mathbf{H}_t = \mathbf{D}_t\mathbf{R}\mathbf{D}_t
 
-Where :math:`\mathbf{h}_t` is a :math:`N \times 1` vector whose elements are univariate GARCH(1,1) variances for each time series, and :math:`\mathbf{R}` is a constant correlation matrix.
+where :math:`\mathbf{D}_t=\text{diag}(\mathbf{h}_t)^{1/2}`, 
+and :math:`\mathbf{h}_t` is a :math:`N \times 1` vector whose elements are univariate GARCH(1,1) variances for each time series.
+:math:`\mathbf{R}` is a positive definite constant conditional correlation matrix.
 
 .. admonition:: A bivarite example
    :class: note
 
-   In a bivariate GARCH(1,1) setting, we have two univariate GARCH(1,1) processes, one for each return series. Note that the ARCH term in each of these univariate GARCH models is typically based on the standardized residuals :math:`z_{t-1}`, not the original residuals from the return series :math:`\epsilon_{t-1}`.
-
+   In a bivariate GARCH(1,1) setting, we have two univariate GARCH(1,1) processes, one for each return series.
    Specifically, the GARCH(1,1) equations for the conditional variances :math:`h_{1t}` and :math:`h_{2t}` can be written as:
 
    .. math::
@@ -65,12 +70,8 @@ Where :math:`\mathbf{h}_t` is a :math:`N \times 1` vector whose elements are uni
 
    where,
 
-   - :math:`z_{i, t-1}` is the standardized residual at time :math:`t-1`, calculated as :math:`{\epsilon_{i, t-1}}/{\sqrt{h_{i, t-1}}}`.
-   
    - :math:`\epsilon_{1,t-1}` and :math:`\epsilon_{2,t-1}` are past shock terms from their respective time series. 
    - The parameters :math:`\omega_1, \alpha_1, \beta_1, \omega_2, \alpha_2, \beta_2` are to be estimated.
-
-   Using standardized residuals in this manner ensures that the innovations \( z_t \) have a standard normal distribution, which is a key assumption underlying GARCH models. This also allows for a more accurate modeling of the volatility dynamics.
 
    With these individual variances, the conditional covariance matrix :math:`\mathbf{H}_t` is:
 
@@ -78,8 +79,8 @@ Where :math:`\mathbf{h}_t` is a :math:`N \times 1` vector whose elements are uni
       :label: conditional_cov_matrix_modified
 
       \mathbf{H}_t = \begin{pmatrix}
-      h_{1t} & \sqrt{h_{1t} h_{2t}} \rho \\\\
-      \sqrt{h_{1t} h_{2t}} \rho & h_{2t}
+      h_{1t} & \rho\sqrt{h_{1t} h_{2t}} \\\\
+      \rho\sqrt{h_{1t} h_{2t}} & h_{2t}
       \end{pmatrix}
 
    Here, :math:`\rho` is the correlation between the two time series. 
@@ -99,12 +100,18 @@ Where :math:`\mathbf{h}_t` is a :math:`N \times 1` vector whose elements are uni
 Log-likelihood function
 -----------------------
 
-The log-likelihood function for the Multivariate GARCH(1,1) model is:
+The log-likelihood function for the :math:`N`-dimensional multivariate GARCH CCC model is:
 
 .. math::
    :label: mv_log_likelihood
 
-   \ell = -\frac{1}{2} \sum_{t=1}^T \left[ N \ln(2\pi) + \ln(|\mathbf{H}_t|) + \mathbf{z}_t' \mathbf{H}_t^{-1} \mathbf{z}_t \right]
+   \begin{align}
+   \ell &= -\frac{1}{2} \sum_{t=1}^T \left[ N\ln(2\pi) + \ln(|\mathbf{H}_t|) + \mathbf{\epsilon}_t' \mathbf{H}_t^{-1} \mathbf{\epsilon}_t \right] \\\\
+        &= -\frac{1}{2} \sum_{t=1}^T \left[ N\ln(2\pi) + \ln(|\mathbf{D}_t\mathbf{R}\mathbf{D}_t|) + \mathbf{\epsilon}_t' \mathbf{D}_t^{-1}\mathbf{R}^{-1}\mathbf{D}_t^{-1} \mathbf{\epsilon}_t \right] \\\\
+        &= -\frac{1}{2} \sum_{t=1}^T \left[ N\ln(2\pi) + 2 \ln(|\mathbf{D}_t|) + \ln(|\mathbf{R}|)+ \mathbf{z}_t' \mathbf{R}^{-1} \mathbf{z}_t \right] 
+   \end{align}
+
+where :math:`\mathbf{z}_t=\mathbf{D}_t^{-1}\mathbf{\epsilon}_t` is the vector of standardized residuals. 
 
 This function is maximized to estimate the model parameters.
 
@@ -118,7 +125,7 @@ This function is maximized to estimate the model parameters.
    .. math::
       :label: log_likelihood_bivariate
 
-      \ell(\Theta) = -\frac{1}{2} \sum_{t=1}^{T} \left[ 2 \ln(2\pi) + \ln(|\mathbf{H}_t|) + \mathbf{z}_t' \mathbf{H}_t^{-1} \mathbf{z}_t \right]
+      \ell(\Theta) = -\frac{1}{2} \sum_{t=1}^T \left[ 2\ln(2\pi) + 2 \ln(|\mathbf{D}_t|) + \ln(|\mathbf{R}|)+ \mathbf{z}_t' \mathbf{R}^{-1} \mathbf{z}_t \right] 
 
    Here, :math:`\mathbf{z}_t'` is the transpose of the vector of standardized residuals :math:`\mathbf{z}_t`, 
 
@@ -129,52 +136,158 @@ This function is maximized to estimate the model parameters.
         z_{2,t}
       \end{pmatrix}
 
-   and :math:`|\mathbf{H}_t|` is the determinant of :math:`\mathbf{H}_t`:
+   Further,
 
    .. math::
 
-      |\mathbf{H}_t| = h_{1,t} \cdot h_{2,t} - \left(\rho \sqrt{h_{1,t} h_{2,t}}\right)^2
-                 = h_{1,t} \cdot h_{2,t} (1 - \rho^2)
-
-
-   The inverse :math:`\mathbf{H}_t^{-1}` is:
-
-   .. math::
-      
-      \mathbf{H}_t^{-1} = \frac{1}{|\mathbf{H}_t|} \begin{pmatrix}
-      h_{2,t} & -\rho \sqrt{h_{1,t} h_{2,t}} \\\\
-      -\rho \sqrt{h_{1,t} h_{2,t}} & h_{1,t}
+      \mathbf{D}_t = \begin{pmatrix}
+      \sqrt{h_{1t}} & 0 \\\\
+      0 & \sqrt{h_{2t}}
       \end{pmatrix}
-   
 
-   Further, the term :math:`\mathbf{z}_t' \mathbf{H}_t^{-1} \mathbf{z}_t` can be expanded as:
-
-   .. math::
-
-      \mathbf{z}_t' \mathbf{H}_t^{-1} \mathbf{z}_t = \frac{1}{|\mathbf{H}_t|} \left( h_{2,t} z_{1,t}^2 + h_{1,t} z_{2,t}^2 - 2 \rho \sqrt{h_{1,t} h_{2,t}} z_{1,t} z_{2,t}  \right)
-
-   Dividing each term in the bracket by :math:`|\mathbf{H}_t|`, we get:
+   so the log-determinant of :math:`\mathbf{D}_t` is
 
    .. math::
 
-      \begin{align}
-      \mathbf{z}_t' \mathbf{H}_t^{-1} \mathbf{z}_t &= \frac{h_{2,t} z_{1,t}^2 + h_{1,t} z_{2,t}^2 - 2\rho \sqrt{h_{1,t} h_{2,t}} z_{1,t} z_{2,t}}{h_{1,t} h_{2,t} (1 - \rho^2)} \\\\
-      &= \frac{1}{1 - \rho^2} \left[\frac{z_{1,t}^2}{h_{1,t}}  + \frac{z_{2,t}^2}{h_{2,t}}  - \frac{2\rho z_{1,t} z_{2,t}}{\sqrt{h_{1,t} h_{2,t}}} \right]
-      \end{align}
+      \ln(|\mathbf{D}_t|) = \frac{1}{2} \ln(h_{1t} h_{2t}) 
 
-
-   Inserting all of these into :math:`\ell(\Theta)`:
+   The log-determinant of :math:`\mathbf{R}` is 
 
    .. math::
-      :label: log_likelihood_bivariate_nonmatrix
 
-      \ell(\Theta) = -\frac{1}{2} \sum_{t=1}^{T} \left[ 2 \ln(2\pi) + \ln(h_{1,t} h_{2,t} \cdot (1 - \rho^2)) + \frac{1}{1 - \rho^2} \left( \frac{z_{1,t}^2}{h_{1,t}}  + \frac{z_{2,t}^2}{h_{2,t}}  - \frac{2\rho z_{1,t} z_{2,t}}{\sqrt{h_{1,t} h_{2,t}}} \right) \right]
+      \ln(|\mathbf{R}|) = \ln(1 - \rho^2)
+
+   Inverse of :math:`\mathbf{R}` is 
+
+   .. math::
+
+      \mathbf{R}^{-1} = \frac{1}{1 - \rho^2} \begin{pmatrix}
+      1 & -\rho \\
+      -\rho & 1
+      \end{pmatrix}
+
+   Lastly, :math:`\mathbf{z}_t' \mathbf{R}^{-1} \mathbf{z}_t` is
+
+   .. math::
+
+      \mathbf{z}_t' \mathbf{R}^{-1} \mathbf{z}_t = \frac{1}{1 - \rho^2} \left[ z_{1t}^2 - 2\rho z_{1t} z_{2t} + z_{2t}^2 \right]
 
 
+   Inserting all of these into :math:`\ell(\Theta)` in equation :math:numref:`log_likelihood_bivariate`:
 
+   .. math::
+      :label: log_likelihood
+
+      \ell(\Theta) = -\frac{1}{2} \sum_{t=1}^T \left[ 2\ln(2\pi) + \ln(h_{1t} h_{2t} (1 - \rho^2)) + \frac{1}{1 - \rho^2} \left( z_{1t}^2 - 2\rho z_{1t} z_{2t} + z_{2t}^2 \right) \right]
+
+Estimation techniques
+=====================
+
+My implementation of :class:`frds.algorithms.GARCHModel_CCC` fits the GARCH-DCC model 
+by simultaneously estimating all parameters via maxmimizing the log-likelihood :math:numref:`log_likelihood`.
+
+1. Use :class:`frds.algorithms.GARCHModel` to estimate the :doc:`/algorithms/garch` model for each of the returns.
+
+2. Use as starting vaues the estimates and a correlation found to maximize loglikelihood.
+`
+
+References
+==========
+
+- `Engle, R. F. (1982) <https://doi.org/10.2307/1912773>`_, "Autoregressive Conditional Heteroskedasticity with Estimates of the Variance of United Kingdom Inflation." *Econometrica*, 50(4), 987-1007.
+
+- `Bollerslev, T. (1990) <https://doi.org/10.2307/2109358>`_, "Modelling the Coherence in Short-Run Nominal Exchange Rates: A Multivariate Generalized ARCH Model." *Review of Economics and Statistics*, 72(3), 498-505.
+  
 API
 ===
 
 .. autoclass:: frds.algorithms.GARCHModel_CCC
-   :private-members:
+   :exclude-members: Parameters
 
+.. autoclass:: frds.algorithms.GARCHModel_CCC.Parameters
+   :exclude-members: __init__
+
+Examples
+========
+
+Let's import the dataset.
+
+>>> import pandas as pd
+>>> data_url = "https://www.stata-press.com/data/r18/stocks.dta"
+>>> df = pd.read_stata(data_url, convert_dates=["date"])
+
+Scale returns to percentage returns for better optimization results
+
+>>> returns1 = df["toyota"].to_numpy() * 100
+>>> returns2 = df["nissan"].to_numpy() * 100
+
+Use :class:`frds.algorithms.GARCHModel_CCC` to estimate a GARCH(1,1)-CCC. 
+
+>>> from frds.algorithms import GARCHModel_CCC
+>>> model_ccc = GARCHModel_CCC(returns1, returns2)
+>>> res = model_ccc.fit()
+>>> from pprint import pprint
+>>> pprint(res)
+Parameters(mu1=0.02746938560178172,
+           omega1=0.034013928248590015,
+           alpha1=0.06593333053443852,
+           beta1=0.9219586517939616,
+           mu2=0.009412154182986385,
+           omega2=0.05869540397594033,
+           alpha2=0.08305499592375533,
+           beta2=0.9040973431326755,
+           rho=0.6506782161411894,
+           loglikelihood=-7281.321453325305)
+
+These results are comparable to the ones obtained in Stata, and even marginally 
+better based on log-likelihood. In Stata, we can estimate the same model as below:
+
+.. code-block:: stata
+
+    webuse stocks, clear
+    replace toyota = toyota * 100
+    replace nissan = nissan * 100
+    mgarch ccc (toyota nissan = ), arch(1) garch(1)
+   
+The Stata results are:
+
+.. code-block:: stata
+
+    Constant conditional correlation MGARCH model
+
+     Sample: 1 thru 2015                                      Number of obs = 2,015
+     Distribution: Gaussian                                   Wald chi2(.)  =     .
+     Log likelihood = -7282.961                               Prob > chi2   =     .
+
+     -------------------------------------------------------------------------------------
+                         | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+     --------------------+----------------------------------------------------------------
+     toyota              |
+                 _cons   |   .0277462   .0302805     0.92   0.360    -.0316024    .0870948
+     --------------------+----------------------------------------------------------------
+     ARCH_toyota         |
+                    arch |
+                    L1.  |   .0666384   .0101597     6.56   0.000     .0467257    .0865511
+                         |
+                  garch  |
+                    L1.  |   .9210688   .0119214    77.26   0.000     .8977032    .9444343
+                         |
+                  _cons  |   .0344153   .0109208     3.15   0.002      .013011    .0558197
+     --------------------+----------------------------------------------------------------
+     nissan              |
+                  _cons  |   .0079682   .0349351     0.23   0.820    -.0605034    .0764398
+     --------------------+----------------------------------------------------------------
+     ARCH_nissan         |
+                    arch |
+                    L1.  |   .0851778   .0132656     6.42   0.000     .0591778    .1111779
+                         |
+                  garch  |
+                    L1.  |   .9016613   .0150494    59.91   0.000     .8721649    .9311577
+                         |
+                  _cons  |   .0603765   .0178318     3.39   0.001     .0254269    .0953262
+     --------------------+----------------------------------------------------------------
+     corr(toyota,nissan) |   .6512249   .0128548    50.66   0.000       .62603    .6764199
+     -------------------------------------------------------------------------------------
+
+See `Stata's reference manual <https://www.stata.com/manuals/ts.pdf>`_ for its
+estimation techniques.
