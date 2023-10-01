@@ -3,7 +3,6 @@ name: Test
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
     tags:
       - "test" # only run when there is a "test" tag on push
   pull_request:
