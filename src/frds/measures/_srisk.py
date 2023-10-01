@@ -1,4 +1,5 @@
 import numpy as np
+from warnings import warn
 from typing import Union
 from functools import lru_cache
 from arch import arch_model
@@ -32,6 +33,7 @@ class SRISK:
             then ``W`` and ``D`` must be of shape ``(n_firms,)``.
 
         """
+        warn(f"{type(self)} is not numerically stable! Do not use!")
         if len(firm_returns.shape) == 1:
             # Single firm
             n_firms = 1
