@@ -270,7 +270,8 @@ log-likelihood :math:`\ell(\hat{\Theta}_1)`.
 
 Step 2. Use the estimated parameters from Step 1 to maximize
 :math:`\ell_{C}(\hat{\Theta}_1, \Theta_2)` with respect to
-:math:`\Theta_2=(a,b)`.
+:math:`\Theta_2=(a,b)`. A grid search is performed to find the starting values 
+of :math:`(a,b)` based on loglikelihood.
 
 ************
  References

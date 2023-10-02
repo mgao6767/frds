@@ -1,5 +1,6 @@
 import warnings
-from typing import List
+from typing import List, Tuple
+import itertools
 from dataclasses import dataclass, asdict
 import numpy as np
 from scipy.optimize import minimize, OptimizeResult
@@ -213,7 +214,7 @@ class GARCHModel_DCC(GARCHModel_CCC):
         m1, m2 = self.model1, self.model2
         m1.fit()
         m2.fit()
-        a, b = 0.04, 0.8  # TODO: use a grid search to find a, b to start with
+        a, b = self.starting_values()
         m1_params = list(asdict(m1.parameters).values())[:-1]
         m2_params = list(asdict(m2.parameters).values())[:-1]
         self.parameters = type(self).Parameters(*m1_params, *m2_params)
@@ -253,6 +254,24 @@ class GARCHModel_DCC(GARCHModel_CCC):
                 self.parameters.b = b
                 self.parameters.loglikelihood=-opt.fun
         return self.parameters
+
+    def starting_values(self) -> Tuple[float, float]:
+        """Use a grid search to find the starting values for a and b
+
+        Returns:
+            Tuple[float, float]: [a, b]
+        """
+        a_grid = np.linspace(0.01, 0.9, 10)
+        b_grid = np.linspace(0.01, 0.9, 10)
+        max_ll = -np.inf
+        initial_values = []
+        for a, b in itertools.product(a_grid, b_grid):
+            if a + b >= 1:
+                continue
+            ll = -self.loglikelihood_model([a, b])
+            if ll > max_ll:
+                initial_values = [a, b]
+        return initial_values
 
     def loglikelihood_model(self, params: np.ndarray) -> float:
         """Calculates the negative log-likelihood based on the current ``params``.
