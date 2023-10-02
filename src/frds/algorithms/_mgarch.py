@@ -50,7 +50,7 @@ class GARCHModel_CCC:
         """Estimates the Multivariate GARCH(1,1)-CCC parameters via MLE
 
         Returns:
-            params: :class:`frds.algorithms.GARCHModel_CCC.Parameters`
+            Parameters: :class:`frds.algorithms.GARCHModel_CCC.Parameters`
         """
         m1, m2 = self.model1, self.model2
         m1.fit()
@@ -180,6 +180,134 @@ class GARCHModel_CCC:
         return log_likelihood
 
 
+class GARCHModel_DCC(GARCHModel_CCC):
+    """:doc:`/algorithms/garch-dcc` model with the following specification:
+
+    - Bivariate
+    - Constant mean
+    - Normal noise
+
+    It estimates the model parameters only. No standard errors calculated.
+    """
+
+    @dataclass
+    class Parameters:
+        mu1: float = np.nan
+        omega1: float = np.nan
+        alpha1: float = np.nan
+        beta1: float = np.nan
+        mu2: float = np.nan
+        omega2: float = np.nan
+        alpha2: float = np.nan
+        beta2: float = np.nan
+        a: float = np.nan
+        b: float = np.nan
+        loglikelihood: float = np.nan
+
+    def fit(self) -> Parameters:
+        """Estimates the Multivariate GARCH(1,1)-DCC parameters via twp-step QML
+
+        Returns:
+            Parameters: :class:`frds.algorithms.GARCHModel_DCC.Parameters`
+        """
+        m1, m2 = self.model1, self.model2
+        m1.fit()
+        m2.fit()
+        a, b = 0.04, 0.8  # TODO: use a grid search to find a, b to start with
+        m1_params = list(asdict(m1.parameters).values())[:-1]
+        m2_params = list(asdict(m2.parameters).values())[:-1]
+        self.parameters = type(self).Parameters(*m1_params, *m2_params)
+        starting_vals = [a, b]
+
+        bounds = [
+            # DCC parameters
+            (0.0, 1.0),  # Bounds for a
+            (0.0, 1.0),  # Bounds for b
+        ]
+
+        def a_plus_b_smaller_than_one(params: List[float]):
+            a, b = params
+            return 1.0 - (a + b)
+
+        # fmt: off
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                "Values in x were outside bounds during a minimize step",
+                RuntimeWarning,
+            )
+            opt: OptimizeResult = minimize(
+                self.loglikelihood_model,
+                starting_vals,
+                args=(),
+                method="SLSQP",
+                bounds=bounds,
+                constraints=[
+                    {"type": "ineq", "fun": a_plus_b_smaller_than_one},
+                ],
+            )
+            if opt.success:
+                self.estimation_success = True
+                a, b = list(opt.x)
+                self.parameters.a = a
+                self.parameters.b = b
+                self.parameters.loglikelihood=-opt.fun
+        return self.parameters
+
+    def loglikelihood_model(self, params: np.ndarray) -> float:
+        """Calculates the negative log-likelihood based on the current ``params``.
+
+        Args:
+            params (np.ndarray): [a, b]
+
+        Returns:
+            float: negative log-likelihood
+        """
+        # fmt: off
+        a, b = params
+        resids1 = self.model1.resids
+        resids2 = self.model2.resids
+        sigma2_1 = self.model1.sigma2
+        sigma2_2 = self.model2.sigma2
+
+        # The loglikelihood of the variance component (Step 1)
+        l1 = self.model1.parameters.loglikelihood + self.model2.parameters.loglikelihood
+
+        # The loglikelihood of the correlation component (Step 2)
+        # z1 and z2 are standardized residuals
+        z1 = resids1 / np.sqrt(sigma2_1)
+        z2 = resids2 / np.sqrt(sigma2_2)
+        Q_bar = np.cov(z1, z2)
+        q_11_bar, q_12_bar, q_22_bar = Q_bar[0, 0], Q_bar[0, 1], Q_bar[1, 1]
+        T = len(z1)
+        q11 = np.empty_like(z1)
+        q12 = np.empty_like(z1)
+        q22 = np.empty_like(z1)
+        rho = np.zeros_like(z1)
+        # TODO: initial values for Q
+        q11[0] = q_11_bar
+        q22[0] = q_22_bar
+        q12[0] = q_12_bar
+        rho[0] = q12[0] / np.sqrt(q11[0] * q22[0])
+
+        # TODO: fix RuntimeWarning about invalid values
+        for t in range(1, T):
+            q11[t] = (1 - a - b) * q_11_bar + a * z1[t - 1] ** 2 + b * q11[t - 1]
+            q22[t] = (1 - a - b) * q_22_bar + a * z2[t - 1] ** 2 + b * q22[t - 1]
+            q12[t] = (1 - a - b) * q_12_bar + a * z1[t - 1] * z2[t - 1] + b * q12[t - 1]
+            rho[t] = q12[t] / np.sqrt(q11[t] * q22[t])
+
+        log_likelihood_terms = -0.5 * (
+            - (z1**2 + z2**2)
+            + np.log(1 - rho ** 2)
+            + (z1 ** 2  + z2 ** 2  - 2 * rho * z1 * z2) / (1 - rho ** 2)
+        )
+        l2 = np.sum(log_likelihood_terms)
+
+        negative_loglikelihood = - (l1 + l2)
+        return negative_loglikelihood
+
+
 if __name__ == "__main__":
     import pandas as pd
     from pprint import pprint
@@ -195,4 +323,8 @@ if __name__ == "__main__":
 
     model = GARCHModel_CCC(toyota, nissan)
     res = model.fit()
+    pprint(res)
+
+    dcc = GARCHModel_DCC(toyota, nissan)
+    res = dcc.fit()
     pprint(res)

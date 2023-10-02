@@ -183,7 +183,7 @@ This function is maximized to estimate the model parameters.
 Estimation techniques
 =====================
 
-My implementation of :class:`frds.algorithms.GARCHModel_CCC` fits the GARCH-DCC model 
+My implementation of :class:`frds.algorithms.GARCHModel_CCC` fits the GARCH-CCC model 
 by simultaneously estimating all parameters via maxmimizing the log-likelihood :math:numref:`log_likelihood`.
 
 General steps are:
