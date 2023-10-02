@@ -1,5 +1,5 @@
 import warnings
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import itertools
 from dataclasses import dataclass, asdict
 import numpy as np
@@ -205,6 +205,38 @@ class GARCHModel_DCC(GARCHModel_CCC):
         b: float = np.nan
         loglikelihood: float = np.nan
 
+    def __init__(
+        self,
+        returns1: Union[np.ndarray, GARCHModel],
+        returns2: Union[np.ndarray, GARCHModel],
+    ) -> None:
+        """__init__
+
+        Args:
+            returns1 (Union[np.ndarray, GARCHModel]): ``(T,)`` array of ``T`` returns of first asset. Can also be an :class:`frds.algorithms.GARCHModel`.
+            returns2 (Union[np.ndarray, GARCHModel]): ``(T,)`` array of ``T`` returns of second asset. Can also be an :class:`frds.algorithms.GARCHModel`.
+
+        .. note::
+
+            If ``returns`` is an array, it is best to be percentage returns for optimization.
+
+            Estimated :class:`frds.algorithms.GARCHModel` can be used to save computation time.
+        """
+        if isinstance(returns1, np.ndarray):
+            self.returns1 = np.asarray(returns1, dtype=np.float64)
+            self.model1 = GARCHModel(self.returns1)
+        if isinstance(returns2, np.ndarray):
+            self.returns2 = np.asarray(returns2, dtype=np.float64)
+            self.model2 = GARCHModel(self.returns2)
+        if isinstance(returns1, GARCHModel):
+            self.model1 = returns1
+            self.returns1 = self.model1.returns
+        if isinstance(returns2, GARCHModel):
+            self.model2 = returns2
+            self.returns2 = self.model2.returns
+        self.estimation_success = False
+        self.parameters = type(self).Parameters()
+
     def fit(self) -> Parameters:
         """Estimates the Multivariate GARCH(1,1)-DCC parameters via twp-step QML
 
@@ -334,6 +366,7 @@ if __name__ == "__main__":
     df = pd.read_stata(
         "https://www.stata-press.com/data/r18/stocks.dta", convert_dates=["date"]
     )
+
     df.set_index("date", inplace=True)
     # Scale returns to percentage returns for better optimization results
     toyota = df["toyota"].to_numpy() * 100
@@ -345,5 +378,16 @@ if __name__ == "__main__":
     pprint(res)
 
     dcc = GARCHModel_DCC(toyota, nissan)
+    res = dcc.fit()
+    pprint(res)
+
+    toyota_garch = GARCHModel(toyota)
+    nissan_garch = GARCHModel(nissan)
+
+    dcc = GARCHModel_DCC(toyota_garch, nissan)
+    res = dcc.fit()
+    pprint(res)
+
+    dcc = GARCHModel_DCC(toyota_garch, nissan_garch)
     res = dcc.fit()
     pprint(res)

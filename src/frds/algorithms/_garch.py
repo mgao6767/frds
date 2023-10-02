@@ -46,6 +46,10 @@ class GARCHModel:
         Returns:
             params: :class:`frds.algorithms.GARCHModel.Parameters`
         """
+        # No repeated estimation?
+        if self.estimation_success:
+            return
+
         starting_vals = self.preparation()
 
         # Set bounds for parameters

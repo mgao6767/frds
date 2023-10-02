@@ -302,8 +302,9 @@ of :math:`(a,b)` based on loglikelihood.
 .. autoclass:: frds.algorithms.GARCHModel_DCC.Parameters
    :exclude-members: __init__
 
-Examples
-========
+**********
+ Examples
+**********
 
 Let's import the dataset.
 
@@ -315,6 +316,9 @@ Scale returns to percentage returns for better optimization results
 
 >>> returns1 = df["toyota"].to_numpy() * 100
 >>> returns2 = df["nissan"].to_numpy() * 100
+
+frds
+======
 
 Use :class:`frds.algorithms.GARCHModel_DCC` to estimate a GARCH(1,1)-DCC. 
 
@@ -337,6 +341,10 @@ Parameters(mu1=0.039598837827953585,
 
 These results are slighly different from the ones obtained in Stata, but with 
 marginally better loglikelihood overall.
+
+Stata
+=======
+
 In Stata, we can estimate the same model as below:
 
 .. code-block:: stata
@@ -397,6 +405,9 @@ The Stata results are:
 
 See `Stata's reference manual <https://www.stata.com/manuals/ts.pdf>`_ for its
 estimation techniques.
+
+R
+===
 
 In R, we can estimate the DCC-GARCH(1,1) as
 
