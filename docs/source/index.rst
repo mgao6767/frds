@@ -108,7 +108,7 @@ Parameters(mu=0.019315543596552513,
            loglikelihood=-4086.487358003049)
 
 Use :class:`frds.algorithms.GARCHModel_CCC` to estimate a bivariate :doc:`/algorithms/garch-ccc` model.
-The results are as good as those otained in Stata, if not better (based on loglikelihood).
+The results are as good as those obtained in Stata, if not better (based on loglikelihood).
 
 >>> from frds.algorithms import GARCHModel_CCC
 >>> toyota = df["toyota"].to_numpy() * 100
@@ -127,7 +127,7 @@ Parameters(mu1=0.02745814255283541,
            loglikelihood=-7281.321453218112)
 
 Use :class:`frds.algorithms.GARCHModel_DCC` to estimate a bivariate :doc:`/algorithms/garch-dcc` model.
-The results are as good as those otained in Stata/R, if not better (based on loglikelihood).
+The results are as good as those obtained in Stata/R, if not better (based on loglikelihood).
 
 >>> from frds.algorithms import GARCHModel_DCC
 >>> model_dcc = GARCHModel_DCC(toyota, nissan)
