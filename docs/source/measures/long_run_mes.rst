@@ -70,7 +70,7 @@ time-varying covariance,
 
     \begin{bmatrix}r_{it} \\ r_{mt}\end{bmatrix} | \mathcal F_{t-1} \sim \mathcal D\left(\mathbf 0, \begin{bmatrix}\sigma_{it}^2 & \rho_{it}\sigma_{it}\sigma_{mt} \\\\ \rho_{it}\sigma_{it}\sigma_{mt} & \sigma_{mt}^2 \end{bmatrix}\right)
 
-Alternatively,
+Alternatively, I present below the constant mean form of return series,
 
 .. math::
    :label: return_eqn_1
@@ -96,7 +96,7 @@ where,
 
 However, generally we can assume :math:`z_{it}, z_{mt}\sim N(0,1)`.
 
-.. note::
+.. important::
 
    In a DCC-GARCH model, assuming that the shock innovation :math:`z` is
    standard normally distributed only implies that the conditional
@@ -125,7 +125,8 @@ However, generally we can assume :math:`z_{it}, z_{mt}\sim N(0,1)`.
    \cdot z_t` may not be normal at all depending on the form of
    :math:`\mu_t`. Therefore, the assumption about :math:`z` being
    standard normal is about the standardized returns or innovations, not
-   the raw returns :math:`r`.
+   the raw returns :math:`r`. **This is the reason why the return pair
+   has an (unspecified) distribution** :math:`\mathcal{D}`.
 
 Conditional variance
 ====================
@@ -136,8 +137,8 @@ Specifically, the GJR-GARCH models the conditional variances as:
    :label: eq:gjr_garch
 
    \begin{align*}
-   \sigma_{it}^2 &= \omega_{i} + \alpha_{i} r^2_{it-1} + \gamma_{i} r^2_{it-1} I^-_{it-1} + \beta_{i} \sigma^2_{it-1}, \\\\
-   \sigma_{mt}^2 &= \omega_{m} + \alpha_{m} r^2_{mt-1} + \gamma_{m} r^2_{mt-1} I^-_{mt-1} + \beta_{m} \sigma^2_{mt-1}
+   \sigma_{it}^2 &= \omega_{i} + \alpha_{i} \epsilon^2_{it-1} + \gamma_{i} \epsilon^2_{it-1} I^-_{it-1} + \beta_{i} \sigma^2_{it-1}, \\\\
+   \sigma_{mt}^2 &= \omega_{m} + \alpha_{m} \epsilon^2_{mt-1} + \gamma_{m} \epsilon^2_{mt-1} I^-_{mt-1} + \beta_{m} \sigma^2_{mt-1}
    \end{align*}
 
 where :math:`I^-_{it} = 1` if :math:`r_{it} < 0` and :math:`I^-_{mt} =
@@ -303,14 +304,14 @@ day :math:`t`,
       z_i = \rho \times z_m + \sqrt{1 - \rho^2} \times \xi
 
    Here, :math:`\xi` is a standard normal random variable that is
-   independent of :math:`z_1`, 
+   independent of :math:`z_m`, 
 
    .. math::
 
       \xi = (z_i - \rho z_m) / \sqrt{1 - \rho^2}
 
 **Step 2**. Sample with replacement :math:`S\times h` pairs of
-:math:`[\xi_{it}, \epsilon_{mt}]'`, which are used as the simulated
+:math:`[\xi_{it}, z_{mt}]'`, which are used as the simulated
 innovations from time :math:`T+1` to :math:`T+h`. Notice that in the
 algorithm, the innovations are simulated by resampling the standardized
 residuals of the GARCH-DCC rather than relying on parametric
