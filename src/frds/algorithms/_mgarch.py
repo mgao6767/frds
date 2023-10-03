@@ -5,7 +5,7 @@ from dataclasses import dataclass, asdict
 import numpy as np
 from scipy.optimize import minimize, OptimizeResult
 
-from frds.algorithms import GARCHModel
+from frds.algorithms import GARCHModel, GJRGARCHModel
 
 
 class GARCHModel_CCC:
@@ -359,13 +359,81 @@ class GARCHModel_DCC(GARCHModel_CCC):
         return negative_loglikelihood
 
 
+class GJRGARCHModel_DCC(GARCHModel_DCC):
+    """:doc:`/algorithms/gjr-garch-dcc` model with the following specification:
+
+    - Bivariate
+    - Constant mean
+    - Normal noise
+
+    It estimates the model parameters only. No standard errors calculated.
+    """
+
+    @dataclass
+    class Parameters:
+        mu1: float = np.nan
+        omega1: float = np.nan
+        alpha1: float = np.nan
+        gamma1: float = np.nan
+        beta1: float = np.nan
+        mu2: float = np.nan
+        omega2: float = np.nan
+        alpha2: float = np.nan
+        gamma2: float = np.nan
+        beta2: float = np.nan
+        a: float = np.nan
+        b: float = np.nan
+        loglikelihood: float = np.nan
+
+    def __init__(
+        self,
+        returns1: Union[np.ndarray, GJRGARCHModel],
+        returns2: Union[np.ndarray, GJRGARCHModel],
+    ) -> None:
+        """__init__
+
+        Args:
+            returns1 (Union[np.ndarray, GJRGARCHModel]): ``(T,)`` array of ``T`` returns of first asset. Can also be an :class:`frds.algorithms.GJRGARCHModel`.
+            returns2 (Union[np.ndarray, GJRGARCHModel]): ``(T,)`` array of ``T`` returns of second asset. Can also be an :class:`frds.algorithms.GJRGARCHModel`.
+
+        .. note::
+
+            If ``returns`` is an array, it is best to be percentage returns for optimization.
+
+            Estimated :class:`frds.algorithms.GJRGARCHModel` can be used to save computation time.
+        """
+        if isinstance(returns1, np.ndarray):
+            self.returns1 = np.asarray(returns1, dtype=np.float64)
+            self.model1 = GJRGARCHModel(self.returns1)
+        if isinstance(returns2, np.ndarray):
+            self.returns2 = np.asarray(returns2, dtype=np.float64)
+            self.model2 = GJRGARCHModel(self.returns2)
+        if isinstance(returns1, GJRGARCHModel):
+            self.model1 = returns1
+            self.returns1 = self.model1.returns
+        if isinstance(returns2, GJRGARCHModel):
+            self.model2 = returns2
+            self.returns2 = self.model2.returns
+        self.estimation_success = False
+        self.parameters = type(self).Parameters()
+
+    def fit(self) -> Parameters:
+        """Estimates the Multivariate GJR-GARCH(1,1)-DCC parameters via twp-step QML
+
+        Returns:
+            Parameters: :class:`frds.algorithms.GJRGARCHModel_DCC.Parameters`
+        """
+        return super().fit()
+
+
 if __name__ == "__main__":
     import pandas as pd
     from pprint import pprint
 
-    df = pd.read_stata(
-        "https://www.stata-press.com/data/r18/stocks.dta", convert_dates=["date"]
-    )
+    # df = pd.read_stata(
+    #     "https://www.stata-press.com/data/r18/stocks.dta", convert_dates=["date"]
+    # )
+    df = pd.read_stata("~/Downloads/stocks.dta", convert_dates=["date"])
 
     df.set_index("date", inplace=True)
     # Scale returns to percentage returns for better optimization results
@@ -389,5 +457,9 @@ if __name__ == "__main__":
     pprint(res)
 
     dcc = GARCHModel_DCC(toyota_garch, nissan_garch)
+    res = dcc.fit()
+    pprint(res)
+
+    dcc = GJRGARCHModel_DCC(GJRGARCHModel(toyota), GJRGARCHModel(nissan))
     res = dcc.fit()
     pprint(res)

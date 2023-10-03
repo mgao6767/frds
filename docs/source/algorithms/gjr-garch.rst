@@ -165,6 +165,7 @@ API
 
 .. autoclass:: frds.algorithms.GJRGARCHModel.Parameters
    :exclude-members: __init__
+   :no-undoc-members:
 
 Examples
 ========

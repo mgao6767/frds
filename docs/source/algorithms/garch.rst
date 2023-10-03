@@ -163,6 +163,7 @@ API
 
 .. autoclass:: frds.algorithms.GARCHModel.Parameters
    :exclude-members: __init__
+   :no-undoc-members:
 
 Examples
 ========

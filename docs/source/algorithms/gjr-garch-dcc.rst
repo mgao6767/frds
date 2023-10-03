@@ -1,6 +1,6 @@
-##################
- GARCH(1,1) - DCC
-##################
+######################
+ GJR-GARCH(1,1) - DCC
+######################
 
 **************
  Introduction
@@ -18,7 +18,8 @@ correlation. Engle (2002) and Tse and Tsui (2002) address this by
 proposing the **Dynamic Conditional Correlation (DCC)** model, which
 allows for time-varying conditional correlation.
 
-Here, the GARCH-DCC model by Engle (2002) is discussed.
+:doc:`/algorithms/garch-dcc` dicusses the GARCH-DCC, here, 
+the :doc:`/algorithms/gjr-garch-dcc` model is discussed.
 
 .. tip::
 
@@ -62,7 +63,7 @@ positive definite matrix, and :math:`\mathbf{z}_t` is a :math:`N \times
 Conditional covariance matrix
 =============================
 
-In the DCC-GARCH(1,1) model, the conditional covariance matrix
+In the DCC-GJR-GARCH(1,1) model, the conditional covariance matrix
 :math:`\mathbf{H}_t` is constructed as:
 
 .. math::
@@ -72,14 +73,14 @@ In the DCC-GARCH(1,1) model, the conditional covariance matrix
 
 where :math:`\mathbf{D}_t=\text{diag}(\mathbf{h}_t)^{1/2}`, and
 :math:`\mathbf{h}_t` is a :math:`N \times 1` vector whose elements are
-univariate GARCH(1,1) variances for each time series.
+univariate GJR-GARCH(1,1) variances for each time series.
 :math:`\mathbf{R}_t` is the :math:`N \times N` conditional correlation
-matrix which is time-varying in DCC-GARCH.
+matrix which is time-varying in DCC-GJR-GARCH.
 
 .. caution::
 
    The log-likelihood function for the :math:`N`-dimensional
-   multivariate GARCH-DCC model is:
+   multivariate GJR-GARCH-DCC model is:
 
    .. math::
 
@@ -115,7 +116,7 @@ Log-likelihood function
 =======================
 
 The log-likelihood function for the :math:`N`-dimensional multivariate
-GARCH DCC model is:
+GJR-GARCH DCC model is:
 
 .. math::
    :label: mv_log_likelihood
@@ -150,13 +151,13 @@ MLE.
 
 Specifically, given the assumption of multivariate normal, the
 volatility component :math:`\ell_{V}(\Theta_1)` is the sum of individual
-GARCH loglikelihood. It can be maximized by separately maximizing each
+GJR-GARCH loglikelihood. It can be maximized by separately maximizing each
 univariate model. So, we can separately estimate for each returns a
-GARCH model via MLE, and add up the loglikelihoods. This is the first
+GJR-GARCH model via MLE, and add up the loglikelihoods. This is the first
 step.
 
 After the first step, we have the parameters
-:math:`\Theta_1=(\mu,\omega,\alpha,\beta)` for the GARCH models, and we
+:math:`\Theta_1=(\mu,\omega,\alpha,\gamma,\beta)` for the GJR-GARCH models, and we
 can then estimate the remaining parameters :math:`\Theta_2=(a, b)`.
 
 ****************
@@ -185,12 +186,14 @@ specified as:
 .. math::
    :label: h1
 
-   h_{1t} = \omega_1 + \alpha_1 \epsilon_{1,t-1}^2 + \beta_1 h_{1,t-1}
+   h_{1t} = \omega_1 + \alpha_1 \epsilon_{1,t-1}^2 + \gamma_1 \epsilon_{1,t-1}^2 I_{1,t-1} + \beta_1 h_{1,t-1}
 
 .. math::
    :label: h2
 
-   h_{2t} = \omega_2 + \alpha_2 \epsilon_{2,t-1}^2 + \beta_2 h_{2,t-1}
+   h_{2t} = \omega_2 + \alpha_2 \epsilon_{2,t-1}^2 + \gamma_2 \epsilon_{2,t-1}^2 I_{2,t-1} + \beta_2 h_{2,t-1}
+
+Here, :math:`I_{i,t-1} = 1` if :math:`\epsilon_{i,t-1} < 0` and 0 otherwise.
 
 The dynamic conditional correlation :math:`\rho_t` is given by:
 
@@ -225,7 +228,7 @@ components:
    \ell = \ell_{V}(\Theta_1) + \ell_{C}(\Theta_1, \Theta_2)
 
 The first part, :math:`\ell_{V}(\Theta_1)`, is the sum of individual
-GARCH log-likelihoods and is given by:
+GJR-GARCH log-likelihoods and is given by:
 
 .. math::
    :label: ll_volatility
@@ -247,9 +250,9 @@ Here,
 -  :math:`\rho_t` is the dynamic conditional correlation, derived from
    :math:`q_{11t}`, :math:`q_{12t}`, and :math:`q_{22t}`.
 
--  :math:`\Theta_1` includes the parameters for the individual GARCH
-   models: :math:`\mu_1, \omega_1, \alpha_1, \beta_1, \mu_2, \omega_2,
-   \alpha_2, \beta_2`.
+-  :math:`\Theta_1` includes the parameters for the individual GJR-GARCH
+   models: :math:`\mu_1, \omega_1, \alpha_1, \gamma_1, \beta_1, \mu_2, \omega_2,
+   \alpha_2, \gamma_2, \beta_2`.
 
 -  :math:`\Theta_2` includes the parameters for the DCC model:
    :math:`\alpha, \beta`.
@@ -258,13 +261,13 @@ Here,
  Esimation techniques
 **********************
 
-My implementation of :class:`frds.algorithms.GARCHModel_DCC` fits the
-GARCH-DCC model by a two-step quasi-maximum likelihood (QML) method.
+My implementation of :class:`frds.algorithms.GJRGARCHModel_DCC` fits the
+GJR-GARCH-DCC model by a two-step quasi-maximum likelihood (QML) method.
 
-Step 1. Use :class:`frds.algorithms.GARCHModel` to estimate the
-:doc:`/algorithms/garch` model for each of the returns. This step yields
+Step 1. Use :class:`frds.algorithms.GJRGARCHModel` to estimate the
+:doc:`/algorithms/gjr-garch` model for each of the returns. This step yields
 the estimates :math:`\hat{\Theta}_1`, including parameters for the
-individual GARCH models: :math:`\mu_1, \omega_1, \alpha_1, \beta_1,
+individual GJR-GARCH models: :math:`\mu_1, \omega_1, \alpha_1, \beta_1,
 \mu_2, \omega_2, \alpha_2, \beta_2`. We obtain also the maximized
 log-likelihood :math:`\ell(\hat{\Theta}_1)`.
 
@@ -287,6 +290,8 @@ of :math:`(a,b)` based on loglikelihood.
    Multivariate Generalized ARCH Model." *Review of Economics and
    Statistics*, 72(3), 498-505.
 
+-  `Glosten, L. R., Jagannathan, R., & Runkle, D. E. (1993) <https://doi.org/10.1111/j.1540-6261.1993.tb05128.x>`_, "On the Relation Between the Expected Value and the Volatility of the Nominal Excess Return on Stocks." *The Journal of Finance*, 48(5), 1779-1801.
+
 -  `Engle, R. (2002) <https://www.jstor.org/stable/1392121>`_, "Dynamic
    Conditional Correlation: A Simple Class of Multivariate Generalized
    Autoregressive Conditional Heteroskedasticity Models." *Journal of
@@ -300,10 +305,10 @@ of :math:`(a,b)` based on loglikelihood.
  API
 *****
 
-.. autoclass:: frds.algorithms.GARCHModel_DCC
+.. autoclass:: frds.algorithms.GJRGARCHModel_DCC
    :exclude-members: Parameters
 
-.. autoclass:: frds.algorithms.GARCHModel_DCC.Parameters
+.. autoclass:: frds.algorithms.GJRGARCHModel_DCC.Parameters
    :exclude-members: __init__
    :no-undoc-members:
 
@@ -325,96 +330,34 @@ Scale returns to percentage returns for better optimization results
 frds
 ======
 
-Use :class:`frds.algorithms.GARCHModel_DCC` to estimate a GARCH(1,1)-DCC. 
+Use :class:`frds.algorithms.GJRGARCHModel_DCC` to estimate a GJR-GARCH(1,1)-DCC. 
 
->>> from frds.algorithms import GARCHModel_DCC
->>> model_dcc = GARCHModel_DCC(returns1, returns2)
+>>> from frds.algorithms import GJRGARCHModel_DCC
+>>> model_dcc = GJRGARCHModel_DCC(returns1, returns2)
 >>> res = model_dcc.fit()
 >>> from pprint import pprint
 >>> pprint(res)
-Parameters(mu1=0.039598837827953585,
-           omega1=0.027895534722110118,
-           alpha1=0.06942955278530698,
-           beta1=0.9216715294923623,
-           mu2=0.019315543596552513,
-           omega2=0.05701047522984261,
-           alpha2=0.0904653253307871,
-           beta2=0.8983752570013462,
-           a=0.04305972552559641,
-           b=0.894147940765443,
-           loglikelihood=-7256.572183143142)
+Parameters(mu1=0.03425396110878375,
+           omega1=0.02870349714933671,
+           alpha1=0.0629604836797677,
+           gamma1=0.012013473922807561,
+           beta1=0.9217503095555597,
+           mu2=0.010528449295629098,
+           omega2=0.05512898468355955,
+           alpha2=0.07700974411970742,
+           gamma2=0.021814015760057957,
+           beta2=0.9013499076166999,
+           a=0.04192697529292123,
+           b=0.8978328716537962,
+           loglikelihood=-7259.03519837521)
 
-These results are slighly different from the ones obtained in Stata, but with 
+These results are slighly different from the ones obtained in R, but with 
 marginally better loglikelihood overall.
-
-Stata
-=======
-
-In Stata, we can estimate the same model as below:
-
-.. code-block:: stata
-
-    webuse stocks, clear
-    replace toyota = toyota * 100
-    replace nissan = nissan * 100
-    mgarch dcc (toyota nissan = ), arch(1) garch(1)
-   
-The Stata results are:
-
-.. code-block:: stata
-
-      Dynamic conditional correlation MGARCH model
-      Sample: 1 thru 2015                                      Number of obs = 2,015
-      Distribution: Gaussian                                   Wald chi2(.)  =     .
-      Log likelihood = -7258.856                               Prob > chi2   =     .
-
-      -------------------------------------------------------------------------------------
-                          | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
-      --------------------+----------------------------------------------------------------
-      toyota              |
-                  _cons   |   .0327834   .0303756     1.08   0.280    -.0267516    .0923185
-      --------------------+----------------------------------------------------------------
-      ARCH_toyota         |
-                     arch |
-                     L1.  |   .0686004   .0104037     6.59   0.000     .0482095    .0889913
-                          |
-                    garch |
-                     L1.  |   .9183872   .0124013    74.06   0.000     .8940811    .9426934
-                          |
-                    _cons |   .0374049   .0115084     3.25   0.001     .0148489    .0599609
-      --------------------+----------------------------------------------------------------
-      nissan              |
-                    _cons |    .001907   .0349832     0.05   0.957    -.0666588    .0704728
-      --------------------+----------------------------------------------------------------
-      ARCH_nissan         |
-                     arch |
-                     L1.  |   .0960886   .0138067     6.96   0.000      .069028    .1231493
-                          |
-                    garch |
-                     L1.  |   .8914556   .0151421    58.87   0.000     .8617778    .9211335
-                          |
-                    _cons |   .0665498   .0185192     3.59   0.000     .0302528    .1028468
-      --------------------+----------------------------------------------------------------
-      corr(toyota,nissan) |   .6653973   .0189345    35.14   0.000     .6282863    .7025082
-      --------------------+----------------------------------------------------------------
-      /Adjustment         |
-                  lambda1 |   .0468196   .0121601     3.85   0.000     .0229862    .0706529
-                  lambda2 |   .8659869   .0474458    18.25   0.000     .7729948     .958979
-      -------------------------------------------------------------------------------------
-
-.. note::
-   The difference is because Stata does not use 2-stage QML. Instead, it simultaneously
-   esimate all parameters via MLE. According to Stata's manual, "The initial optimization step is performed in the unconstrained space. Once the maximum is found,
-   we impose the constraints :math:`\lambda1\ge 0`, :math:`\lambda_2\ge 0`, :math:`\lambda_1+\lambda_2<1`, and maximize the log likelihood
-   in the constrained space."
-
-See `Stata's reference manual <https://www.stata.com/manuals/ts.pdf>`_ for its
-estimation techniques.
 
 R
 ===
 
-In R, we can estimate the DCC-GARCH(1,1) as
+In R, we can estimate the DCC-GRJGARCH(1,1) as
 
 .. code-block:: R
 
@@ -423,7 +366,7 @@ In R, we can estimate the DCC-GARCH(1,1) as
    stocks <- read_dta("https://www.stata-press.com/data/r18/stocks.dta")
    data <- data.frame(toyota=stocks$toyota*100, nissan=stocks$nissan*100)
    uspec <- multispec(replicate(2, ugarchspec(mean.model=list(armaOrder=c(0, 0)),
-                                             variance.model=list(model="sGARCH", garchOrder=c(1, 1)))))
+                                             variance.model=list(model="gjrGARCH", garchOrder=c(1, 1)))))
    dccspec <- dccspec(uspec=uspec, dccOrder=c(1, 1), distribution="mvnorm")
    dcc_fit <- dccfit(dccspec, data=data)
    dcc_fit
@@ -438,26 +381,38 @@ The results are:
 
    Distribution         :  mvnorm
    Model                :  DCC(1,1)
-   No. Parameters       :  11
-   [VAR GARCH DCC UncQ] : [0+8+2+1]
+   No. Parameters       :  13
+   [VAR GARCH DCC UncQ] : [0+10+2+1]
    No. Series           :  2
    No. Obs.             :  2015
-   Log-Likelihood       :  -7258.016
+   Log-Likelihood       :  -7260.429
    Av.Log-Likelihood    :  -3.6 
 
    Optimal Parameters
    -----------------------------------
                   Estimate  Std. Error  t value Pr(>|t|)
-   [toyota].mu      0.040368    0.030579  1.32013 0.186790
-   [toyota].omega   0.028452    0.014592  1.94984 0.051195
-   [toyota].alpha1  0.070391    0.015048  4.67780 0.000003
-   [toyota].beta1   0.920455    0.017295 53.22156 0.000000
-   [nissan].mu      0.018490    0.036034  0.51313 0.607860
-   [nissan].omega   0.058844    0.029039  2.02640 0.042724
-   [nissan].alpha1  0.092924    0.027716  3.35268 0.000800
-   [nissan].beta1   0.895593    0.029815 30.03821 0.000000
-   [Joint]dcca1     0.043275    0.010592  4.08551 0.000044
-   [Joint]dccb1     0.894212    0.032218 27.75480 0.000000
+   [toyota].mu      0.035250    0.031485  1.11959 0.262887
+   [toyota].omega   0.029322    0.015296  1.91701 0.055237
+   [toyota].alpha1  0.064252    0.015871  4.04852 0.000052
+   [toyota].beta1   0.920387    0.017760 51.82272 0.000000
+   [toyota].gamma1  0.011615    0.017344  0.66967 0.503066
+   [nissan].mu      0.009901    0.036277  0.27292 0.784911
+   [nissan].omega   0.057227    0.029777  1.92185 0.054625
+   [nissan].alpha1  0.079891    0.035086  2.27702 0.022785
+   [nissan].beta1   0.898218    0.031844 28.20660 0.000000
+   [nissan].gamma1  0.021556    0.023028  0.93610 0.349221
+   [Joint]dcca1     0.042226    0.010225  4.12983 0.000036
+   [Joint]dccb1     0.897648    0.031025 28.93326 0.000000
 
-These are more comparable to the results of :class:`frds.algorithms.GARCHModel_CCC`,
+These are more comparable to the results of :class:`frds.algorithms.GJRGARCHModel_DCC`,
 because the package ``rmgarch`` also uses a 2-stage approach.
+
+Stata
+=======
+
+.. note::
+
+   Stata does not support multivariate GJR-GARCH with DCC.
+
+   The ``tarch`` option is not allowed for ``-mgarch-`` command.
+

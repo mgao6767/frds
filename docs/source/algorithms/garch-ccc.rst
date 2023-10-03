@@ -210,6 +210,7 @@ API
 
 .. autoclass:: frds.algorithms.GARCHModel_CCC.Parameters
    :exclude-members: __init__
+   :no-undoc-members:
 
 Examples
 ========
