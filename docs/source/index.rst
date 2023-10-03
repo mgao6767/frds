@@ -48,7 +48,26 @@ The structure of |frds| is simple:
 * :mod:`frds.algorithms` provides a collection of algorithms.
 * :mod:`frds.measures` provides a collection of measures.
 * :mod:`frds.datasets` provides example datasets.
-    
+
+---------
+Read more
+---------
+
+.. toctree::
+    :maxdepth: 2
+
+    measures/index
+    algorithms/index
+    datasets/index
+
+.. toctree::
+    :hidden:
+    :caption: Other
+    :titlesonly:
+
+    GitHub <https://github.com/mgao6767/frds/>
+    Mingze Gao <https://mingze-gao.com>
+   
 --------
 Examples
 --------
@@ -146,21 +165,3 @@ Parameters(mu1=0.039598837827953585,
            b=0.894147940765443,
            loglikelihood=-7256.572183143142)
 
----------
-Read more
----------
-
-.. toctree::
-    :maxdepth: 2
-
-    measures/index
-    algorithms/index
-    datasets/index
-
-.. toctree::
-    :hidden:
-    :caption: Other
-    :titlesonly:
-
-    GitHub <https://github.com/mgao6767/frds/>
-    Mingze Gao <https://mingze-gao.com>
