@@ -186,17 +186,13 @@ equity of 100 and debt value of 900.
 -22.247115947780237
 
 Negative SRISK! So Goldman Sachs with the assumed equity/debt is safe. 
-What if we define a "systemic event" to be a market decline of 5% instead?
-
->>> srisk.estimate(lrmes_C=-0.5)
--19.999999999999996
-
-Still safe. But what if I assume a even higher leverage?
+What if we define a "systemic event" to be a market decline of 5% instead,
+and assume a even higher leverage?
 
 >>> srisk = SRISK(gs, sp500, W=100.0, D=1500.0)
->>> srisk.estimate(lrmes_C=-0.5)
-28.000000000000004
+>>> srisk.estimate(lrmes_C=-0.05)
+27.684007759631047
 
 Well, in this extreme case where the bank has a equity to debt ratio of 1/15, 
 and a systemic event defined as market decline of 5% over 22 days, the SRISK of
-the bank is positive at 28.
+the bank is positive suggesting a capital shortfall.
