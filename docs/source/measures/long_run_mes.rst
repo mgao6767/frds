@@ -358,8 +358,8 @@ compute :math:`\hat{\sigma}^2_{iT+h}` and :math:`\hat{\sigma}^2_{mT+h}`,
 .. math:: 
 
    \begin{align}
-   \hat{\sigma}^2_{iT+h} &= \omega_i + \left[\alpha_i+\gamma_i I(\xi_{ih}<0)\right] \xi_{ih}^2 + \beta_i \hat{\sigma}^2_{iT+h-1} \\\\
-   \hat{\sigma}^2_{mT+h} &= \omega_m + \left[\alpha_m+\gamma_m I(z_{mh}<0)\right] z_{mh}^2 + \beta_m \hat{\sigma}^2_{mT+h-1} 
+   \hat{\sigma}^2_{iT+h} &= \omega_i + \left[\alpha_i+\gamma_i I(\xi_{ih-1}<0)\right] \xi_{ih-1}^2 + \beta_i \hat{\sigma}^2_{iT+h-1} \\\\
+   \hat{\sigma}^2_{mT+h} &= \omega_m + \left[\alpha_m+\gamma_m I(z_{mh-1}<0)\right] z_{mh-1}^2 + \beta_m \hat{\sigma}^2_{mT+h-1} 
    \end{align}
 
 Then, update DCC coefficients,
