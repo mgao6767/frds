@@ -2,6 +2,8 @@
  SRISK
 #######
 
+.. warning:: This is a bug in the code to be fixed as at version 2.0.0.
+
 **************
  Introduction
 **************
