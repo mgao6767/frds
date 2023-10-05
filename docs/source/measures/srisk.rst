@@ -144,6 +144,7 @@ where,
  API
 *****
 
+.. autoclass:: frds.measures.SRISK
 
 **********
  Examples
