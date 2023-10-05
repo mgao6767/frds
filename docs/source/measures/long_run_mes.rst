@@ -92,9 +92,10 @@ where,
    volatility at time :math:`t`.
 
 -  :math:`z_{it}, z_{mt}` follows an unknown bivariate distribution with
-   zero mean and some covariance structure.
+   zero mean and maybe some covariance structure.
 
-However, generally we can assume :math:`z_{it}, z_{mt}\sim N(0,1)`.
+However, generally we can assume :math:`z_{it}` and :math:`z_{mt}` are i.i.d. 
+standard normal
 
 .. important::
 
@@ -144,6 +145,14 @@ Specifically, the GJR-GARCH models the conditional variances as:
 where :math:`I^-_{it} = 1` if :math:`r_{it} < 0` and :math:`I^-_{mt} =
 1` if :math:`r_{mt} < 0`.
 
+.. note::
+
+   `Brownlees and Engle (2017) <https://doi.org/10.1093/rfs/hhw060>`_ use a 
+   zero-mean assumption, so that :math:`r` is used in the above equation 
+   instead of the residual :math:`\epsilon`. They use :math:`\epsilon` to denote
+   the standardized residual, which in this note is :math:`z` to be consistent
+   with other notes of ``frds``.
+
 Dynamic correlation
 ===================
 
@@ -175,8 +184,8 @@ the time-varying :math:`\mathbf{R}_t` via a proxy process
    :label: eq:dcc_corr
 
    \mathbf{R}_t = \text{Corr}\begin{pmatrix}
-   \epsilon_{it} \\\\
-   \epsilon_{mt}
+   z_{it} \\\\
+   z_{mt}
    \end{pmatrix}
    = \begin{bmatrix}
    1 & \rho_{it} \\\\
@@ -217,7 +226,7 @@ The Q process is updated as follows:
 .. math::
    :label: q11
 
-   q_{it} = (1 - a - b) \overline{q}_{i} + a z^2_{1,t-1} + b q_{i,t-1}
+   q_{it} = (1 - a - b) \overline{q}_{i} + a z^2_{i,t-1} + b q_{i,t-1}
 
 .. math::
    :label: q22
@@ -234,7 +243,7 @@ The dynamic conditional correlation :math:`\rho_t` is given by:
 .. math::
    :label: rho_t
 
-   \rho_{it} = \frac{q_{imt}}{\sqrt{q_{i} q_{mt}}}
+   \rho_{it} = \frac{q_{imt}}{\sqrt{q_{it} q_{mt}}}
 
 Estimating GJR-GARCH-DCC
 ========================
@@ -319,11 +328,13 @@ assumptions.
 
 .. note::
    
-   Basically, we need innovations :math:`z_{it}` and :math:`z_{mt}` in order to forecast.
-   To do so, after estimating the GJR-GARCH-DCC model, we use the standardized residuals
-   from the market time series and the estimated conditinal correlations to compute the "innovation" 
-   to the firm series *such that* its standarized residuals conforms the conditional correlations.
+   Basically, we need innovations :math:`z_{it}` and :math:`z_{mt}` for :math:`t>T` in order to forecast.
 
+   For the market returns' :math:`z_{mt}` in the prediction horizon, we sample the standardized residuals 
+   from the past with replacement. For the firm return innovations :math:`z_{it}` in the prediction horizon, 
+   we use the computed :math:`\xi_{it}`, which is *independent* from :math:`z_{mt}`. This guarantees that
+   the market and firm return innovations are i.i.d. standard normal, while the return covariances conform 
+   to the DCC model.
 
 **Step 3**. Use the pseudo sample of innovations as inputs of the DCC
 and (GJR)GARCH filters, respectively. Initial conditions are the last values
@@ -341,6 +352,44 @@ up to time :math:`T`, that is
       r^s_{mT+t}
    \end{bmatrix}_{t=1,...,h} | \mathcal{F}_{T}
 
+Specifically, in each simulation :math:`s`, for the :math:`h`-step-ahead prediction, 
+compute :math:`\hat{\sigma}^2_{iT+h}` and :math:`\hat{\sigma}^2_{mT+h}`,
+
+.. math:: 
+
+   \begin{align}
+   \hat{\sigma}^2_{iT+h} &= \omega_i + \left[\alpha_i+\gamma_i I(\xi_{ih}<0)\right] \xi_{ih}^2 + \beta_i \hat{\sigma}^2_{iT+h-1} \\\\
+   \hat{\sigma}^2_{mT+h} &= \omega_m + \left[\alpha_m+\gamma_m I(z_{mh}<0)\right] z_{mh}^2 + \beta_m \hat{\sigma}^2_{mT+h-1} 
+   \end{align}
+
+Then, update DCC coefficients,
+
+.. math::
+
+   \begin{align}
+   \hat{q}_{iT+h} &= (1 - a - b) \overline{q}_{i} + a \xi^2_{i,h-1} + b \hat{q}_{i,T+h-1} \\\\
+   \hat{q}_{mT+h} &= (1 - a - b) \overline{q}_{m} + a z^2_{m,h-1} + b \hat{q}_{m,T+h-1} \\\\
+   \hat{q}_{imT+h} &= (1 - a - b) \overline{q}_{im} + a \xi_{i,h-1} z_{m,h-1} + b \hat{q}_{im,T+h-1}
+   \end{align}
+
+The dynamic conditional correlation :math:`\hat{\rho}_{iT+1}` is given by:
+
+.. math::
+
+   \hat{\rho}_{iT+h} = \frac{\hat{q}_{imT+h}}{\sqrt{\hat{q}_{iT+h} \hat{q}_{mT+h}}}
+
+This conditional correlation :math:`\hat{\rho}_{iT+1}` is then used to compute the 1-step-ahead returns 
+given the conditional variances and innovations,
+
+.. math::
+
+   \begin{align}
+   \hat{r}_{iT+h} &= \mu_i + \hat{\rho}_{iT+h} \xi_{ih} \\\\
+   \hat{r}_{mT+h} &= \mu_m + \hat{\rho}_{iT+h} z_{mh}
+   \end{align}
+
+This process is performed for :math:`T+2,\dots,T+h` forecasts, so tha we have in this simulation
+:math:`s` a set of market and firm (log) returns, :math:`r^s_{iT+t}` and :math:`r^s_{mT+t}`, :math:`t=1,\dots,h`.
 
 **Step 4**. Construct the multiperiod arithmetic firm (market) return of
 each pseudo sample,
@@ -385,6 +434,30 @@ multiperiod arithmetic returns conditional on the systemic event,
 
 .. autoclass:: frds.measures.LRMES
 
+.. autoclass:: frds.measures.LongRunMarginalExpectedShortfall
+
 **********
  Examples
 **********
+
+Import built-in dataset of stock returns.
+
+>>> from frds.datasets import StockReturns
+>>> returns = StockReturns.stocks_us
+>>> returns.head()
+               GOOGL        GS       JPM     ^GSPC
+Date                                              
+2010-01-05 -0.004404  0.017680  0.019370  0.003116
+2010-01-06 -0.025209 -0.010673  0.005494  0.000546
+2010-01-07 -0.023280  0.019569  0.019809  0.004001
+2010-01-08  0.013331 -0.018912 -0.002456  0.002882
+2010-01-11 -0.001512 -0.015776 -0.003357  0.001747
+
+Estimate LRMES using the last 600 days' observtions.
+
+>>> from frds.measures import LRMES
+>>> gs = returns["GS"].to_numpy()[-600:]
+>>> sp500 = returns["^GSPC"].to_numpy()[-600:]
+>>> lrmes = LRMES(gs, sp500)
+>>> lrmes.estimate(S=10000, h=22, C=-0.1)
+-0.02442517334543748

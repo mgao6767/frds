@@ -5,6 +5,12 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.optimize import minimize, OptimizeResult
 
+USE_CPP_EXTENSION = True
+try:
+    import frds.algorithms.utils.utils_ext as ext
+except ImportError:
+    USE_CPP_EXTENSION = False
+
 
 class GARCHModel:
     """:doc:`/algorithms/garch` model with constant mean and Normal noise
@@ -162,6 +168,8 @@ class GARCHModel:
         Returns:
             np.ndarray: conditional variance
         """
+        if USE_CPP_EXTENSION:
+            return ext.compute_garch_variance(params, resids, backcast, var_bounds)
         omega, alpha, beta = params
         sigma2 = np.zeros_like(resids)
         sigma2[0] = omega + (alpha + beta) * backcast
@@ -252,6 +260,8 @@ class GARCHModel:
         Returns:
             float: adjusted conditional variance
         """
+        if USE_CPP_EXTENSION:
+            return ext.bounds_check(sigma2, var_bounds)
         lower, upper = var_bounds[0], var_bounds[1]
         sigma2 = max(lower, sigma2)
         if sigma2 > upper:
@@ -292,6 +302,8 @@ class GARCHModel:
         Returns:
             np.ndarray: Array containing the conditional variance estimates.
         """
+        if USE_CPP_EXTENSION:
+            return ext.ewma(resids, initial_value, lam)
         T = len(resids)
         variance = np.empty(T)
         variance[0] = initial_value  # Set the initial value
@@ -384,6 +396,8 @@ class GJRGARCHModel(GARCHModel):
         Returns:
             np.ndarray: conditional variance
         """
+        if USE_CPP_EXTENSION:
+            return ext.compute_gjrgarch_variance(params, resids, backcast, var_bounds)
         # fmt: off
         omega, alpha, gamma, beta = params
         sigma2 = np.zeros_like(resids)
@@ -393,6 +407,31 @@ class GJRGARCHModel(GARCHModel):
             sigma2[t] += gamma * resids[t - 1] ** 2 if resids[t - 1] < 0 else 0
             sigma2[t] = GJRGARCHModel.bounds_check(sigma2[t], var_bounds[t])
         return sigma2
+
+    @staticmethod
+    def forecast_variance(
+        params: Parameters,
+        resids: np.ndarray,
+        initial_variance: float,
+    ) -> np.ndarray:
+        """Forecast the variances conditional on given parameters and residuals.
+
+        Args:
+            params (Parameters): :class:`frds.algorithms.GJRGARCHModel.Parameters`
+            resids (np.ndarray): residuals to use
+            initial_variance (float): starting value of variance forecasts
+
+        Returns:
+            np.ndarray: conditional variance
+        """
+        # fmt: off
+        omega, alpha, gamma, beta = params.omega, params.alpha, params.gamma, params.beta
+        sigma2 = np.zeros_like(resids)
+        sigma2[0] = initial_variance
+        for t in range(1, len(resids)):
+            sigma2[t] = omega + alpha * (resids[t - 1] ** 2) + beta * sigma2[t - 1]
+            sigma2[t] += gamma * resids[t - 1] ** 2 if resids[t - 1] < 0 else 0
+        return sigma2[1:]
 
     def starting_values(self, resids: np.ndarray) -> List[float]:
         """Finds the optimal initial values for the volatility model via a grid

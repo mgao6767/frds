@@ -320,33 +320,15 @@ class GARCHModel_DCC(GARCHModel_CCC):
         resids2 = self.model2.resids
         sigma2_1 = self.model1.sigma2
         sigma2_2 = self.model2.sigma2
+        # z1 and z2 are standardized residuals
+        z1 = resids1 / np.sqrt(sigma2_1)
+        z2 = resids2 / np.sqrt(sigma2_2)
 
         # The loglikelihood of the variance component (Step 1)
         l1 = self.model1.parameters.loglikelihood + self.model2.parameters.loglikelihood
 
         # The loglikelihood of the correlation component (Step 2)
-        # z1 and z2 are standardized residuals
-        z1 = resids1 / np.sqrt(sigma2_1)
-        z2 = resids2 / np.sqrt(sigma2_2)
-        Q_bar = np.cov(z1, z2)
-        q_11_bar, q_12_bar, q_22_bar = Q_bar[0, 0], Q_bar[0, 1], Q_bar[1, 1]
-        T = len(z1)
-        q11 = np.empty_like(z1)
-        q12 = np.empty_like(z1)
-        q22 = np.empty_like(z1)
-        rho = np.zeros_like(z1)
-        # TODO: initial values for Q
-        q11[0] = q_11_bar
-        q22[0] = q_22_bar
-        q12[0] = q_12_bar
-        rho[0] = q12[0] / np.sqrt(q11[0] * q22[0])
-
-        # TODO: fix RuntimeWarning about invalid values
-        for t in range(1, T):
-            q11[t] = (1 - a - b) * q_11_bar + a * z1[t - 1] ** 2 + b * q11[t - 1]
-            q22[t] = (1 - a - b) * q_22_bar + a * z2[t - 1] ** 2 + b * q22[t - 1]
-            q12[t] = (1 - a - b) * q_12_bar + a * z1[t - 1] * z2[t - 1] + b * q12[t - 1]
-            rho[t] = q12[t] / np.sqrt(q11[t] * q22[t])
+        rho = self.conditional_correlations(a, b)
 
         log_likelihood_terms = -0.5 * (
             - (z1**2 + z2**2)
@@ -357,6 +339,47 @@ class GARCHModel_DCC(GARCHModel_CCC):
 
         negative_loglikelihood = - (l1 + l2)
         return negative_loglikelihood
+
+    def conditional_correlations(self, a: float, b: float) -> np.ndarray:
+        """Computes the conditional correlations based on given a and b.
+        Other parameters are
+
+        Args:
+            a (float): DCC parameter
+            b (float): DCC parameter
+
+        Returns:
+            np.ndarray: array of conditional correlations
+        """
+        self.model1.fit()  # in case it was not estimated, no performance loss
+        self.model2.fit()  # in case it was not estimated
+        resids1 = self.model1.resids
+        resids2 = self.model2.resids
+        sigma2_1 = self.model1.sigma2
+        sigma2_2 = self.model2.sigma2
+
+        # z1 and z2 are standardized residuals
+        z1 = resids1 / np.sqrt(sigma2_1)
+        z2 = resids2 / np.sqrt(sigma2_2)
+        Q_bar = np.cov(z1, z2)
+        q_11_bar, q_12_bar, q_22_bar = Q_bar[0, 0], Q_bar[0, 1], Q_bar[1, 1]
+        T = len(z1)
+        q11 = np.empty_like(z1)
+        q12 = np.empty_like(z1)
+        q22 = np.empty_like(z1)
+        rho = np.zeros_like(z1)
+        q11[0] = q_11_bar
+        q22[0] = q_22_bar
+        q12[0] = q_12_bar
+        rho[0] = q12[0] / np.sqrt(q11[0] * q22[0])
+
+        for t in range(1, T):
+            q11[t] = (1 - a - b) * q_11_bar + a * z1[t - 1] ** 2 + b * q11[t - 1]
+            q22[t] = (1 - a - b) * q_22_bar + a * z2[t - 1] ** 2 + b * q22[t - 1]
+            q12[t] = (1 - a - b) * q_12_bar + a * z1[t - 1] * z2[t - 1] + b * q12[t - 1]
+            rho[t] = q12[t] / np.sqrt(q11[t] * q22[t])
+
+        return rho
 
 
 class GJRGARCHModel_DCC(GARCHModel_DCC):

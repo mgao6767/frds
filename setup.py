@@ -21,17 +21,17 @@ mod_isolation_forest = Extension(
     language="c++",
 )
 
-# mod_dcc = Extension(
-#     "frds.algorithms.dcc.dcc_ext",
-#     include_dirs=[get_path("platinclude"), numpy.get_include()],
-#     sources=["src/frds/algorithms/dcc/dcc_module.cpp"],
-#     extra_compile_args=extra_compile_args,
-#     language="c++",
-# )
+mod_algo_utils = Extension(
+    "frds.algorithms.utils.utils_ext",
+    include_dirs=[get_path("platinclude"), numpy.get_include()],
+    sources=["src/frds/algorithms/utils/utils_module.cpp"],
+    extra_compile_args=extra_compile_args,
+    language="c++",
+)
 
 ext_modules = [
     mod_isolation_forest,
-    # mod_dcc,
+    mod_algo_utils,
 ]
 
 setup(
