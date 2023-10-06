@@ -7,6 +7,13 @@ from scipy.optimize import minimize, OptimizeResult
 
 from frds.algorithms import GARCHModel, GJRGARCHModel
 
+USE_CPP_EXTENSION = True
+
+try:
+    import frds.algorithms.utils.utils_ext as ext
+except ImportError:
+    USE_CPP_EXTENSION = False
+
 
 class GARCHModel_CCC:
     """:doc:`/algorithms/garch-ccc` model with the following specification:
@@ -353,6 +360,17 @@ class GARCHModel_DCC(GARCHModel_CCC):
         """
         self.model1.fit()  # in case it was not estimated, no performance loss
         self.model2.fit()  # in case it was not estimated
+
+        if USE_CPP_EXTENSION:
+            return ext.dcc_conditional_correlation(
+                a,
+                b,
+                self.model1.resids,
+                self.model2.resids,
+                self.model1.sigma2,
+                self.model2.sigma2,
+            )
+
         resids1 = self.model1.resids
         resids2 = self.model2.resids
         sigma2_1 = self.model1.sigma2

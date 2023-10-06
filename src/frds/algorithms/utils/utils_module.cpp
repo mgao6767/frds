@@ -5,6 +5,7 @@
 #define UTILS_MODULE
 #endif
 #include "garch.hpp"
+#include "mgarch.hpp"
 
 #ifndef NPY_NO_DEPRECATED_API
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -154,6 +155,31 @@ static PyObject *compute_gjrgarch_variance_wrapper(PyObject *self,
   return sigma2_out;
 }
 
+static PyObject *dcc_conditional_correlations_wrapper(PyObject *self,
+                                                      PyObject *args) {
+  double a, b;
+  PyArrayObject *resids1;
+  PyArrayObject *resids2;
+  PyArrayObject *sigma2_1;
+  PyArrayObject *sigma2_2;
+
+  if (!PyArg_ParseTuple(args, "ddO!O!O!O!", &a, &b, &PyArray_Type, &resids1,
+                        &PyArray_Type, &resids2, &PyArray_Type, &sigma2_1,
+                        &PyArray_Type, &sigma2_2)) {
+    return NULL;
+  }
+
+  std::vector<double> rho =
+      DCC::conditional_correlations(a, b, resids1, resids2, sigma2_1, sigma2_2);
+
+  npy_intp dims[1] = {static_cast<npy_intp>(rho.size())};
+  PyArrayObject *py_rho =
+      (PyArrayObject *)PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+  std::copy(rho.begin(), rho.end(), (double *)PyArray_DATA(py_rho));
+
+  return (PyObject *)py_rho;
+}
+
 // Method table
 static PyMethodDef methods[] = {
     {"ewma", ewma_wrapper, METH_VARARGS, "Calculate EWMA"},
@@ -166,6 +192,10 @@ static PyMethodDef methods[] = {
 
     {"compute_gjrgarch_variance", compute_gjrgarch_variance_wrapper,
      METH_VARARGS, "Computes the variances conditional on given parameters"},
+
+    {"dcc_conditional_correlation", dcc_conditional_correlations_wrapper,
+     METH_VARARGS,
+     "Computes the DCC conditional correlation based on given parameters"},
 
     {NULL, NULL, 0, NULL}};
 
