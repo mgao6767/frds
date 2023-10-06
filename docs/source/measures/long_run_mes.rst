@@ -330,13 +330,22 @@ assumptions.
 
 .. note::
    
-   Basically, we need innovations :math:`z_{it}` and :math:`z_{mt}` for :math:`t>T` in order to forecast.
+   Basically, we need residuals :math:`\epsilon_{mT+t}=\sigma_{mT+t}z_{mT+t}` 
+   and :math:`\epsilon_{iT+t}=\sigma_{iT+t}z_{iT+t}` for :math:`t=1,...,h`.
 
-   For the market returns' :math:`z_{mt}` in the prediction horizon, we sample the standardized residuals 
-   from the past with replacement. For the firm return innovations :math:`z_{it}` in the prediction horizon, 
-   we use the computed :math:`\xi_{it}`, which is *independent* from :math:`z_{mt}`. This guarantees that
-   the market and firm return innovations are i.i.d. standard normal, while the return covariances conform 
-   to the DCC model.
+   Requirements are
+   
+   #. The standarized residuals :math:`z_{iT+t}` and :math:`z_{mT+t}` are i.i.d. normal.
+   #. :math:`\epsilon_{mT+t}` and :math:`\epsilon_{iT+t}` have a conditional correlation :math:`\rho_t`.
+
+   Given conditional variance, conditional correlation, :math:`z_{iT+t}` has to be
+
+   .. math::
+
+      z_{iT+t} = \rho_t \times z_{mT+t} + \sqrt{1 - \rho_t^2} \times \xi_{iT+t}
+
+   We use the sampled (bootstrapped) :math:`h` pairs of :math:`[\xi_{it}, z_{mt}]'` 
+   as :math:`[\xi_{iT+t}, z_{mT+t}]'` for :math:`t=1,...,h`.
 
 **Step 3**. Use the pseudo sample of innovations as inputs of the DCC
 and (GJR)GARCH filters, respectively. Initial conditions are the last values
@@ -360,18 +369,28 @@ compute :math:`\hat{\sigma}^2_{iT+h}` and :math:`\hat{\sigma}^2_{mT+h}`,
 .. math:: 
 
    \begin{align}
-   \hat{\sigma}^2_{iT+h} &= \omega_i + \left[\alpha_i+\gamma_i I(\xi_{ih-1}<0)\right] \xi_{ih-1}^2 + \beta_i \hat{\sigma}^2_{iT+h-1} \\\\
-   \hat{\sigma}^2_{mT+h} &= \omega_m + \left[\alpha_m+\gamma_m I(z_{mh-1}<0)\right] z_{mh-1}^2 + \beta_m \hat{\sigma}^2_{mT+h-1} 
+   \hat{\sigma}^2_{iT+h} &= \omega_i + \left[\alpha_i+\gamma_i I(\epsilon_{iT+h-1}<0)\right] \epsilon_{iT+h-1}^2 + \beta_i \hat{\sigma}^2_{iT+h-1} \\\\
+   \hat{\sigma}^2_{mT+h} &= \omega_m + \left[\alpha_m+\gamma_m I(\epsilon_{mT+h-1}<0)\right] \epsilon_{mT+h-1}^2 + \beta_m \hat{\sigma}^2_{mT+h-1} 
    \end{align}
+
+where,
+
+.. math::
+
+   \begin{align}
+   \epsilon_{mT+h-1} &= z_{mT+h-1} \hat{\sigma}_{mT+h-1} \\\\
+   \epsilon_{iT+h-1} &= \hat{\rho}_{iT+h-1} z_{mT+h-1} + \sqrt{1-\hat{\rho}^2_{iT+h-1}} \xi_{iT+h-1}
+   \end{align}
+
 
 Then, update DCC coefficients,
 
 .. math::
 
    \begin{align}
-   \hat{q}_{iT+h} &= (1 - a - b) \overline{q}_{i} + a \xi^2_{i,h-1} + b \hat{q}_{i,T+h-1} \\\\
-   \hat{q}_{mT+h} &= (1 - a - b) \overline{q}_{m} + a z^2_{m,h-1} + b \hat{q}_{m,T+h-1} \\\\
-   \hat{q}_{imT+h} &= (1 - a - b) \overline{q}_{im} + a \xi_{i,h-1} z_{m,h-1} + b \hat{q}_{im,T+h-1}
+   \hat{q}_{iT+h} &= (1 - a - b) \overline{q}_{i} + a \epsilon^2_{iT+h-1} + b \hat{q}_{i,T+h-1} \\\\
+   \hat{q}_{mT+h} &= (1 - a - b) \overline{q}_{m} + a \epsilon^2_{mT+h-1} + b \hat{q}_{m,T+h-1} \\\\
+   \hat{q}_{imT+h} &= (1 - a - b) \overline{q}_{im} + a \epsilon_{iT+h-1} \epsilon_{mT+h-1} + b \hat{q}_{im,T+h-1}
    \end{align}
 
 The dynamic conditional correlation :math:`\hat{\rho}_{iT+1}` is given by:
@@ -380,17 +399,17 @@ The dynamic conditional correlation :math:`\hat{\rho}_{iT+1}` is given by:
 
    \hat{\rho}_{iT+h} = \frac{\hat{q}_{imT+h}}{\sqrt{\hat{q}_{iT+h} \hat{q}_{mT+h}}}
 
-This conditional correlation :math:`\hat{\rho}_{iT+1}` is then used to compute the 1-step-ahead returns 
+This conditional correlation :math:`\hat{\rho}_{iT+h}` is then used to compute the h-step-ahead returns 
 given the conditional variances and innovations,
 
 .. math::
 
    \begin{align}
-   \hat{r}_{iT+h} &= \mu_i + \hat{\rho}_{iT+h} \xi_{ih} \\\\
-   \hat{r}_{mT+h} &= \mu_m + \hat{\rho}_{iT+h} z_{mh}
+   \hat{r}_{mT+h} &= \mu_m + \hat{\sigma}_{mT+h} z_{mT+h} \\\\
+   \hat{r}_{iT+h} &= \mu_i + \hat{\sigma}_{iT+h} (\hat{\rho}_{iT+h} z_{mT+h} + \sqrt{1-\hat{\rho}^2_{iT+h}} \xi_{iT+h})
    \end{align}
 
-This process is performed for :math:`T+2,\dots,T+h` forecasts, so tha we have in this simulation
+So we have in this simulation
 :math:`s` a set of market and firm (log) returns, :math:`r^s_{iT+t}` and :math:`r^s_{mT+t}`, :math:`t=1,\dots,h`.
 
 **Step 4**. Construct the multiperiod arithmetic firm (market) return of
