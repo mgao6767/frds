@@ -60,6 +60,8 @@ class GARCHModel_CCC:
         Returns:
             Parameters: :class:`frds.algorithms.GARCHModel_CCC.Parameters`
         """
+        if self.estimation_success:
+            return self.parameters
         m1, m2 = self.model1, self.model2
         m1.fit()
         m2.fit()
@@ -250,6 +252,8 @@ class GARCHModel_DCC(GARCHModel_CCC):
         Returns:
             Parameters: :class:`frds.algorithms.GARCHModel_DCC.Parameters`
         """
+        if self.estimation_success:
+            return self.parameters
         m1, m2 = self.model1, self.model2
         m1.fit()
         m2.fit()
