@@ -2,6 +2,12 @@ from typing import Tuple
 import numpy as np
 from frds.algorithms import GJRGARCHModel, GJRGARCHModel_DCC
 
+USE_CPP_EXTENSION = True
+try:
+    from frds.measures import measures_ext as ext
+except ImportError:
+    USE_CPP_EXTENSION = False
+
 
 class LongRunMarginalExpectedShortfall:
     """:doc:`/measures/long_run_mes`"""
@@ -75,18 +81,42 @@ class LongRunMarginalExpectedShortfall:
             # Each simulation
             inv = sample[s, :, :]  # shape=(h,2)
             assert inv.shape == (h, 2)
-            firm_return, systemic_event = self.simulation(
-                innovation=inv,
-                C=C,
-                firm_var=self.firm_model.sigma2[-1],
-                mkt_var=self.market_model.sigma2[-1],
-                firm_resid=self.firm_model.resids[-1],
-                mkt_resid=self.market_model.resids[-1],
-                a=self.dcc_model.parameters.a,
-                b=self.dcc_model.parameters.b,
-                rho=rho[-1],
-                Q_bar=Q_bar,
-            )
+            if USE_CPP_EXTENSION:
+                firm_return, systemic_event = ext.simulation(
+                    inv,
+                    C,
+                    self.firm_model.sigma2[-1],
+                    self.market_model.sigma2[-1],
+                    self.firm_model.resids[-1],
+                    self.market_model.resids[-1],
+                    self.dcc_model.parameters.a,
+                    self.dcc_model.parameters.b,
+                    rho[-1],
+                    Q_bar,
+                    self.firm_model.parameters.mu,
+                    self.firm_model.parameters.omega,
+                    self.firm_model.parameters.alpha,
+                    self.firm_model.parameters.gamma,
+                    self.firm_model.parameters.beta,
+                    self.market_model.parameters.mu,
+                    self.market_model.parameters.omega,
+                    self.market_model.parameters.alpha,
+                    self.market_model.parameters.gamma,
+                    self.market_model.parameters.beta,
+                )
+            else:
+                firm_return, systemic_event = self.simulation(
+                    innovation=inv,
+                    C=C,
+                    firm_var=self.firm_model.sigma2[-1],
+                    mkt_var=self.market_model.sigma2[-1],
+                    firm_resid=self.firm_model.resids[-1],
+                    mkt_resid=self.market_model.resids[-1],
+                    a=self.dcc_model.parameters.a,
+                    b=self.dcc_model.parameters.b,
+                    rho=rho[-1],
+                    Q_bar=Q_bar,
+                )
             firm_avg_return += firm_return
             n_systemic_event += systemic_event
 
