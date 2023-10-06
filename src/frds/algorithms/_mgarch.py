@@ -361,7 +361,7 @@ class GARCHModel_DCC(GARCHModel_CCC):
         # z1 and z2 are standardized residuals
         z1 = resids1 / np.sqrt(sigma2_1)
         z2 = resids2 / np.sqrt(sigma2_2)
-        Q_bar = np.cov(z1, z2)
+        Q_bar = np.corrcoef(z1, z2)
         q_11_bar, q_12_bar, q_22_bar = Q_bar[0, 0], Q_bar[0, 1], Q_bar[1, 1]
         T = len(z1)
         q11 = np.empty_like(z1)
