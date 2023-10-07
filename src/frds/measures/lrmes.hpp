@@ -28,36 +28,54 @@ simulation(PyArrayObject *innovation, double C, double firm_var, double mkt_var,
   bool systemic_event = true;
   double firmret = 0.0;
 
+  // lagged residuals
+  double resid_i_tm1 = firm_resid;
+  double resid_m_tm1 = mkt_resid;
+  // lagged conditonal variance
+  double firm_var_tm1 = firm_var;
+  double mkt_var_tm1 = mkt_var;
+  // lagged standarized residuals
+  double firm_innov_tm1 = resid_i_tm1 / std::sqrt(firm_var_tm1);
+  double mkt_innov_tm1 = resid_m_tm1 / std::sqrt(mkt_var_tm1);
+
   // Main loop
   for (int h = 0; h < PyArray_DIM(innovation, 0); ++h) {
-    double firm_innov = *((double *)PyArray_GETPTR2(innovation, h, 0));
-    double mkt_innov = *((double *)PyArray_GETPTR2(innovation, h, 1));
-    double resid_i = (h == 0) ? firm_resid : epsilon_i;
-    double resid_m = (h == 0) ? mkt_resid : epsilon_m;
 
-    firm_var = omega_i + alpha_i * std::pow(resid_i, 2) + beta_i * firm_var;
-    if (resid_i < 0) {
-      firm_var += gamma_i * std::pow(resid_i, 2);
+    double firm_var_t =
+        omega_i + alpha_i * std::pow(resid_i_tm1, 2) + beta_i * firm_var_tm1;
+    if (resid_i_tm1 < 0) {
+      firm_var_t += gamma_i * std::pow(resid_i_tm1, 2);
     }
 
-    mkt_var = omega_m + alpha_m * std::pow(resid_m, 2) + beta_m * mkt_var;
-    if (resid_m < 0) {
-      mkt_var += gamma_m * std::pow(resid_m, 2);
+    double mkt_var_t =
+        omega_m + alpha_m * std::pow(resid_m_tm1, 2) + beta_m * mkt_var_tm1;
+    if (resid_m_tm1 < 0) {
+      mkt_var_t += gamma_m * std::pow(resid_m_tm1, 2);
     }
 
-    q_i = (1 - a - b) * q_i_bar + a * std::pow(resid_i, 2) + b * q_i;
-    q_m = (1 - a - b) * q_m_bar + a * std::pow(resid_m, 2) + b * q_m;
-    q_im = (1 - a - b) * q_im_bar + a * resid_i * resid_m + b * q_im;
-
+    q_i = (1 - a - b) * q_i_bar + a * firm_innov_tm1 * firm_innov_tm1 + b * q_i;
+    q_m = (1 - a - b) * q_m_bar + a * mkt_innov_tm1 * mkt_innov_tm1 + b * q_m;
+    q_im =
+        (1 - a - b) * q_im_bar + a * firm_innov_tm1 * mkt_innov_tm1 + b * q_im;
     double rho_h = q_im / std::sqrt(q_i * q_m);
 
-    epsilon_m = std::sqrt(mkt_var) * mkt_innov;
+    double firm_innov = *((double *)PyArray_GETPTR2(innovation, h, 0));
+    double mkt_innov = *((double *)PyArray_GETPTR2(innovation, h, 1));
+
+    epsilon_m = std::sqrt(mkt_var_t) * mkt_innov;
     epsilon_i =
-        std::sqrt(firm_var) *
+        std::sqrt(firm_var_t) *
         (rho_h * mkt_innov + std::sqrt(1 - std::pow(rho_h, 2)) * firm_innov);
 
     mkt_return[h] = mu_m + epsilon_m;
     firm_return[h] = mu_i + epsilon_i;
+
+    firm_var_tm1 = firm_var_t;
+    mkt_var_tm1 = mkt_var_t;
+    resid_i_tm1 = epsilon_i;
+    resid_m_tm1 = epsilon_m;
+    firm_innov_tm1 = resid_i_tm1 / std::sqrt(firm_var_tm1);
+    mkt_innov_tm1 = mkt_innov;
   }
 
   // Convert back to original scale

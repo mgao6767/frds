@@ -52,7 +52,8 @@ class LongRunMarginalExpectedShortfall:
 
         # Estimate the (GJR)GARCH-DCC model
         self.dcc_model.fit()
-
+        if not self.dcc_model.estimation_success:
+            raise RuntimeError("(GJR)GARCH-DCC model estimation failed!")
         # Construct GJR-GARCH-DCC standardized innovations for the sample
         # See the step 1 of Computing LRMES section
         firm_variances = self.firm_model.sigma2
@@ -70,7 +71,15 @@ class LongRunMarginalExpectedShortfall:
         sample = np.array([xi_i, z_m])
 
         # Sample with replacement S*h innovations
-        sample = sample.T[rng.choice(sample.shape[1], (S, h), replace=True)]
+        # sample = sample.T[rng.choice(sample.shape[1], (S, h), replace=True)]
+
+        sample = np.zeros((S, h, 2))
+        # Sample with replacement
+        for s in range(S):
+            idx = rng.choice(len(xi_i), size=h, replace=True)
+            sample[s, :, 0] = xi_i[idx]
+            sample[s, :, 1] = z_m[idx]
+
         assert sample.shape == (S, h, 2)
 
         Q_bar = np.corrcoef(z_i, z_m)
@@ -171,42 +180,56 @@ class LongRunMarginalExpectedShortfall:
         firm_return = np.empty(shape=len(innovation))
         mkt_return = np.empty(shape=len(innovation))
 
+        # lagged residuals
+        resid_i_tm1 = firm_resid
+        resid_m_tm1 = mkt_resid
+        # lagged conditonal variance
+        firm_var_tm1 = firm_var
+        mkt_var_tm1 = mkt_var
+        # lagged standarized residuals
+        firm_innov_tm1 = resid_i_tm1 / np.sqrt(firm_var_tm1)
+        mkt_innov_tm1 = resid_m_tm1 / np.sqrt(mkt_var_tm1)
+
         for h in range(len(innovation)):
+            # fmt: off
             # Each iteration is a one-step-ahead forecast
+            # conditional variance this time
+            firm_var_t = omega_i + alpha_i * (resid_i_tm1**2) + beta_i * firm_var_tm1
+            firm_var_t += gamma_i * (resid_i_tm1**2) if resid_i_tm1 < 0 else 0
+
+            mkt_var_t = omega_m + alpha_m * (resid_m_tm1**2) + beta_m * mkt_var_tm1
+            mkt_var_t += gamma_m * (resid_m_tm1**2) if resid_m_tm1 < 0 else 0
+
+            # conditional correlation this time
+            q_i = (1 - a - b) * q_i_bar + a * firm_innov_tm1**2 + b * q_i
+            q_m = (1 - a - b) * q_m_bar + a * mkt_innov_tm1**2 + b * q_m
+            q_im = (1 - a - b) * q_im_bar + a * firm_innov_tm1*mkt_innov_tm1 + b * q_im
+            rho_h = q_im / np.sqrt(q_i * q_m)
+
+            # innovations this time
             firm_innov = innovation[h, 0]
             mkt_innov = innovation[h, 1]
 
-            if h == 0:
-                resid_i = firm_resid
-                resid_m = mkt_resid
-            else:
-                # lagged residuals
-                resid_i = epsilon_i
-                resid_m = epsilon_m
-
-            firm_var = omega_i + alpha_i * (resid_i**2) + beta_i * firm_var
-            firm_var += gamma_i * (resid_i**2) if resid_i < 0 else 0
-
-            mkt_var = omega_m + alpha_m * (resid_m**2) + beta_m * mkt_var
-            mkt_var += gamma_m * (resid_m**2) if resid_m < 0 else 0
-
-            q_i = (1 - a - b) * q_i_bar + a * resid_i**2 + b * q_i
-            q_m = (1 - a - b) * q_m_bar + a * resid_m**2 + b * q_m
-            q_im = (1 - a - b) * q_im_bar + a * resid_i * resid_m + b * q_im
-            rho_h = q_im / np.sqrt(q_i * q_m)
-
             # market excess return
-            epsilon_m = np.sqrt(mkt_var) * mkt_innov
+            # or, residual this time, conditional volatility * innovation (z_m)
+            epsilon_m = np.sqrt(mkt_var_t) * mkt_innov
             # Beta of the firm = cov/var(mkt)
-            # Beta = rho_h * np.sqrt(firm_var) / np.sqrt(mkt_var)
+            # Beta = rho_h * np.sqrt(firm_var_t) / np.sqrt(mkt_var_t)
             # epsilon_i = Beta * epsilon_m
 
-            epsilon_i = np.sqrt(firm_var) * (
+            epsilon_i = np.sqrt(firm_var_t) * (
                 rho_h * mkt_innov + np.sqrt(1 - rho_h**2) * firm_innov
             )
 
             mkt_return[h] = mu_m + epsilon_m
             firm_return[h] = mu_i + epsilon_i
+
+            firm_var_tm1 = firm_var_t
+            mkt_var_tm1 = mkt_var_t
+            resid_i_tm1 = epsilon_i
+            resid_m_tm1 = epsilon_m
+            firm_innov_tm1 = resid_i_tm1 / np.sqrt(firm_var_tm1)
+            mkt_innov_tm1 = mkt_innov
 
         # Convert back to original scale
         mkt_return /= 100
