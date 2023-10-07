@@ -344,9 +344,9 @@ class GJRGARCHModel(GARCHModel):
         bounds = [
             (-np.inf, np.inf),  # No bounds for mu
             (1e-6, np.inf),  # Lower bound for omega
-            (0.0, 1.0),  # Bounds for alpha
-            (0.0, 1.0),  # Bounds for gamma
-            (0.0, 1.0),  # Boudns for beta
+            (1e-6, 1.0),  # Bounds for alpha
+            (1e-6, 1.0),  # Bounds for gamma
+            (1e-6, 1.0),  # Boudns for beta
         ]
 
         # Set constraint for stationarity

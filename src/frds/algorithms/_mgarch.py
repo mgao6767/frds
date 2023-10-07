@@ -304,8 +304,8 @@ class GARCHModel_DCC(GARCHModel_CCC):
         Returns:
             Tuple[float, float]: [a, b]
         """
-        a_grid = np.linspace(0.01, 0.9, 10)
-        b_grid = np.linspace(0.01, 0.9, 10)
+        a_grid = np.linspace(0.01, 0.5, 10)
+        b_grid = np.linspace(0.6, 0.95, 10)
         max_ll = -np.inf
         initial_values = []
         for a, b in itertools.product(a_grid, b_grid):
@@ -340,6 +340,8 @@ class GARCHModel_DCC(GARCHModel_CCC):
 
         # The loglikelihood of the correlation component (Step 2)
         rho = self.conditional_correlations(a, b)
+        # TODO: rare case rho is out of bounds
+        rho = np.clip(rho, -0.99, 0.99)
 
         log_likelihood_terms = -0.5 * (
             - (z1**2 + z2**2)
