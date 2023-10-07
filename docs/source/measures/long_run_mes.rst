@@ -87,17 +87,15 @@ Alternatively, I present below the constant mean form of return series,
 where,
 
 -  :math:`\mu=0` assumes zero-mean. One can also assume a constant
-   non-zero mean or even other structure.
+   mean or even other structure.
 
 -  :math:`\epsilon_{it} = \sigma_{it} z_{it}`, :math:`\epsilon_{mt} =
    \sigma_{mt} z_{mt}`, where :math:`\sigma_{it}` is the conditional
    volatility at time :math:`t`.
 
--  :math:`z_{it}, z_{mt}` follows an unknown bivariate distribution with
-   zero mean and maybe some covariance structure.
-
-However, generally we can assume :math:`z_{it}` and :math:`z_{mt}` are i.i.d. 
-standard normal
+-  :math:`z_{it}, z_{mt}` are standarized residuals that follow an unknown bivariate distribution with
+   zero mean and maybe some covariance structure. However, generally we can assume :math:`z_{it}` and :math:`z_{mt}` are i.i.d. 
+   standard normal
 
 .. important::
 
@@ -363,14 +361,57 @@ up to time :math:`T`, that is
       r^s_{mT+t}
    \end{bmatrix}_{t=1,...,h} | \mathcal{F}_{T}
 
-Specifically, in each simulation :math:`s`, for the :math:`h`-step-ahead prediction, 
-compute :math:`\hat{\sigma}^2_{iT+h}` and :math:`\hat{\sigma}^2_{mT+h}`,
+Specifically, in a simulation :math:`s` with simulated innovations :math:`[\xi^s_{iT+t}, z^s_{mT+t}]'`,
+for the 1-step-ahead prediction, compute :math:`\hat{\sigma}^2_{iT+1}` and :math:`\hat{\sigma}^2_{mT+1}`,
 
 .. math:: 
 
    \begin{align}
-   \hat{\sigma}^2_{iT+h} &= \omega_i + \left[\alpha_i+\gamma_i I(\epsilon_{iT+h-1}<0)\right] \epsilon_{iT+h-1}^2 + \beta_i \hat{\sigma}^2_{iT+h-1} \\\\
-   \hat{\sigma}^2_{mT+h} &= \omega_m + \left[\alpha_m+\gamma_m I(\epsilon_{mT+h-1}<0)\right] \epsilon_{mT+h-1}^2 + \beta_m \hat{\sigma}^2_{mT+h-1} 
+   \hat{\sigma}^2_{iT+1} &= \omega_i + \left[\alpha_i+\gamma_i I(\epsilon_{iT}<0)\right] \epsilon_{iT}^2 + \beta_i {\sigma}^2_{iT} \\\\
+   \hat{\sigma}^2_{mT+1} &= \omega_m + \left[\alpha_m+\gamma_m I(\epsilon_{mT}<0)\right] \epsilon_{mT}^2 + \beta_m {\sigma}^2_{mT} 
+   \end{align}
+
+where, :math:`\sigma^2_{iT}` and :math:`\sigma^2_{mT}` are the last conditional 
+variances, :math:`\epsilon_{iT}` and :math:`\epsilon_{mT}` are the last residuals. All of these are known.
+
+The updated :math:`Q_{T+1}` is given by 
+
+.. math::
+
+   \begin{align}
+   \hat{q}_{iT+1} &= (1 - a - b) \overline{q}_{i} + a z^2_{iT} + b {q}_{iT} \\\\
+   \hat{q}_{mT+1} &= (1 - a - b) \overline{q}_{m} + a z^2_{mT} + b {q}_{mT} \\\\
+   \hat{q}_{imT+1} &= (1 - a - b) \overline{q}_{im} + a z_{iT} z_{mT} + b {q}_{imT}
+   \end{align}
+
+where :math:`z_{iT}` and :math:`z_{mT}` are the last standardized residuals. 
+:math:`q_{iT}`, :math:`q_{mT}` and :math:`q_{imT}` are from the last :math:`Q_T`.
+All of these are known.
+
+The 1-step-ahead conditional correlation :math:`\hat{\rho}_{iT+1}` is given by:
+
+.. math::
+
+   \hat{\rho}_{iT+1} = \frac{\hat{q}_{imT+1}}{\sqrt{\hat{q}_{iT+1} \hat{q}_{mT+1}}}
+
+This conditional correlation :math:`\hat{\rho}_{iT+1}` is then used to compute the 1-step-ahead returns 
+given the 1-step-ahead forecast of conditional variances :math:`\hat{\sigma}^2_{iT+1}` and :math:`\hat{\sigma}^2_{mT+1}`,
+and innovations :math:`[\xi^s_{iT+1}, z^s_{mT+1}]'`,
+
+.. math::
+
+   \begin{align}
+   \hat{r}_{mT+1} &= \mu_m + \hat{\epsilon}_{mT+1} = \mu_m + \hat{\sigma}_{mT+1} z^s_{mT+1} \\\\
+   \hat{r}_{iT+1} &= \mu_i + \hat{\epsilon}_{iT+1} = \mu_i + \hat{\sigma}_{iT+1} (\hat{\rho}_{iT+1} z^s_{mT+1} + \sqrt{1-\hat{\rho}^2_{iT+1}} \xi^s_{iT+1})
+   \end{align}
+
+Then, for :math:`h>1`, we use the :math:`h-1` forecasts as inputs.
+
+.. math:: 
+
+   \begin{align}
+   \hat{\sigma}^2_{iT+h} &= \omega_i + \left[\alpha_i+\gamma_i I(\hat{\epsilon}_{iT+h-1}<0)\right] \hat{\epsilon}_{iT+h-1}^2 + \beta_i \hat{\sigma}^2_{iT+h-1} \\\\
+   \hat{\sigma}^2_{mT+h} &= \omega_m + \left[\alpha_m+\gamma_m I(\hat{\epsilon}_{mT+h-1}<0)\right] \hat{\epsilon}_{mT+h-1}^2 + \beta_m \hat{\sigma}^2_{mT+h-1} 
    \end{align}
 
 where,
@@ -378,35 +419,35 @@ where,
 .. math::
 
    \begin{align}
-   \epsilon_{mT+h-1} &= z_{mT+h-1} \hat{\sigma}_{mT+h-1} \\\\
-   \epsilon_{iT+h-1} &= \hat{\rho}_{iT+h-1} z_{mT+h-1} + \sqrt{1-\hat{\rho}^2_{iT+h-1}} \xi_{iT+h-1}
+   \hat{\epsilon}_{mT+h-1} &= \hat{\sigma}_{mT+h-1} z^s_{mT+h-1} \\\\
+   \hat{\epsilon}_{iT+h-1} &= \hat{\sigma}_{iT+h-1} \left[\hat{\rho}_{iT+h-1} z^s_{mT+h-1} + \sqrt{1-\hat{\rho}^2_{iT+h-1}} \xi^s_{iT+h-1}\right]
    \end{align}
-
 
 Then, update DCC coefficients,
 
 .. math::
 
    \begin{align}
-   \hat{q}_{iT+h} &= (1 - a - b) \overline{q}_{i} + a \epsilon^2_{iT+h-1} + b \hat{q}_{i,T+h-1} \\\\
-   \hat{q}_{mT+h} &= (1 - a - b) \overline{q}_{m} + a \epsilon^2_{mT+h-1} + b \hat{q}_{m,T+h-1} \\\\
-   \hat{q}_{imT+h} &= (1 - a - b) \overline{q}_{im} + a \epsilon_{iT+h-1} \epsilon_{mT+h-1} + b \hat{q}_{im,T+h-1}
+   \hat{q}_{iT+h} &= (1 - a - b) \overline{q}_{i} + a {\left(\frac{\hat{\epsilon}_{iT+h-1}}{\hat{\sigma}_{iT+h-1}}\right)}^2 + b \hat{q}_{i,T+h-1} \\\\
+   \hat{q}_{mT+h} &= (1 - a - b) \overline{q}_{m} + a {\left(\frac{\hat{\epsilon}_{mT+h-1}}{\hat{\sigma}_{mT+h-1}}\right)}^2 + b \hat{q}_{m,T+h-1} \\\\
+   \hat{q}_{imT+h} &= (1 - a - b) \overline{q}_{im} + a \left(\frac{\hat{\epsilon}_{mT+h-1}}{\hat{\sigma}_{mT+h-1}}\frac{\hat{\epsilon}_{iT+h-1}}{\hat{\sigma}_{iT+h-1}}\right) + b \hat{q}_{im,T+h-1}
    \end{align}
 
-The dynamic conditional correlation :math:`\hat{\rho}_{iT+1}` is given by:
+The dynamic conditional correlation :math:`\hat{\rho}_{iT+h}` is given by:
 
 .. math::
 
    \hat{\rho}_{iT+h} = \frac{\hat{q}_{imT+h}}{\sqrt{\hat{q}_{iT+h} \hat{q}_{mT+h}}}
 
 This conditional correlation :math:`\hat{\rho}_{iT+h}` is then used to compute the h-step-ahead returns 
-given the conditional variances and innovations,
+given the h-step-ahead forecast of conditional variances :math:`\hat{\sigma}^2_{iT+h}` and :math:`\hat{\sigma}^2_{mT+h}`,
+and innovations :math:`[\xi^s_{iT+h}, z^s_{mT+h}]'`,
 
 .. math::
 
    \begin{align}
-   \hat{r}_{mT+h} &= \mu_m + \hat{\sigma}_{mT+h} z_{mT+h} \\\\
-   \hat{r}_{iT+h} &= \mu_i + \hat{\sigma}_{iT+h} (\hat{\rho}_{iT+h} z_{mT+h} + \sqrt{1-\hat{\rho}^2_{iT+h}} \xi_{iT+h})
+   \hat{r}_{mT+h} &= \mu_m + \hat{\sigma}_{mT+h} z^s_{mT+h} \\\\
+   \hat{r}_{iT+h} &= \mu_i + \hat{\sigma}_{iT+h} (\hat{\rho}_{iT+h} z^s_{mT+h} + \sqrt{1-\hat{\rho}^2_{iT+h}} \xi^s_{iT+h})
    \end{align}
 
 So we have in this simulation
@@ -473,12 +514,3 @@ Date
 2010-01-07 -0.023280  0.019569  0.019809  0.004001
 2010-01-08  0.013331 -0.018912 -0.002456  0.002882
 2010-01-11 -0.001512 -0.015776 -0.003357  0.001747
-
-Estimate LRMES using the last 600 days' observtions.
-
->>> from frds.measures import LRMES
->>> gs = returns["GS"].to_numpy()[-600:]
->>> sp500 = returns["^GSPC"].to_numpy()[-600:]
->>> lrmes = LRMES(gs, sp500)
->>> lrmes.estimate(S=10000, h=22, C=-0.1)
--0.02442517334543748
