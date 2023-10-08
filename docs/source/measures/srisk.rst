@@ -2,8 +2,6 @@
  SRISK
 #######
 
-.. warning:: This is a bug in the code to be fixed as at version 2.0.0.
-
 **************
  Introduction
 **************
@@ -185,7 +183,7 @@ equity of 100 and debt value of 900.
 >>> from frds.measures import SRISK
 >>> srisk = SRISK(gs, sp500, W=100.0, D=900.0)
 >>> srisk.estimate()
--22.247115947780237
+-11.032087743990681
 
 Negative SRISK! So Goldman Sachs with the assumed equity/debt is safe. 
 What if we define a "systemic event" to be a market decline of 5% instead,
@@ -193,7 +191,7 @@ and assume a even higher leverage?
 
 >>> srisk = SRISK(gs, sp500, W=100.0, D=1500.0)
 >>> srisk.estimate(lrmes_C=-0.05)
-27.684007759631047
+33.462929665773935
 
 Well, in this extreme case where the bank has a equity to debt ratio of 1/15, 
 and a systemic event defined as market decline of 5% over 22 days, the SRISK of

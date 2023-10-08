@@ -2,7 +2,7 @@
  Long-Run Marginal Expected Shortfall (LRMES)
 ##############################################
 
-.. warning:: This is a bug in the code to be fixed as at version 2.0.0.
+.. tip:: Check `Examples`_ section for code guide and plot.
 
 **************
  Introduction
@@ -502,15 +502,112 @@ multiperiod arithmetic returns conditional on the systemic event,
  Examples
 **********
 
-Import built-in dataset of stock returns.
+Download daily price data for GS and SP500 and compute returns.
 
->>> from frds.datasets import StockReturns
->>> returns = StockReturns.stocks_us
->>> returns.head()
-               GOOGL        GS       JPM     ^GSPC
-Date                                              
-2010-01-05 -0.004404  0.017680  0.019370  0.003116
-2010-01-06 -0.025209 -0.010673  0.005494  0.000546
-2010-01-07 -0.023280  0.019569  0.019809  0.004001
-2010-01-08  0.013331 -0.018912 -0.002456  0.002882
-2010-01-11 -0.001512 -0.015776 -0.003357  0.001747
+>>> from frds.measures import LRMES
+>>> import yfinance as yf
+>>> import numpy as np
+>>> data = yf.download(['GS', '^GSPC'], start='1999-01-01', end='2022-12-31')['Adj Close']
+>>> data['GS'] = data['GS'].pct_change()
+>>> data['^GSPC'] = data['^GSPC'].pct_change()
+>>> data = data.dropna()
+
+Compute LRMES, conditioal on a 40% market decline over the next six months.
+
+>>> lrmes = LRMES(data['GS'], data['^GSPC'])
+>>> lrmes.estimate(S=10000, h=22*6, C=-0.4)
+0.3798383812883635
+
+Additionally, below is an example output for estimating the daily LRMES for GS
+using parallel computing.
+
+.. image:: /images/GS_LRMES.png
+
+This is computed using the following code.
+
+.. code-block:: python
+
+   from concurrent.futures import ProcessPoolExecutor
+   from frds.measures import LRMES
+   import numpy as np
+   import pandas as pd
+   import yfinance as yf
+   import matplotlib.pyplot as plt
+
+
+   def compute_lrmes_for_date(args):
+       date, data = args
+       if date.year < 2001:
+           return None
+       sub_data = data.loc[:date]
+       lrmes = LRMES(sub_data["GS"], sub_data["^GSPC"]).estimate(h=22 * 6, C=-0.4)
+       print((date, lrmes))
+       return (date, lrmes)
+
+
+   if __name__ == "__main__":
+       # Download daily price data for GS and SP500
+       data = yf.download(["GS", "^GSPC"], start="1994-01-01", end="2022-12-31")["Adj Close"]
+
+       data["GS"] = data["GS"].pct_change()
+       data["^GSPC"] = data["^GSPC"].pct_change()
+       data = data.dropna()
+
+       data["GS_Price"] = (1 + data["GS"]).cumprod() * 100
+       data["^GSPC_Price"] = (1 + data["^GSPC"]).cumprod() * 100
+
+       with ProcessPoolExecutor() as executor:
+           lrmes_values = list(
+               executor.map(
+                   compute_lrmes_for_date,
+                   [(d, data) for d in data.index.unique()],
+               )
+           )
+
+       lrmes_values = [x for x in lrmes_values if x is not None]
+
+       lrmes_df = pd.DataFrame(lrmes_values, columns=["Date", "LRMES"]).set_index("Date")
+
+       data = pd.merge_asof(data, lrmes_df, left_index=True, right_index=True, direction="backward")
+
+       model = LRMES(data["GS"], data["^GSPC"])
+       model.dcc_model.fit()
+       data["GS Volatility"] = np.sqrt(model.dcc_model.model1.sigma2)
+       data["S&P500 Volatility"] = np.sqrt(model.dcc_model.model2.sigma2)
+
+       fig, axs = plt.subplots(4, 1, figsize=(12, 15), sharex=True)
+
+       # Plot data
+       axs[0].plot(data["GS"], label="GS data", color="blue")
+       axs[0].plot(data["^GSPC"], label="SP500 data", color="red")
+       axs[0].set_title("Daily Returns")
+       axs[0].set_ylabel("Returns")
+       axs[0].legend()
+       axs[0].grid(True)
+
+       axs[1].plot(data["GS_Price"], label="GS Indexed Price", color="blue")
+       axs[1].plot(data["^GSPC_Price"], label="SP500 Indexed Price", color="red")
+       axs[1].set_title("Indexed Prices")
+       axs[1].set_ylabel("Indexed Price")
+       axs[1].legend()
+       axs[1].grid(True)
+
+       axs[2].plot(data["GS Volatility"], label="GS Volatility", color="blue")
+       axs[2].plot(data["S&P500 Volatility"], label="S&P500 Volatility", color="red")
+       axs[2].set_title("Conditional Volatility")
+       axs[2].set_ylabel("Conditional Volatility")
+       axs[2].legend()
+       axs[2].grid(True)
+
+       axs[3].plot(data["LRMES"], label="GS LRMES", color="blue")
+       axs[3].set_title("LRMES - Conditional on a 40% Market Decline in Six Months")
+       axs[3].set_xlabel("Date")
+       axs[3].set_ylabel("LRMES")
+       axs[3].legend()
+       axs[3].grid(True)
+
+       plt.tight_layout()
+       plt.show()
+       plt.savefig("./GS_LRMES.png")
+
+
