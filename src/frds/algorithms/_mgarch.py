@@ -307,7 +307,7 @@ class GARCHModel_DCC(GARCHModel_CCC):
         a_grid = np.linspace(0.01, 0.5, 10)
         b_grid = np.linspace(0.6, 0.95, 10)
         max_ll = -np.inf
-        initial_values = []
+        initial_values = [0.01, 0.8]
         for a, b in itertools.product(a_grid, b_grid):
             if a + b >= 1:
                 continue
