@@ -29,11 +29,12 @@ class GARCHModel:
         beta: float = np.nan
         loglikelihood: float = np.nan
 
-    def __init__(self, returns: np.ndarray) -> None:
+    def __init__(self, returns: np.ndarray, zero_mean=False) -> None:
         """__init__
 
         Args:
             returns (np.ndarray): ``(T,)`` array of ``T`` returns
+            zero_mean (bool): whether to use a zero mean returns model. Default to False.
 
         .. note:: ``returns`` is best to be percentage returns for optimization
         """
@@ -45,6 +46,7 @@ class GARCHModel:
         self.sigma2 = np.empty_like(self.returns)
         self.backcast_value = np.nan
         self.var_bounds: np.ndarray = None
+        self.zero_mean = zero_mean
 
     def fit(self) -> Parameters:
         """Estimates the GARCH(1,1) parameters via MLE
@@ -65,10 +67,12 @@ class GARCHModel:
             (0.0, 1.0),  # Bounds for alpha
             (0.0, 1.0),  # Boudns for beta
         ]
+        if self.zero_mean:
+            bounds = bounds[1:]
 
         # Set constraint for stationarity
         def persistence_smaller_than_one(params: List[float]):
-            _, _, alpha, beta = params
+            alpha, beta = params[-2:]
             return 1.0 - (alpha + beta)
 
         # MLE via minimizing the negative log-likelihood
@@ -82,14 +86,17 @@ class GARCHModel:
             opt: OptimizeResult = minimize(
                 self.loglikelihood_model,
                 starting_vals,
-                args=(self.backcast_value, self.var_bounds),
+                args=(self.backcast_value, self.var_bounds, self.zero_mean),
                 method="SLSQP",
                 bounds=bounds,
                 constraints={"type": "ineq", "fun": persistence_smaller_than_one},
             )
             if opt.success:
                 self.estimation_success = True
-                self.parameters = type(self).Parameters(*list(opt.x), loglikelihood=-opt.fun)
+                if self.zero_mean:
+                    self.parameters = type(self).Parameters(0.0, *list(opt.x), loglikelihood=-opt.fun)
+                else:
+                    self.parameters = type(self).Parameters(*list(opt.x), loglikelihood=-opt.fun)
                 self.resids = self.returns - self.parameters.mu
 
         return self.parameters
@@ -101,7 +108,10 @@ class GARCHModel:
             List[float]: list of starting values
         """
         # Compute a starting value for volatility process by backcasting
-        resids = self.returns - np.mean(self.returns)
+        if self.zero_mean:
+            resids = self.returns
+        else:
+            resids = self.returns - np.mean(self.returns)
         self.backcast_value = self.backcast(resids)
         # Compute a loose bound for the volatility process
         # This is to avoid NaN in MLE by avoiding zero/negative variance,
@@ -115,10 +125,14 @@ class GARCHModel:
         # Starting values are [mu, omega, alpha, beta]
         starting_vals = [initial_mu, *var_params]
 
-        return starting_vals
+        return starting_vals if not self.zero_mean else var_params
 
     def loglikelihood_model(
-        self, params: np.ndarray, backcast: float, var_bounds
+        self,
+        params: np.ndarray,
+        backcast: float,
+        var_bounds: np.ndarray,
+        zero_mean=False,
     ) -> float:
         """Calculates the negative log-likelihood based on the current ``params``.
         This function is used in optimization.
@@ -131,8 +145,14 @@ class GARCHModel:
         Returns:
             float: negative log-likelihood
         """
-        resids = self.returns - params[0]  # params[0] is mu
-        self.sigma2 = self.compute_variance(params[1:], resids, backcast, var_bounds)
+        if zero_mean:
+            resids = self.returns
+            self.sigma2 = self.compute_variance(params, resids, backcast, var_bounds)
+        else:
+            resids = self.returns - params[0]  # params[0] is mu
+            self.sigma2 = self.compute_variance(
+                params[1:], resids, backcast, var_bounds
+            )
         return -self.loglikelihood(resids, self.sigma2)
 
     @staticmethod
@@ -348,10 +368,12 @@ class GJRGARCHModel(GARCHModel):
             (1e-6, 1.0),  # Bounds for gamma
             (1e-6, 1.0),  # Boudns for beta
         ]
+        if self.zero_mean:
+            bounds = bounds[1:]
 
         # Set constraint for stationarity
         def persistence_smaller_than_one(params: List[float]):
-            _, _, alpha, gamma, beta = params
+            alpha, gamma, beta = params[-3:]
             return 1.0 - (alpha + beta + gamma / 2)
 
         # MLE via minimizing the negative log-likelihood
@@ -364,16 +386,21 @@ class GJRGARCHModel(GARCHModel):
             opt: OptimizeResult = minimize(
                 self.loglikelihood_model,
                 starting_vals,
-                args=(self.backcast_value, self.var_bounds),
+                args=(self.backcast_value, self.var_bounds, self.zero_mean),
                 method="SLSQP",
                 bounds=bounds,
                 constraints={"type": "ineq", "fun": persistence_smaller_than_one},
             )
             if opt.success:
                 self.estimation_success = True
-                self.parameters = type(self).Parameters(
-                    *list(opt.x), loglikelihood=-opt.fun
-                )
+                if self.zero_mean:
+                    self.parameters = type(self).Parameters(
+                        0.0, *list(opt.x), loglikelihood=-opt.fun
+                    )
+                else:
+                    self.parameters = type(self).Parameters(
+                        *list(opt.x), loglikelihood=-opt.fun
+                    )
                 self.resids = self.returns - self.parameters.mu
 
         return self.parameters
