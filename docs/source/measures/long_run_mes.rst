@@ -2,7 +2,10 @@
  Long-Run Marginal Expected Shortfall (LRMES)
 ##############################################
 
-.. tip:: Check `Examples`_ section for code guide and plot.
+.. tip:: 
+
+   Check `Examples`_ section for code guide and comparison to NYU's 
+   `V-Lab <https://vlab.stern.nyu.edu/srisk/RISK.USFIN-MR.MESSIM>`_, 
 
 **************
  Introduction
@@ -522,6 +525,21 @@ Additionally, below is an example output for estimating the daily LRMES for GS
 using parallel computing.
 
 .. image:: /images/GS_LRMES.png
+
+.. note:: 
+   
+   These estimates are similar to NYU's 
+   `V-Lab <https://vlab.stern.nyu.edu/srisk/RISK.USFIN-MR.MESSIM>`_, 
+   which is more stable and on average higher. V-Lab's simulated LRMES is 
+   typically above 40%.
+
+   Possible reasons include differences in
+   
+   #. the training sample  
+   #. the (GJR)GARCH-DCC model specification and estimation, where V-Lab uses 
+      a zero-mean return model but I use a constant mean
+   #. the number of simulations, sampling of past residuals, etc. 
+
 
 This is computed using the following code.
 
