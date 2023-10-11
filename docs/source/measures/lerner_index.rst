@@ -179,6 +179,8 @@ Here, :math:`a_1` and :math:`a_2` are coefficients that capture the first-order 
 Translog Cost Function
 ----------------------
 
+.. warning:: This part is incorrec and needs to be fixed.
+
 The Translog cost function can be derived from the Translog production function through the duality theory in economics, specifically using Shepard's Lemma.
 
 Shepard's Lemma
