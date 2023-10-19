@@ -36,17 +36,14 @@ The translog cost function :math:`\ln C(Q, W)` is often used to model the cost :
    &+ \sum_{i=1}^{n} \phi_i \ln Q \ln W_i
    \end{align}
 
-.. important:: 
-   
-   When estimating :math:numref:`lerner-index-translog`, year fixed effects can also be introduced 
-   with robust standard errors by bank to capture the specificities of each firm
-   (e.g., `Berger, Klapper, and Turk-Ariss (2009) <https://doi.org/10.1007/s10693-008-0050-7>`_,
-   `Beck, De Jonghe, and Schepens (2013) <https://doi.org/10.1016/j.jfi.2012.07.001>`_, among others)
+.. tip::
 
-   See the section `About Translog Functions`_  below to understand why the cost function is like this.
+   Please refer to my post `Translog Production and Cost Functions <https://mingze-gao.com/posts/translog-production-and-cost-functions/>`_
+   for details.
 
-   See the section `Estimation of Translog Cost Function`_  below for more on the OLS vs SFA, as well as
-   the homogeneity constraint on input prices.
+   Simply put, the use of translog cost function as specified in :math:numref:`lerner-index-translog`
+   allows for approximating potentially very complex cost function, hence complex
+   produciton function via duality.
 
 After estimating this cost function, the marginal cost :math:`MC` with respect to the output :math:`Q` can be obtained by differentiating the cost function :math:`C(Q, W)` with respect to :math:`Q`:
 
@@ -102,29 +99,26 @@ About this adjusted Lerner Index, `Clerides, Delis, and Kokas (2015) <https://do
   actual (exercised) market power, while Koetter, Kolari, and Spierdijk (2012) 
   are interested in measuring potential market power.
 
-Alternative parameteriation
----------------------------
+Alternative specification
+-------------------------
 
 Of course, one we choose a different functional form for the cost function and obtain margainal cost :math:`MC`
 accordingly. For example, `Clerides, Delis, and Kokas (2015) <https://doi.org/10.1111/fmii.12030>`_ and  
 `Deli, Delis, Hasan, and Liu (2019) <https://doi.org/10.1016/j.jbankfin.2019.01.016>`_ use 
 a log-linear cost function model.
 
-About Translog Functions
-========================
-
-.. tip::
-
-   Please refer to my post `Translog Production and Cost Functions <https://mingze-gao.com/posts/translog-production-and-cost-functions/>`_
-   for details.
-
-   Simply put, the use of translog cost function as specified in :math:numref:`lerner-index-translog`
-   allows for approximating potentially very complex cost function, hence complex
-   produciton function via duality.
-
+A log-linear cost function is fundamentally a simplification of translog cost function
+in that if uses a first-order Taylor expansion instead of second-order Taylor expansion.
+Refer to my post `Translog Production and Cost Functions <https://mingze-gao.com/posts/translog-production-and-cost-functions/>`_
+for the derivation of cost function.
 
 Estimation of Translog Cost Function
-================================================
+====================================
+
+.. tip:: 
+   
+   See my post `Translog Cost Function Etimation <https://mingze-gao.com/posts/translog-cost-function-estimation/>`_
+   for a detailed discussion.
 
 The Translog cost function can be estimated using either Ordinary Least Squares 
 (OLS) or Stochastic Frontier Analysis (SFA), depending on the assumptions about the error term.
@@ -151,6 +145,14 @@ This is achieved by normalizing the total cost :math:`C` and input prices by :ma
 have scaled :math:`\tilde{C}=\frac{C}{W_1}`, :math:`\tilde{W}_2=\frac{W_2}{W_1}` 
 and :math:`\tilde{W}_3=\frac{W_3}{W_1}`.
 
+.. tip:: 
+   
+   Again, see `Translog Cost Function Etimation <https://mingze-gao.com/posts/translog-cost-function-estimation/>`_
+   for a detailed discussion and proof.
+
+Time fixed effect
+-----------------
+
 With three inputs and one output, the model to estimate is then
 
 .. math::
@@ -168,9 +170,44 @@ The marginal cost for bank :math:`i` at time :math:`t` is then obtained as
 .. math::
    :label: lerner-index-mc-from-estimates
 
-   MC_{it} = \frac{\partial C_{it}}{\partial Q_{it}} = \frac{C_{it}}{Q_{it}} \left( \hat{\beta}_1 + \hat{\beta}_2 \ln Q + \hat{\phi}_2 \ln \tilde{W}_2 + \hat{\phi}_3 \ln \tilde{W}_3\right)
+   MC = \frac{\partial C}{\partial Q} = \frac{C}{Q}\frac{\partial \ln C}{\partial \ln Q} = \frac{C}{Q}\frac{\partial (\ln \tilde{C} + \ln W_1) }{\partial \ln Q} = \frac{C}{Q}\frac{\partial \ln \tilde{C} }{\partial \ln Q}
+
+so
+
+.. math::
+   :label: lerner-index-mc-final
+
+   MC_{it} = \frac{C_{it}}{Q_{it}} \left( \hat{\beta}_1 + \hat{\beta}_2 \ln Q + \hat{\phi}_2 \ln \tilde{W}_2 + \hat{\phi}_3 \ln \tilde{W}_3\right)
 
 This :math:`MC_{it}` is used to compute the Lerner Index.
+
+Model :math:numref:`lerner-index-translog-ols-model` adds year fixed effects 
+to :math:numref:`lerner-index-translog` and can be estimated
+with robust standard errors by bank to capture the specificities of each firm
+(e.g., `Berger, Klapper, and Turk-Ariss (2009) <https://doi.org/10.1007/s10693-008-0050-7>`_,
+`Beck, De Jonghe, and Schepens (2013) <https://doi.org/10.1016/j.jfi.2012.07.001>`_, among others)
+
+Trend
+-----
+
+Alternatively, we can incorporate trend instead, similar to  
+`Koetter, Kolari, and Spierdijk (2012) <https://doi.org/10.1162/REST_a_00155>`_,
+
+.. math::
+   :label: lerner-index-translog-ols-model-trend
+
+   \begin{align}
+   \ln \tilde{C}_{it} &= \beta_0 + \beta_1 \ln Q_{it} + \frac{1}{2} \beta_2 (\ln Q_{it})^2 \\\\
+   &+ \gamma_2 \ln\tilde{W}_{2,it} + \gamma_3 \ln\tilde{W}_{3,it} + \phi_3 \ln Q_{it} \ln\tilde{W}_{2,it} + \phi_3 \ln Q_{it} \ln\tilde{W}_{3,it} \\\\
+   &+ \eta_0 trend + \eta_1 trend^2 + \eta_2 trend \ln Q_{it} + \omega_{2} trend \ln\tilde{W}_{2,it} + \omega_{3} trend \ln\tilde{W}_{3,it} + \varepsilon_{it}
+   \end{align}
+
+such that the marginal cost is
+
+.. math::
+   :label: lerner-index-mc-final-trend
+
+   MC_{it} = \frac{C_{it}}{Q_{it}} \left( \hat{\beta}_1 + \hat{\beta}_2 \ln Q + \hat{\phi}_2 \ln \tilde{W}_2 + \hat{\phi}_3 \ln \tilde{W}_3 + \eta_2 trend\right)
 
 
 References
@@ -206,6 +243,8 @@ References
 
 API
 ===
+
+.. note:: To be implemented.
 
 .. autoclass:: frds.measures.LernerIndex
 
