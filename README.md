@@ -23,6 +23,28 @@ If there's any issue (likely), please contact me at [mingze.gao@sydney.edu.au](m
 ## Supported measures and algorithms
 
 For a complete list of supported built-in measures, please check [frds.io/measures/](https://frds.io/measures/) and [frds.io/algorithms](https://frds.io/algorithms/).
+
+[Supported Measures](https://frds.io/measures/)
+
+- Absorption Ratio
+- Contingent Claim Analysis
+- Distress Insurance Premium
+- Lerner Index (Banks)
+- Long-Run Marginal Expected Shortfall (LRMES)
+- Marginal Expected Shortfall
+- Option Prices
+- SRISK
+- Systemic Expected Shortfall
+- Z-score
+
+[Algorithms](https://frds.io/algorithems/)
+
+- GARCH(1,1)
+- GARCH(1,1) - CCC
+- GARCH(1,1) - DCC
+- GJR-GARCH(1,1)
+- GJR-GARCH(1,1) - DCC
+
 ## Examples
 
 Some simple examples.
