@@ -9,6 +9,7 @@ from ._distress_insurance_premium import DistressInsurancePremium
 from ._lerner_index import LernerIndex
 from ._long_run_mes import LongRunMarginalExpectedShortfall
 from ._marginal_expected_shortfall import MarginalExpectedShortfall
+from ._probability_of_informed_trading import PIN
 from ._srisk import SRISK
 from ._systemic_expected_shortfall import SystemicExpectedShortfall
 
@@ -26,6 +27,7 @@ __all__ = [
     "LongRunMarginalExpectedShortfall",
     "LRMES",
     "MarginalExpectedShortfall",
+    "PIN",
     "SRISK",
     "SystemicExpectedShortfall",
     # functions
