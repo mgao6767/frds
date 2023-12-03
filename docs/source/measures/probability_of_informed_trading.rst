@@ -387,7 +387,50 @@ MLE.
 *****
 
 .. autoclass:: frds.measures.PIN
+   :private-members:
+   :exclude-members: Parameters
+
+.. autoclass:: frds.measures.PIN.Parameters
+   :exclude-members: __init__
+   :no-undoc-members:
+
 
 **********
  Examples
 **********
+
+Consider the following example buys and sells consistent with the Easley, 
+Hvidjkaer, and O'Hara example on p. 2198 of
+Easley, David, Soeren Hvidkjaer, and Maureen O'Hara,
+2002, "Is Information Risk a Determinant of Asset Returns?", 
+The Journal of Finance, 57 (5), pp. 2185-2221.     
+
+The parameters in this example would be identified as 
+:math:`\varepsilon_b=\varepsilon_s=40`, :math:`\mu=50`, :math:`\alpha=0.4`, 
+and :math:`\delta=0.5`.
+
+>>> from pprint import pprint
+>>> import numpy as np
+>>> from frds.measures import PIN
+>>> B = np.array([90, 40, 40, 40, 40])
+>>> S = np.array([40, 90, 40, 40, 40])
+>>> res = PIN(B, S).estimate(method="LK2011")
+>>> pprint(res)
+Parameters(alpha=0.4000034024442184,
+           delta=0.50000867584611,
+           epsilon_b=39.9999707607252,
+           epsilon_s=40.00012455827183,
+           mu=49.99988692576548,
+           loglikelihood=1485.6558133261797,
+           pin=0.20000080849728463,
+           method='LK2011')
+>>> res = PIN(B, S).estimate(method="EHO2010")
+>>> pprint(res)
+Parameters(alpha=0.400000965289364,
+           delta=0.4999993508809301,
+           epsilon_b=40.00007364091631,
+           epsilon_s=40.000051685750314,
+           mu=49.99989185329409,
+           loglikelihood=1485.6558133270914,
+           pin=0.19999978939239277,
+           method='EHO2010')
