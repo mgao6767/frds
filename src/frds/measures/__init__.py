@@ -13,6 +13,7 @@ from ._probability_of_informed_trading import PIN
 from ._srisk import SRISK
 from ._systemic_expected_shortfall import SystemicExpectedShortfall
 
+from ._kyle_lambda import kyle_lambda
 from ._option_price import blsprice
 from ._z_score import z_score
 
@@ -32,5 +33,6 @@ __all__ = [
     "SystemicExpectedShortfall",
     # functions
     "blsprice",
+    "kyle_lambda",
     "z_score",
 ]
