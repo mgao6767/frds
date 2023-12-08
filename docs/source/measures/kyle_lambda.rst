@@ -21,7 +21,7 @@ Kyle's Lambda for stock :math:`i` as the slope coefficient
    r_{i,n} = \delta_{i} + \lambda_{i}\cdot S_{i,n} + \varepsilon_{i,t}
 
 where for the :math:`n`-th five-minute period, :math:`r_{i,n}` is the
-stock return and :math:`S_{i,n}` is the signed square-root dollar
+(percentage) stock return and :math:`S_{i,n}` is the signed square-root dollar
 volume, i.e., :math:`S_{i,n}=\sum_k sign(v_{k,n}) \sqrt{|v_{k,n}|}`, and
 :math:`v_{kn}` is the signed dollar volume of the :math:`k`-th trade in
 the :math:`n`-th five-minute period.
