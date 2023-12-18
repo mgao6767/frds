@@ -149,6 +149,23 @@ at bid/ask depth level :math:`x` in stock :math:`i` at time :math:`t`,
 :math:`\text{Price}_{it}^K` is the bid/ask price at the :math:`K`-th
 level, and :math:`m_{it}` is the bid-ask midpoint at time :math:`t`.
 
+Bid-side Slope Difference
+-------------------------
+
+.. math::
+   :label: bid-slope-diff-DGGW
+
+   \text{Bid Slope Difference}_{it} = \frac{\text{Bid Depth}_{it5} - \text{Bid Depth}_{it3}}{|\text{Bid Price}_{it5} - \text{Bid Price}_{it3}|} - \frac{\text{Bid Depth}_{it3} - \text{Bid Depth}_{it1}}{|\text{Bid Price}_{it3} - \text{Bid Price}_{it1}|}
+
+Ask-side Slope Difference
+-------------------------
+
+.. math::
+   :label: ask-slope-diff-DGGW
+
+   \text{Ask Slope Difference}_{it} = \frac{\text{Ask Depth}_{it5} - \text{Ask Depth}_{it3}}{|\text{Ask Price}_{it5} - \text{Ask Price}_{it3}|} - \frac{\text{Ask Depth}_{it3} - \text{Ask Depth}_{it1}}{|\text{Ask Price}_{it3} - \text{Ask Price}_{it1}|}
+
+
 Scaled Depth Difference
 -----------------------
 

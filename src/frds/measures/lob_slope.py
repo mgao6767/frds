@@ -99,6 +99,42 @@ def DGGW_bid_slope(
     return np.mean(slope)
 
 
+def DGGW_bid_side_slope_difference(
+    bid_size: np.ndarray, bid_price: np.ndarray
+) -> float:
+    """Bid-side Slope Difference from Della Vedova, Gao, Grant and Westerholm (working paper)
+
+    Args:
+        bid_size (np.ndarray): ``(n,k)`` array of LOB bid sizes, where ``n`` is number of quotes and ``k`` is number of levels.
+        bid_price (np.ndarray): ``(n,k)`` array of LOB bid prices, where ``n`` is number of quotes and ``k`` is number of levels.
+
+    Returns:
+        float: bid-side slope difference
+    """
+    assert len(bid_size.shape) > 1
+    n, k = bid_size.shape
+    assert k > 1  # at least two levels
+    # fmt: off
+    slope_h = (bid_size[:,4] - bid_size[:,2]) / np.abs(bid_price[:,4] - bid_price[:,2])
+    slope_l = (bid_size[:,2] - bid_size[:,0]) / np.abs(bid_price[:,2] - bid_price[:,0])
+    return np.mean(slope_h - slope_l)
+
+
+def DGGW_ask_side_slope_difference(
+    ask_size: np.ndarray, ask_price: np.ndarray
+) -> float:
+    """Ask-side Slope Difference from Della Vedova, Gao, Grant and Westerholm (working paper)
+
+    Args:
+        ask_size (np.ndarray): ``(n,k)`` array of LOB ask sizes, where ``n`` is number of quotes and ``k`` is number of levels.
+        ask_price (np.ndarray): ``(n,k)`` array of LOB ask prices, where ``n`` is number of quotes and ``k`` is number of levels.
+
+    Returns:
+        float: ask-side slope difference
+    """
+    return DGGW_bid_side_slope_difference(ask_size, ask_price)
+
+
 def DGGW_scaled_depth_difference(bid_size: np.ndarray, ask_size: np.ndarray) -> float:
     """SDD from Della Vedova, Gao, Grant and Westerholm (working paper)
 
