@@ -13,10 +13,10 @@ def kyle_lambda(returns: np.ndarray, signed_dollar_volume: np.ndarray) -> float:
 
         .. note::
            The return value is the estimated coefficient of :math:`\lambda` in equation
-           :math:numref:`kylelambda_regression` multiplied by 1,000,000. Otherwise, the
-           value would be too small and may cause issues.
+           :math:numref:`kylelambda_regression` multiplied by 1,000,000.
     """
-    returns = np.asarray(returns)
-    signed_dollar_volume = np.asarray(signed_dollar_volume)
-    coeff, _ = np.polyfit(signed_dollar_volume, returns, 1)
-    return coeff * 1_000_000
+    y = np.asarray(returns)
+    x = np.asarray(signed_dollar_volume)
+    x = x[:, np.newaxis]
+    a, _, _, _ = np.linalg.lstsq(x, y, rcond=None)
+    return a[0] * 1_000_000

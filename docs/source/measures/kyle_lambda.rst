@@ -18,7 +18,7 @@ Kyle's Lambda for stock :math:`i` as the slope coefficient
 .. math::
    :label: kylelambda_regression
 
-   r_{i,n} = \delta_{i} + \lambda_{i}\cdot S_{i,n} + \varepsilon_{i,t}
+   r_{i,n} = \lambda_{i}\cdot S_{i,n} + \varepsilon_{i,t}
 
 where for the :math:`n`-th five-minute period, :math:`r_{i,n}` is the
 (percentage) stock return and :math:`S_{i,n}` is the signed square-root dollar
