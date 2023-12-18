@@ -57,7 +57,7 @@ def DGGW_ask_slope(
     assert len(mid_point.shape) == 1 and n == mid_point.shape[0]
 
     slope = np.sum(ask_size, axis=1) / (ask_price_highest_level - mid_point)
-    return np.mean(slope)
+    return np.nanmean(slope)
 
 
 def DGGW_bid_slope(
@@ -96,7 +96,7 @@ def DGGW_bid_slope(
     assert len(mid_point.shape) == 1 and n == mid_point.shape[0]
 
     slope = np.sum(bid_size, axis=1) / np.abs((bid_price_highest_level - mid_point))
-    return np.mean(slope)
+    return np.nanmean(slope)
 
 
 def DGGW_bid_side_slope_difference(
@@ -117,7 +117,7 @@ def DGGW_bid_side_slope_difference(
     # fmt: off
     slope_h = (bid_size[:,4] - bid_size[:,2]) / np.abs(bid_price[:,4] - bid_price[:,2])
     slope_l = (bid_size[:,2] - bid_size[:,0]) / np.abs(bid_price[:,2] - bid_price[:,0])
-    return np.mean(slope_h - slope_l)
+    return np.nanmean(slope_h - slope_l)
 
 
 def DGGW_ask_side_slope_difference(
@@ -168,4 +168,4 @@ def DGGW_scaled_depth_difference(bid_size: np.ndarray, ask_size: np.ndarray) -> 
     bid_depth = np.sum(bid_size, axis=1)
     ask_depth = np.sum(ask_size, axis=1)
     sdd = 2 * (ask_depth - bid_depth) / (ask_depth + bid_depth)
-    return np.mean(sdd)
+    return np.nanmean(sdd)
