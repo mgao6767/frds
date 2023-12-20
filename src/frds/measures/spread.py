@@ -63,7 +63,10 @@ def effective_spread(
             spread = 2 * trade_direction * (price - midpoint) / midpoint * 100
         else:
             spread = 2 * trade_direction * (np.log(price) - np.log(midpoint))
-    return np.average(spread, weights=volume * price)
+    dollar_volume = volume * price
+    if all(dollar_volume == 0):
+        return np.nanmean(spread)
+    return np.average(spread, weights=dollar_volume)
 
 
 def realized_spread(
@@ -108,5 +111,7 @@ def realized_spread(
             spread = 2 * trade_direction * (price - midpoint_later) / midpoint * 100
         else:
             spread = 2 * trade_direction * (np.log(price) - np.log(midpoint_later))
-
-    return np.average(spread, weights=volume * price)
+    dollar_volume = volume * price
+    if all(dollar_volume == 0):
+        return np.nanmean(spread)
+    return np.average(spread, weights=dollar_volume)

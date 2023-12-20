@@ -42,5 +42,7 @@ def simple_price_impact(
             spread = 2 * trade_direction * (midpoint_later - midpoint) / midpoint * 100
         else:
             spread = 2 * trade_direction * (np.log(midpoint_later) - np.log(midpoint))
-
-    return np.average(spread, weights=volume * price)
+    dollar_volume = volume * price
+    if all(dollar_volume == 0):
+        return np.nanmean(spread)
+    return np.average(spread, weights=dollar_volume)
