@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(__file__, "../../../src")))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "frds"
-copyright = "2023, Mingze Gao"
+copyright = "2023 - 2024, Mingze Gao"
 author = "Mingze Gao"
 html_title = "frds"
 html_shorttitle = "frds"

@@ -6,8 +6,9 @@ Financial Research Data Services
 complexities often encountered in financial research. It provides a collection 
 of ready-to-use methods for computing a wide array of measures in the literature. 
 
-It is developed by Dr. `Mingze Gao <http://mingze-gao.com>`_  from the University of Sydney, as 
-a personal project during his postdoctoral research fellowship.
+It is developed by Dr. `Mingze Gao <http://mingze-gao.com>`_ from the Macquarie 
+University, initially started as as a personal project during his postdoctoral 
+research fellowship at the University of Sydney.
 
 |GitHub license| |PyPI Downloads| |Tests| |PyPI Version|
 
@@ -30,7 +31,7 @@ a personal project during his postdoctoral research fellowship.
    Breaking changes may be expected.
 
    If there's any issue (likely), please contact me at 
-   `mingze.gao@sydney.edu.au <mailto:mingze.gao@sydney.edu.au>`_.
+   `mingze.gao@mq.edu.au <mailto:mingze.gao@mq.edu.au>`_.
 
 ------------
 Quick start

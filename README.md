@@ -6,7 +6,7 @@
 
 [frds](https://github.com/mgao6767/frds/) is a Python library to simplify the complexities often encountered in financial research. It provides a collection of ready-to-use methods for computing a wide array of measures in the literature. 
 
-It is developed by Dr. [Mingze Gao](https://mingze-gao.com) from the University of Sydney, as a personal project during his postdoctoral research fellowship.
+It is developed by Dr. [Mingze Gao](https://mingze-gao.com) from the Macquarie University, initially started as as a personal project during his postdoctoral research fellowship at the University of Sydney.
 
 ## Installation
 
@@ -18,7 +18,7 @@ pip install frds
 
 This library is still under development and breaking changes may be expected.
 
-If there's any issue (likely), please contact me at [mingze.gao@sydney.edu.au](mailto:mingze.gao@sydney.edu.au)
+If there's any issue (likely), please contact me at [mingze.gao@mq.edu.au](mailto:mingze.gao@mq.edu.au)
 
 ## Supported measures and algorithms
 
